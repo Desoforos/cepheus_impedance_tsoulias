@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<robot name="turtlebot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <gazebo reference="base_link">
+		<material>Gazebo/White</material>
+	</gazebo>
+
+    <gazebo reference="front_wheel_link">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+</robot>

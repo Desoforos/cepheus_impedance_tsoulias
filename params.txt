@@ -1,0 +1,154 @@
+clear all
+clc
+% 
+global t0 t_free v xE_in yE_in thetaE_in xE_contact yE_contact thetaE_contact...
+   xb_in yb_in theta0_in xb_fin yb_fin thetab_fin mt x_target_in y_target_in theta_target_in...
+   M mb m1 m2 m3 r0x r0y r0 r1 r2 r3 l1 l2 l3 Ibzz I1zz I2zz I3zz l0 lt S01 S02...
+   Md Bd Kd Fdes Itzz ke A0 w q1_in q2_in q3_in parameters
+% 
+mb=400;
+m1=100;
+m2=50;
+m3=20;
+mt=100;
+%
+M=mb+m1+m2+m3;
+% 
+l1=1;
+l2=0.5;
+l3=0.25;
+lt=0.2;
+% 
+r0x=1;
+r0y=1;
+%
+r0=sqrt(r0x^2+r0y^2);
+%
+r1=1;
+r2=0.5;
+r3=0.25;
+%
+S01=2;
+S02=2.5;
+%
+% 
+l0=0.1;
+% 
+% xE_in=0.1;
+% yE_in=0.1;
+% thetaE_in=60*(pi/180);
+% xE_contact=2.5;
+% yE_contact=2.5;
+% thetaE_contact=0;
+% XE_in=[xE_in;yE_in;thetaE_in];
+% XE_contact=[xE_contact;yE_contact;thetaE_contact];
+% x_target_in=xE_contact+l0;
+% y_target_in=2.5;
+% theta_target_in=0;
+% X_target_in=[x_target_in;y_target_in;theta_target_in];
+%
+%
+xE_in=6;
+yE_in=7;%7;
+thetaE_in=30*(pi/180);
+%
+xb_in=4;%2.5;
+yb_in=4;
+theta0_in=30*(pi/180);
+%
+x_target_in=10;
+y_target_in=20;
+theta_target_in=0*(pi/180);
+%
+xE_contact=x_target_in-l0;
+yE_contact=y_target_in;
+thetaE_contact=theta_target_in;
+%
+xb_fin=xE_contact-S01;
+yb_fin=yE_contact-S02;
+thetab_fin=theta_target_in;
+%
+a=sqrt(r0x^2+r0y^2);
+b=l1+r1;
+c=l2+r2;
+d=l3+r3;
+% 
+cos_q2=(((xE_in-xb_in-a*cos(theta0_in)-d*cos(thetaE_in))^2)+...
+    ((yE_in-yb_in-a*sin(theta0_in)-d*sin(thetaE_in))^2)-(b^2)-(c^2))/(2*b*c);
+sin_q2=sqrt(1-(cos_q2)^2);
+% 
+A=c*sin_q2;
+B=b+c*cos_q2;
+% 
+sin_th0_q1=-((A*(xE_in-xb_in-a*cos(theta0_in)-d*cos(thetaE_in))-...
+    B*(yE_in-yb_in-a*sin(theta0_in)-d*sin(thetaE_in)))/((b^2)+(c^2)+2*b*c*cos_q2));
+cos_th0_q1=(A*(yE_in-yb_in-a*sin(theta0_in)-d*sin(thetaE_in))+...
+    B*(xE_in-xb_in-a*cos(theta0_in)-d*cos(thetaE_in)))/((b^2)+(c^2)+2*b*c*cos_q2);
+% 
+q2_in=atan2(sin_q2,cos_q2);
+q1_in=atan2(sin_th0_q1,cos_th0_q1)-theta0_in;
+q3_in=thetaE_in-theta0_in-q1_in-q2_in;
+%
+% q1_deg=q1_in*(180/pi)
+% q2_deg=q2_in*(180/pi)
+% q3_deg=q3_in*(180/pi)
+%
+Ibzz=(1/2)*mb*(r0x^2+r0y^2);
+I1zz=(1/12)*m1*((l1+r1)^2);
+I2zz=(1/12)*m2*((l2+r2)^2);
+I3zz=(1/12)*m3*((l3+r3)^2);
+Itzz=(1/6)*mt*(lt^2);
+% 
+%
+% A0=100;
+% w=10;
+A0=0;
+w=2;
+%
+Ke_star=[10000 0 0;0 10000 0;0 0 10000];
+Ke=Ke_star;
+ke=10000;
+Kd_e=[100 0 0;0 100 0;0 0 100];
+Kd_b=[100 0 0;0 100 0;0 0 100];
+Ktot=Ke+Kd_e;
+Fdes=[0.1;0;0];
+% 
+t0=0;
+t_free=200;
+% 
+z_free=1;
+ts_free=0.1*t_free;
+% 
+if z_free==1
+    wn_free=6/ts_free;
+else
+    wn_free=4/(z_free*ts_free);
+end
+%
+Md_e=[Kd_e(1,1)/(wn_free^2) 0 0;0 Kd_e(2,2)/(wn_free^2) 0;0 0 Kd_e(3,3)/(wn_free^2)];
+Bd_e=2*z_free*wn_free*Md_e;
+%
+Md_b=[Kd_b(1,1)/(wn_free^2) 0 0;0 Kd_b(2,2)/(wn_free^2) 0;0 0 Kd_b(3,3)/(wn_free^2)];
+Bd_b=2*z_free*wn_free*Md_b;
+%
+Kd=[Kd_e zeros(3,3);zeros(3,3) Kd_b];
+%
+Md=[Md_e zeros(3,3);zeros(3,3) Md_b];
+%
+Bd=[Bd_e zeros(3,3);zeros(3,3) Bd_b];
+% 
+z_contact=z_free*sqrt(Kd(1,1)/(Kd(1,1)+Ke_star(1,1)));
+%
+wn_contact=wn_free*sqrt((Kd(1,1)+Ke_star(1,1))/Kd(1,1));
+% 
+v=(Fdes(1,1)*z_contact)/(Md_e(1,1)*wn_contact);
+% v=0.1;
+%
+% parameters=[mb;m1;m2;m3;mt;M;I0z;I1z;I2z;I3z;It;r0x;r0y;r1;r2;r3;l1;l2;l3;lt;S01;S02;
+%            t0;t_free;xE_in;yE_in;thetaE_in;xb_in;yb_in;thetab_in;xt_in;yt_in;thetat_in;
+%            xE_fin;yE_fin;thetaE_fin;xb_fin;yb_fin;thetab_fin;ke;v;A0;w;l0];
+
+parameters=[mb;m1;m2;m3;mt;Ibzz;I1zz;I2zz;I3zz;Itzz;r0;r1;r2;r3;l1;l2;l3;lt;
+           t0;t_free;xE_in;yE_in;thetaE_in;xb_in;yb_in;theta0_in;x_target_in;y_target_in;theta_target_in;
+           xE_contact;yE_contact;thetaE_contact;ke;v;l0];
+           

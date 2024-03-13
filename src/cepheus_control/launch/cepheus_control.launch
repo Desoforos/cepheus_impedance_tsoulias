@@ -1,0 +1,47 @@
+<launch>
+	<arg name="controller"/>
+	<!-- <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" > 
+		<arg name="port" value="9090"/>
+	</include> -->
+	<rosparam file="$(find cepheus_control)/config/cepheus_controlforos.yaml" command="load"/>
+	<node
+		name="controller_spawner"
+		pkg="controller_manager"
+		type="spawner"
+		respawn="false"
+		output="screen"
+		args="joint_state_controller  left_shoulder_effort_controller left_elbow_effort_controller left_wrist_effort_controller reaction_wheel_velocity_controller"/> 
+		<!-- p1_position_controller p2_position_controller left_shoulder_position_controller 
+		left_elbow_position_controller reaction_wheel_velocity_controller CartesianImpedance_trajectory_controller
+		ns="/cepheus" NA TO KSANAVALO an bgalo to group ns-->
+	<node
+		name="robot_state_publisher"
+		pkg="robot_state_publisher"
+		type="robot_state_publisher"
+		respawn="false"
+		output="screen">
+		<param
+			name="robot_description"
+			command="$(find xacro)/xacro '$(find cepheus_description)/urdf/cepheus.xacro'" />
+		<remap 
+			from="/joint_states"
+			to="/cepheus/joint_states" />
+	</node>
+	<!-- <arg name="address" default="localhost"/>
+	<arg name="port" default="7575"/>
+	<node
+		pkg="web_video_server"
+		type="web_video_server"
+		name="web_video_server">
+		<param name="address" value="$(arg address)"/>
+		<param name="port" value="$(arg port)"/>
+	</node> -->
+	<node
+		name="foros_simcontroller"  
+		pkg="cepheus_control"
+		type="foros_simcontroller_node"
+		output="screen"
+		required="true"
+		if="$(arg controller)">
+	</node>
+</launch>

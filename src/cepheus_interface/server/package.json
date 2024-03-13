@@ -1,0 +1,29 @@
+{
+  "name": "ros-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ros.js",
+  "dependencies": {
+    "dotenv": "^9.0.2",
+    "express": "^4.17.1",
+    "rosnodejs": "^3.0.2",
+    "shelljs": "^0.8.4",
+    "socket.io": "^2.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "scripts": {
+    "dev": "nodemon ros --robot_address=192.168.1.103"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pelekoudasq/cepheus_simulator.git"
+  },
+  "author": "Ioannis Pelekoudas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pelekoudasq/cepheus_simulator/issues"
+  },
+  "homepage": "https://github.com/pelekoudasq/cepheus_simulator#readme"
+}

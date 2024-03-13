@@ -1,0 +1,10 @@
+digraph G {
+"left_arm" -> "left_forearm"[label=" Broadcaster: /robot_state_publisher\nAverage rate: 50.201\nBuffer length: 4.98\nMost recent transform: 544.781\nOldest transform: 539.801\n"];
+"cepheus" -> "left_arm"[label=" Broadcaster: /robot_state_publisher\nAverage rate: 50.201\nBuffer length: 4.98\nMost recent transform: 544.781\nOldest transform: 539.801\n"];
+"left_forearm" -> "left_grip"[label=" Broadcaster: /robot_state_publisher\nAverage rate: 50.201\nBuffer length: 4.98\nMost recent transform: 544.781\nOldest transform: 539.801\n"];
+"cepheus" -> "reaction_wheel"[label=" Broadcaster: /robot_state_publisher\nAverage rate: 50.201\nBuffer length: 4.98\nMost recent transform: 544.781\nOldest transform: 539.801\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 544.803"[ shape=plaintext ] ;
+}->"cepheus";
+}

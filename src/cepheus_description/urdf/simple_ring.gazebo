@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<robot name="simple_ring" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <gazebo>
+	    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+			<robotNamespace>/simple_ring</robotNamespace>
+		</plugin>
+    </gazebo>
+	<gazebo reference="base_link">
+        <mu1>0</mu1>
+        <mu2>0</mu2>
+		<material>Gazebo/White</material>
+	</gazebo>
+	<gazebo reference="ring_link">
+		<material>Gazebo/Blue</material>
+	</gazebo>
+</robot>

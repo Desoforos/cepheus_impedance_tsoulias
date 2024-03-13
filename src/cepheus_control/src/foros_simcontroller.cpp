@@ -1,0 +1,188 @@
+/*
+Nikiforos Tsoulias 2023
+This will be the high level control node.
+It shall read the state of the robot (joint posistions,force applied) and calculate the output wrench needed.
+Then it shall publish it to the right topics:
+In simulation, it shall be the gazebo command/effort topics
+In real robot, it shall be the topics that the cepheus_interface reads.
+*/
+
+#include "variables.h"
+#include "callbacks.h"
+#include "calculations.h"
+
+#include <typeinfo>
+
+#define DESIRED_VEL 40  // RW_qdot_des [rad/s]
+#define NUM_OF_MEASUREMENTS 1000
+#define POS_FILTER 0.005
+#define VEL_FILTER 0.05
+#define TORQUE_LIMIT 0.00000001
+
+typedef Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> Matrix;
+
+template<typename MatType>
+using PseudoInverseType = Eigen::Matrix<typename MatType::Scalar, MatType::ColsAtCompileTime, MatType::RowsAtCompileTime>;
+
+template<typename MatType>
+PseudoInverseType<MatType> pseudoInverse(const MatType &a, double epsilon = std::numeric_limits<double>::epsilon())
+{
+    using WorkingMatType = Eigen::Matrix<typename MatType::Scalar, Eigen::Dynamic, Eigen::Dynamic, 0, MatType::MaxRowsAtCompileTime, MatType::MaxColsAtCompileTime>;
+    Eigen::BDCSVD<WorkingMatType> svd(a, Eigen::ComputeThinU | Eigen::ComputeThinV);
+    svd.setThreshold(epsilon*std::max(a.cols(), a.rows()));
+    Eigen::Index rank = svd.rank();
+    Eigen::Matrix<typename MatType::Scalar, Eigen::Dynamic, MatType::RowsAtCompileTime,
+    0, Eigen::BDCSVD<WorkingMatType>::MaxDiagSizeAtCompileTime, MatType::MaxRowsAtCompileTime>
+    tmp = svd.matrixU().leftCols(rank).adjoint();
+    tmp = svd.singularValues().head(rank).asDiagonal().inverse() * tmp;
+    return svd.matrixV().leftCols(rank) * tmp;
+}
+
+
+
+/////////////// GLOBAL VARIABLES INITIALIZATION START////////////////////////
+
+//einai sto variables.h
+
+/////////////// GLOBAL VARIABLES INITIALIZATION END////////////////////////
+
+
+/////////////// CALLBACK FUNCTIONS DEFINITION START////////////////////////
+
+//einai sto callbacks.h
+
+/////////////// CALLBACK FUNCTIONS DEFINITION END////////////////////////
+
+/////////////// CALCULATION FUNCTIONS DEFINITION START////////////////////////
+
+//einai sto calculations.h
+
+/////////////// CALCULATION FUNCTIONS DEFINITION END////////////////////////
+
+int main(int argc, char **argv) {
+
+    
+    bool hasbegun = false;
+
+    /* ros init */
+    ros::init(argc, argv, "foros_simcontroller_node");
+    ros::NodeHandle nh;
+
+    /* Create publishers */
+    ros::Publisher RW_velocity_pub = nh.advertise<std_msgs::Float64>("/cepheus/reaction_wheel_velocity_controller/command", 1);
+    ros::Publisher LE_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_elbow_effort_controller/command", 1);
+    ros::Publisher LS_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_shoulder_effort_controller/command", 1);
+
+    /* messages to publish */
+    // std_msgs::Float64 msg_RW;
+    // std_msgs::Float64 msg_LE;
+    // std_msgs::Float64 msg_LS;
+    
+    /* init messages */ 
+    msg_RW.data = 0.1;
+    msg_LE.data = 0.1;
+    msg_LS.data = 0.1;
+
+    // double frequency = (float)1/DT;
+
+    /* Create subscribers */
+    // ros::Subscriber RW_velocity_sub = nh.subscribe<sensor_msgs::JointState>("/cepheus/joint_states", 1, velocityCheckCallback);
+    // ros::Subscriber position_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states", 1, positionCheckCallback);
+	ros::Subscriber joint_states_sub = nh.subscribe<sensor_msgs::JointState>("/cepheus/joint_states",1,jointStatesCallback);
+
+    //ros::Subscriber ee_target_pos_sub = nh.subscribe<geometry_msgs::Pose>("/cepheus/ee_target_pos", 1, ee_target_posCallback);
+    ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 1, lsPosCallback);
+    ros::Subscriber force_sub = nh.subscribe("/cepheus/ft_sensor_topic", 100, forceCallback);
+    ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",1,gazeboposCallback);
+
+
+
+
+    
+    //ros::Rate loop_rate(frequency);
+    ros::Rate loop_rate(10); //10Hz
+
+
+	for (int i = 0; i < 3; i++) {  //initialize errors and torques
+		errorq[i] = 0.0;
+		error_qdot[i] = 0.0;
+		torq[i] = 0.0;
+		prev_torq[i] = 0.0;
+		qd[i] = 0.0;
+		qd_dot[i] = 0.0;
+	}
+
+    ROS_INFO("[foros_simcontroller]: torques initialized to 0. \n");
+
+    // ROS_INFO("[foros_simcontroller]: Give me Kp, Kd. \n");
+
+    // std::cin>>Kp>>Kd;  //kala einai ta kp=5 kai kd=0.5
+    ROS_INFO("[foros_simcontroller]: Give me q1des, q2des. \n");
+    std::cin>>q1des>>q2des; //apla gia na ksekinisei
+
+    q1des = q1des* (M_PI / 180);
+    q2des = q2des* (M_PI / 180);
+    start_movement= true;
+    initialiseParameters();
+
+    while(ros::ok()){
+        // RW_velocity_pub.publish(msg_RW);
+        // LE_position_pub.publish(msg_LE);
+        // LS_position_pub.publish(msg_LS);
+        for (int i = 0; i < 3; i++) {
+			prev_torq[i] = torq[i];
+		}
+
+
+        //ros::spinOnce(); //once it spins it will read the current rw, le, ls and the callbacks will update the values q1,q2,q3 and the velocities
+        //now we update the errors and we recalculate the desired efforts to publish as msg_LE,msg_LS
+
+        
+        if(!start_movement){
+            ROS_INFO("[foros_simcontroller]: waiting for ee_pose msg \n");
+        }
+        else{
+            if(!hasbegun){
+                ROS_INFO("[foros_simcontroller]: initializing movement with given target position");
+                hasbegun = true; //apla gia to rosinfo na mas pei oti ksekinaei tin kinhsh
+            }
+
+
+            
+            desiredTrajectory(t); //na oriso time t
+            calculateStep();
+
+
+            //ImpedanceControlUpdateStep();
+			msg_LS.data = torq[0];
+			msg_LE.data = torq[1];
+			msg_RW.data = torq[2];
+
+            RW_velocity_pub.publish(msg_RW);
+            LE_torque_pub.publish(msg_LE);
+            LS_torque_pub.publish(msg_LS);
+
+            //ROS_INFO("current ee_x: %f ee_y: %f ring_x: %f ring_y: %f",ee_x, ee_y, ring_x, ring_y);
+        }
+		if(reachedTarget){
+			ROS_INFO("[foros_simcontroller]: target position achieved, stopped publishing. \n");
+			break;
+		}
+        
+        ros::spinOnce();
+
+
+
+
+
+
+        //ros::Duration(2).sleep(); 
+
+
+        loop_rate.sleep();
+
+    }
+
+    return 0;
+
+}

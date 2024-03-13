@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<robot name="assist_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+	<gazebo reference="assist_robot">
+		<material>Gazebo/White</material>
+	</gazebo>
+	<gazebo reference="drogue">
+		<material>Gazebo/Silver</material>
+	</gazebo>
+</robot>

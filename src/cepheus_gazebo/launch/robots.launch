@@ -1,0 +1,13 @@
+<launch>
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+		<arg name="world_name" value="$(find cepheus_gazebo)/worlds/cepheus.world"/>
+		<arg name="gui" value="true"/>
+		<arg name="paused" value="true"/>
+	</include>
+	<group ns="cepheus">
+		<include file="$(find cepheus_gazebo)/launch/cepheus.launch" pass_all_args="true"/> 
+	</group>
+	<group ns="simple_ring">
+		<include file="$(find cepheus_gazebo)/launch/assist_robot.launch" pass_all_args="true"/>
+	</group>
+</launch>

@@ -1,0 +1,28 @@
+<launch>
+	<arg name="controller"/>
+	<!-- <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" > 
+		<arg name="port" value="9090"/>
+	</include> -->
+	<rosparam file="$(find cepheus_control)/config/simple_ring_control.yaml" command="load"/>
+	<node
+		name="controller_spawner"
+		pkg="controller_manager"
+		type="spawner"
+		respawn="false"
+		output="screen"
+		ns="/simple_ring"
+		args="joint_state_controller"/> 
+	<node
+		name="robot_state_publisher"
+		pkg="robot_state_publisher"
+		type="robot_state_publisher"
+		respawn="false"
+		output="screen">
+		<param
+			name="robot_description"
+			command="$(find xacro)/xacro '$(find cepheus_description)/urdf/simple_ring.xacro'" />
+		<remap 
+			from="/joint_states"
+			to="/simple_ring/joint_states" />
+	</node>
+</launch>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<robot name="combined_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find cepheus_description)/urdf/cepheus.xacro" />
+  <xacro:include filename="$(find cepheus_description)/urdf/assist_robot.xacro" />
+  <xacro:cepheus />
+  <xacro:assist_robot />
+  <joint name="base_joint" type="fixed">
+    <parent link = "cepheus_link"/>
+    <child link = "assist_robot_link"/>
+    <origin xyz="10 0 0" rpy="0 0 0" />
+ </joint>
+</robot>

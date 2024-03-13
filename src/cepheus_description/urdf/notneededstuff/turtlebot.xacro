@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<robot name="turtlebot" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find cepheus_description)/urdf/turtlebot.gazebo" />
+  <xacro:include filename="$(find cepheus_description)/urdf/materials.xacro" />
+
+  <!-- Define the base of the TurtleBot -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.5 0.6 0.3"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.5 0.6 0.3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Define a wheel -->
+  <joint name="front_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="front_wheel_link"/>
+    <origin xyz="0 0.1 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <link name="front_wheel_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Gazebo reference -->
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/turtlebot</robotNamespace>
+    </plugin>
+  </gazebo>
+
+</robot>

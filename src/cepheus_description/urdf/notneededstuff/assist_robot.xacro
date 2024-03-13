@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<robot name="assist_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find cepheus_description)/urdf/assist_robot.gazebo" />
+  <xacro:include filename="$(find cepheus_description)/urdf/assist_materials.xacro" />
+
+  <link name="assist_robot">
+    <visual>
+      <material name="assist_black"> <color rgba="0.4 0.4 0.4 1"/> </material>
+      <geometry>
+        <box size="0.45 0.45 0.43"/>
+      </geometry>
+      <origin xyz="0 0 0.245" rpy="0 0 0"/>
+    </visual>
+  </link>
+  <gazebo reference="assist_robot">
+    <mu1>0</mu1>
+    <mu2>0</mu2>
+  </gazebo>
+
+  <link name="drogue">
+    <visual>
+      <material name="assist_silver"> <color rgba="0.8 0.8 0.8 1"/> </material>
+      <geometry>
+        <cylinder length="0.1" radius="0.072"/>
+      </geometry>
+      <origin xyz="0 0 -0.05" rpy="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="drogue_joint" type="fixed">
+    <parent link="assist_robot"/>
+    <child link="drogue"/>
+    <origin xyz="0.3 0 0.145" rpy="1.570796 0 1.570796"/>
+    <axis xyz="0 0 1" /> 
+  </joint>
+
+
+  
+</robot>

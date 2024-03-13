@@ -1,0 +1,22 @@
+<launch>
+
+    <!-- <include file="$(find gazebo_ros)/launch/empty_world.launch">
+		<arg name="world_name" value="$(find cepheus_gazebo)/worlds/cepheus.world"/>
+		<arg name="gui" value="true"/>
+	</include> -->
+	<param name="robot_description" command="$(find xacro)/xacro '$(find
+	cepheus_description)/urdf/simple_ring.xacro'" /> 
+	<!-- <param name="robot_description" textfile="$(find
+	cepheus_description)/urdf/simple_ring.urdf" /> -->
+	
+	<!-- <node respawn="false" name="assist_robot_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
+	args="-urdf -param robot_description -model simple_ring" /> -->
+
+	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" respawn="false" 
+	output="screen" args="-param robot_description -urdf -model simple_ring" />
+
+	<!-- <include file="$(find cepheus_control)/launch/simple_ring_control.launch" pass_all_args="true">
+		<arg name="controller" value="$(arg controller)"/>
+	</include> -->
+
+</launch>

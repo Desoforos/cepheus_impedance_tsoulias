@@ -1,0 +1,7 @@
+*.pyc
+*~
+.clang-format
+*.swp
+CMakeLists.txt.user*
+*.autosave
+build/

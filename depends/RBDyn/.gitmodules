@@ -1,0 +1,6 @@
+[submodule "benchmark"]
+	path = tests/benchmark
+	url = https://github.com/google/benchmark
+[submodule "cmake"]
+	path = cmake
+	url = https://github.com/jrl-umi3218/jrl-cmakemodules

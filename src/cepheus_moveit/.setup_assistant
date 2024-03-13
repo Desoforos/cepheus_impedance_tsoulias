@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: cepheus_description
+    relative_path: urdf/cepheus.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/cepheus.srdf
+  CONFIG:
+    author_name: desoforos
+    author_email: nikiforostsece@outlook.com
+    generated_timestamp: 1698061450
