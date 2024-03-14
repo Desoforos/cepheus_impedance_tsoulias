@@ -288,12 +288,37 @@ void JointControlUpdateStep(){
     }
 } 
 
-void parametersCalc(){
+void trajparametersCalc(double t){
     Eigen::VectorXd b1_x;
     Eigen::VectorXd b1_y;
     Eigen::VectorXd b1_theta;
+    Eigen::MatrixXd a_matrix(6,6);
+    Eigen::VectorXd fdes(0.1,0,0);
 
-    b1_x << sin_x, sdotin_x, sdotdotin_x,m sfin_x, sdotfin_x, sdotdotfin_x;
+    double t0 =0 , t_free =200;
+    double v =  (Fdes[0]*z_contact)/(Md_e(1,1)*wn_contact); 
+
+    a_matrix << 1, t0, t0^2, t0^3, t0^4, t0^5,
+                0, 1, 2*t0, 3*t0^2, 4*t0^3, 5*t0^4,
+                0, 0, 2, 6*t0, 12*t0^2, 20*t0^3,
+                1, t_free, t_free^2, t_free^3, t_free^4, t_free^5,
+                0, 1, 2*t_free, 3*t_free^2, 4*t_free^3, 5*t_free^4,
+                0, 0, 2, 6*t_free, 12*t_free^2, 20*t_free^3 ;
+    ///////initial sinthikes///////////////
+    double sin_x = 0, sdotin_x = 0, sdotdotin_x = 0;
+    double sin_y = 0, sdotin_y = 0, sdotdotin_y = 0;
+    double sin_theta = 0, sdotin_theta = 0, sdotdotin_theta = 0;
+    ///////telikes sinthikes/////////////
+    double xE_contact = x_target_in - l0;
+    double yE_contact = y_target_in;
+    double thetaE_contact = theta_target_in;
+    double sfin_x = 1, sdotfin_x = v/(xE_contact-xE_in), sdotdotfin_x = 0;
+    double sfin_y = 1, sdotfin_y = 0, sdotdotfin_y = 0;
+    double sfin_theta = 1, sdotfin_theta = 0, sdotdotfin_theta = 0;
+
+    
+
+    b1_x << sin_x, sdotin_x, sdotdotin_x, sfin_x, sdotfin_x, sdotdotfin_x;
     b1_y <<sin_y, sdotin_y, sdotdotin_y, sfin_y, sdotfin_y, sdotdotfin_y;
     b1_theta << sin_theta, sdotin_theta, sdotdotin_theta, sfin_theta, sdotfin_theta, sdotdotfin_theta;
 
