@@ -294,9 +294,21 @@ void trajparametersCalc(double t){
     Eigen::VectorXd b1_theta;
     Eigen::MatrixXd a_matrix(6,6);
     Eigen::VectorXd fdes(0.1,0,0);
+    Eigen::MatrixXd ke_star(3,3);
+
+    ke_star << 10000, 0, 0,
+                10000, 0, 0,
+                0, 0, 10000;
 
     double t0 =0 , t_free =200;
-    double v =  (Fdes[0]*z_contact)/(Md_e(1,1)*wn_contact); 
+    double z_contact = z_free*sqrt(Kd(1,1)/(Kd[1,1]+ke_star[1,1]));
+    double wn_contact = z_free*sqrt(Kd(1,1)/(Kd[1,1]+ke_star[1,1]));
+    double v =  (Fdes[0]*z_contact)/(Md_e[1,1]*wn_contact); 
+    double x_target_in = 10, y_target_in = 2.5, theta_target_in = 0;
+    double xE_in = 6, yE_in = 7;
+    double z_free = 1;
+
+
 
     a_matrix << 1, t0, t0^2, t0^3, t0^4, t0^5,
                 0, 1, 2*t0, 3*t0^2, 4*t0^3, 5*t0^4,
