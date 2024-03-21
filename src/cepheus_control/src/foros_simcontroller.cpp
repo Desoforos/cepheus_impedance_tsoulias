@@ -148,7 +148,7 @@ int main(int argc, char **argv) {
             }
 
 
-            
+            trajparametersCalc(t);
             desiredTrajectory(t); //na oriso time t
             calculateStep();
 

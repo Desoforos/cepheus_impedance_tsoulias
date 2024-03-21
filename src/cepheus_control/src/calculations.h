@@ -288,25 +288,49 @@ void JointControlUpdateStep(){
     }
 } 
 
-void trajparametersCalc(double t){
+void trajparametersCalc(double t){//PROSOXH!: allagh ton indexes apo matlab se c++ stous pinakes
+    
+    Eigen::VectorXd a_x;
+    Eigen::VectorXd a_y;
+    Eigen::VectorXd a_theta;
     Eigen::VectorXd b1_x;
     Eigen::VectorXd b1_y;
     Eigen::VectorXd b1_theta;
     Eigen::MatrixXd a_matrix(6,6);
     Eigen::VectorXd fdes(0.1,0,0);
     Eigen::MatrixXd ke_star(3,3);
+    Eigen::MatrixXd kd_e(3,3);
+    Eigen::MatrixXd kd_b(3,3);
+    Eigen::MatrixXd kd(6,6) = 100*Eigen::MatrixXd::Identity(6,6);
+    Eigen::MatrixXd md_e(3,3);
+
 
     ke_star << 10000, 0, 0,
-                10000, 0, 0,
+                0, 10000, 0,
                 0, 0, 10000;
+    
+    kd_e << 100, 0, 0,
+            0, 100, 0,
+            0, 0, 100;
+
+    kd_b << 100, 0, 0,
+            0, 100, 0,
+            0, 0, 100;
 
     double t0 =0 , t_free =200;
-    double z_contact = z_free*sqrt(Kd(1,1)/(Kd[1,1]+ke_star[1,1]));
-    double wn_contact = z_free*sqrt(Kd(1,1)/(Kd[1,1]+ke_star[1,1]));
-    double v =  (Fdes[0]*z_contact)/(Md_e[1,1]*wn_contact); 
+    double z_free = 1;
+    double ts_free = 0.1*t_free;
+    double wn_free = 6/ts_free;
+    double z_contact = z_free*sqrt(kd[0,0]/(kd[0,0]+ke_star[0,0]));
+    double wn_contact = wn_free*sqrt(kd[0,0]/(kd[0,0]+ke_star[0,0]));
+
+    md_e << kd_e[0,0]/wn_free^2, 0, 0,
+            0, kd_e[1,1]/wn_free^2, 0,
+            0, 0, kd_e[2,2]/wn_free^2;
+    double v =  (Fdes[0]*z_contact)/(md_e[0,0]*wn_contact); 
     double x_target_in = 10, y_target_in = 2.5, theta_target_in = 0;
     double xE_in = 6, yE_in = 7;
-    double z_free = 1;
+    
 
 
 
@@ -333,6 +357,29 @@ void trajparametersCalc(double t){
     b1_x << sin_x, sdotin_x, sdotdotin_x, sfin_x, sdotfin_x, sdotdotfin_x;
     b1_y <<sin_y, sdotin_y, sdotdotin_y, sfin_y, sdotfin_y, sdotdotfin_y;
     b1_theta << sin_theta, sdotin_theta, sdotdotin_theta, sfin_theta, sdotfin_theta, sdotdotfin_theta;
+
+    //kanonika edo thelei ena if t<=t_free (??)
+    a_x = a_matrix.inverse()*b1_x;
+    a_y = a_matrix.inverse()*b1_y;
+    a_theta = a_matrix.inverse()*b1_theta;
+    a0x = a_x[0];
+    a1x = a_x[1];
+    a2x = a_x[2];
+    a3x = a_x[3];
+    a4x = a_x[4];
+    a5x = a_x[5];
+    a0y = a_y[0];
+    a1y = a_y[1];
+    a2y = a_y[2];
+    a3y = a_y[3];
+    a4y = a_y[4];
+    a5y = a_y[5];
+    a0t = a_theta[0];
+    a1t = a_theta[1];
+    a2t = a_theta[2];
+    a3t = a_theta[3];
+    a4t = a_theta[4];
+    a5t = a_theta[5];
 
 
 }
