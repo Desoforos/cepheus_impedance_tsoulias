@@ -260,7 +260,7 @@ void calculateStep(){  //calculate stuff in each iteration
                         w.inverse() * md.inverse() * (fdes_star - (bd * edot) - (kd * e)) +
                         w.transpose().inverse() * xddotdot; //(H.colPivHouseholderQr().solve(C))) TODO:xddotdot(desired troxia), jacobiandot CHECK,zdot CHECK
 
-
+    //na grapso thn sxesh pou syndeei ta torq[] me fact kai to n
 }
 
 void ImpedanceControlUpdateStep(){
@@ -274,17 +274,17 @@ double lsTorqCalc();
 double leTorqCalc();
 
 void JointControlUpdateStep(){
-	errorq(0) = q1des - q1;
-	errorq(1) = q2des - q2;
-	error_qdot(0) = q1dotdes - q1dot;
-	error_qdot(1) = q2dotdes - q2dot;
-	torq(0) = Kp*errorq(0) + Kd*error_qdot(0);
-	torq(1) = Kp*errorq(1) + Kd*error_qdot(1);
-    if(abs(errorq(0))<0.05 && abs(errorq(1))<0.05 && abs(error_qdot(0))<0.05 && abs(error_qdot(1))<0.05){
+	errorq[0] = q1des - q1;
+	errorq[1] = q2des - q2;
+	error_qdot[0] = q1dotdes - q1dot;
+	error_qdot[1] = q2dotdes - q2dot;
+	torq[0] = Kp*errorq[0] + Kd*error_qdot[0];
+	torq[1] = Kp*errorq[1] + Kd*error_qdot[1];
+    if(abs(errorq[0])<0.05 && abs(errorq[1])<0.05 && abs(error_qdot[0])<0.05 && abs(error_qdot[1])<0.05){
         reachedTarget = true;
     }
     else{
-        std::cout<<"the error of q1 is: " <<errorq(0)<< " the error of q2 is: "<<errorq(1)<<" the error of q1dot is: "<<error_qdot(0)<<" the error of q2dot is: "<<error_qdot(1)<<std::endl;
+        std::cout<<"the error of q1 is: " <<errorq[0]<< " the error of q2 is: "<<errorq[1]<<" the error of q1dot is: "<<error_qdot[0]<<" the error of q2dot is: "<<error_qdot[1]<<std::endl;
     }
 } 
 

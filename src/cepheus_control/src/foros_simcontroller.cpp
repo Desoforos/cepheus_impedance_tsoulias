@@ -94,10 +94,6 @@ int main(int argc, char **argv) {
     ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 1, lsPosCallback);
     ros::Subscriber force_sub = nh.subscribe("/cepheus/ft_sensor_topic", 100, forceCallback);
     ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",1,gazeboposCallback);
-
-
-
-
     
     //ros::Rate loop_rate(frequency);
     ros::Rate loop_rate(10); //10Hz
@@ -108,51 +104,38 @@ int main(int argc, char **argv) {
 		error_qdot[i] = 0.0;
 		torq[i] = 0.0;
 		prev_torq[i] = 0.0;
-		qd[i] = 0.0;
-		qd_dot[i] = 0.0;
 	}
 
     ROS_INFO("[foros_simcontroller]: torques initialized to 0. \n");
 
     // ROS_INFO("[foros_simcontroller]: Give me Kp, Kd. \n");
-
     // std::cin>>Kp>>Kd;  //kala einai ta kp=5 kai kd=0.5
-    ROS_INFO("[foros_simcontroller]: Give me q1des, q2des. \n");
-    std::cin>>q1des>>q2des; //apla gia na ksekinisei
-
-    q1des = q1des* (M_PI / 180);
-    q2des = q2des* (M_PI / 180);
-    start_movement= true;
+    // ROS_INFO("[foros_simcontroller]: Give me q1des, q2des. \n");
+    // std::cin>>q1des>>q2des; //apla gia na ksekinisei
+    // q1des = q1des* (M_PI / 180);
+    // q2des = q2des* (M_PI / 180);
+    char command;
     initialiseParameters();
 
     while(ros::ok()){
-        // RW_velocity_pub.publish(msg_RW);
-        // LE_position_pub.publish(msg_LE);
-        // LS_position_pub.publish(msg_LS);
         for (int i = 0; i < 3; i++) {
 			prev_torq[i] = torq[i];
 		}
-
-
         //ros::spinOnce(); //once it spins it will read the current rw, le, ls and the callbacks will update the values q1,q2,q3 and the velocities
         //now we update the errors and we recalculate the desired efforts to publish as msg_LE,msg_LS
-
-        
         if(!start_movement){
-            ROS_INFO("[foros_simcontroller]: waiting for ee_pose msg \n");
+            ROS_INFO("[foros_simcontroller]: Press Y to start the controller \n");
+            std::cin>> command;
+            if(command == 'Y') start_movement= true;
         }
         else{
             if(!hasbegun){
                 ROS_INFO("[foros_simcontroller]: initializing movement with given target position");
                 hasbegun = true; //apla gia to rosinfo na mas pei oti ksekinaei tin kinhsh
             }
-
-
             trajparametersCalc(t);
             desiredTrajectory(t); //na oriso time t
             calculateStep();
-
-
             //ImpedanceControlUpdateStep();
 			msg_LS.data = torq[0];
 			msg_LE.data = torq[1];
@@ -162,23 +145,13 @@ int main(int argc, char **argv) {
             LE_torque_pub.publish(msg_LE);
             LS_torque_pub.publish(msg_LS);
 
-            //ROS_INFO("current ee_x: %f ee_y: %f ring_x: %f ring_y: %f",ee_x, ee_y, ring_x, ring_y);
         }
-		if(reachedTarget){
+		if(reachedTarget){ //na ftiakso to reachedGoal kalytera gia na teleionei to peirama, na ftiakso xrono
 			ROS_INFO("[foros_simcontroller]: target position achieved, stopped publishing. \n");
 			break;
-		}
-        
+		}     
         ros::spinOnce();
-
-
-
-
-
-
         //ros::Duration(2).sleep(); 
-
-
         loop_rate.sleep();
 
     }
