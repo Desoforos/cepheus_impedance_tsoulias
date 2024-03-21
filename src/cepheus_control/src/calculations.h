@@ -77,14 +77,14 @@ void calculateStep(){  //calculate stuff in each iteration
     j24 = j25 + l1*cos(theta0+q1);
     j23 = j24 + l0*cos(theta0);
 
-    jacobian[1][3] = j13;
-    jacobian[1][4] = j14;
-    jacobian[1][5] = j15;
-    jacobian[1][6] = j16;
-    jacobian[2][3] = j23;
-    jacobian[2][4] = j24;
-    jacobian[2][5] = j25;
-    jacobian[2][6] = j26;
+    jacobian(1)(3) = j13;
+    jacobian(1)(4) = j14;
+    jacobian(1)(5) = j15;
+    jacobian(1)(6) = j16;
+    jacobian(2)(3) = j23;
+    jacobian(2)(4) = j24;
+    jacobian(2)(5) = j25;
+    jacobian(2)(6) = j26;
 
     j16dot = -l3*cos(theta0+q1+q2+q3)*(theta0dot+q1dot+q2dot+q3dot);
     j15dot = j16dot - l2*cos(theta0+q1+q2)*(theta0dot+q1dot+q2dot);
@@ -96,28 +96,28 @@ void calculateStep(){  //calculate stuff in each iteration
     j24dot = j25dot - l1*sin(theta0+q1)*(theta0dot+q1dot);
     j23dot = j24dot - l0*sin(theta0)*theta0dot;
     
-    jacobiandot[1][3] = j13dot;
-    jacobiandot[1][4] = j14dot;
-    jacobiandot[1][5] = j15dot;
-    jacobiandot[1][6] = j16dot;
-    jacobiandot[2][3] = j23dot;
-    jacobiandot[2][4] = j24dot;
-    jacobiandot[2][5] = j25dot;
-    jacobiandot[2][6] = j26dot;
+    jacobiandot(1)(3) = j13dot;
+    jacobiandot(1)(4) = j14dot;
+    jacobiandot(1)(5) = j15dot;
+    jacobiandot(1)(6) = j16dot;
+    jacobiandot(2)(3) = j23dot;
+    jacobiandot(2)(4) = j24dot;
+    jacobiandot(2)(5) = j25dot;
+    jacobiandot(2)(6) = j26dot;
 
-    z[0] = xc0;
-    z[1] = yc0;
-    z[2] = theta0;
-    z[3] = q1;
-    z[4] = q2;
-    z[5] = q3;
+    z(0) = xc0;
+    z(1) = yc0;
+    z(2) = theta0;
+    z(3) = q1;
+    z(4) = q2;
+    z(5) = q3;
 
-    zdot[0] = xc0dot;
-    zdot[1] = yc0dot;
-    zdot[2] = theta0dot;
-    zdot[3] = q1dot;
-    zdot[4] = q2dot;
-    zdot[5] = q3dot;
+    zdot(0) = xc0dot;
+    zdot(1) = yc0dot;
+    zdot(2) = theta0dot;
+    zdot(3) = q1dot;
+    zdot(4) = q2dot;
+    zdot(5) = q3dot;
 
     
     
@@ -161,12 +161,12 @@ void calculateStep(){  //calculate stuff in each iteration
             + (l1 + r1) * (q1dot + theta0dot) * (q1dot + theta0dot) * sin(q2 + q3) 
             + r0 * theta0dot * theta0dot * sin(q1 + q2 + q3));
     
-    c[0] = c11;
-    c[1] = c21;
-    c[2] = c31;
-    c[3] = c41;
-    c[4] = c51;
-    c[5] = c61;
+    c(0) = c11;
+    c(1) = c21;
+    c(2) = c31;
+    c(3) = c41;
+    c(4) = c51;
+    c(5) = c61;
 
     h11 = m1 + m2 + m3 + mb; //na oriso mb
     h12 = 0;
@@ -210,48 +210,48 @@ void calculateStep(){  //calculate stuff in each iteration
     h65 = i3zz+l3*l3*m3+l3*m3*(l2+r2)*cos(q3);
     h66 = i3zz+l3*l3*m3;
 
-    //na oriso h[0][0] klp
-    h[0][0] = h11;
-    h[0][1] = h12;
-    h[0][2] = h13;
-    h[0][3] = h14;
-    h[0][4] = h15;
-    h[0][5] = h16;
+    //na oriso h(0)(0) klp
+    h(0)(0) = h11;
+    h(0)(1) = h12;
+    h(0)(2) = h13;
+    h(0)(3) = h14;
+    h(0)(4) = h15;
+    h(0)(5) = h16;
     //////////////
-    h[1][0] = h21;
-    h[1][1] = h22;
-    h[1][2] = h23;
-    h[1][3] = h24;
-    h[1][4] = h25;
-    h[1][5] = h26;
+    h(1)(0) = h21;
+    h(1)(1) = h22;
+    h(1)(2) = h23;
+    h(1)(3) = h24;
+    h(1)(4) = h25;
+    h(1)(5) = h26;
     /////////////
-    h[2][0] = h31;
-    h[2][1] = h32;
-    h[2][2] = h33;
-    h[2][3] = h34;
-    h[2][4] = h35;
-    h[2][5] = h36;
+    h(2)(0) = h31;
+    h(2)(1) = h32;
+    h(2)(2) = h33;
+    h(2)(3) = h34;
+    h(2)(4) = h35;
+    h(2)(5) = h36;
     /////////////
-    h[3][0] = h41;
-    h[3][1] = h42;
-    h[3][2] = h43;
-    h[3][3] = h44;
-    h[3][4] = h45;
-    h[3][5] = h46;
+    h(3)(0) = h41;
+    h(3)(1) = h42;
+    h(3)(2) = h43;
+    h(3)(3) = h44;
+    h(3)(4) = h45;
+    h(3)(5) = h46;
     ////////////
-    h[4][0] = h51;
-    h[4][1] = h52;
-    h[4][2] = h53;
-    h[4][3] = h54;
-    h[4][4] = h55;
-    h[4][5] = h56;
+    h(4)(0) = h51;
+    h(4)(1) = h52;
+    h(4)(2) = h53;
+    h(4)(3) = h54;
+    h(4)(4) = h55;
+    h(4)(5) = h56;
     /////////////
-    h[5][0] = h61;
-    h[5][1] = h62;
-    h[5][2] = h63;
-    h[5][3] = h64;
-    h[5][4] = h65;
-    h[5][5] = h66;
+    h(5)(0) = h61;
+    h(5)(1) = h62;
+    h(5)(2) = h63;
+    h(5)(3) = h64;
+    h(5)(4) = h65;
+    h(5)(5) = h66;
 
     w = jacobian*h.inverse()*jacobian.transpose;
     
@@ -274,17 +274,17 @@ double lsTorqCalc();
 double leTorqCalc();
 
 void JointControlUpdateStep(){
-	errorq[0] = q1des - q1;
-	errorq[1] = q2des - q2;
-	error_qdot[0] = q1dotdes - q1dot;
-	error_qdot[1] = q2dotdes - q2dot;
-	torq[0] = Kp*errorq[0] + Kd*error_qdot[0];
-	torq[1] = Kp*errorq[1] + Kd*error_qdot[1];
-    if(abs(errorq[0])<0.05 && abs(errorq[1])<0.05 && abs(error_qdot[0])<0.05 && abs(error_qdot[1])<0.05){
+	errorq(0) = q1des - q1;
+	errorq(1) = q2des - q2;
+	error_qdot(0) = q1dotdes - q1dot;
+	error_qdot(1) = q2dotdes - q2dot;
+	torq(0) = Kp*errorq(0) + Kd*error_qdot(0);
+	torq(1) = Kp*errorq(1) + Kd*error_qdot(1);
+    if(abs(errorq(0))<0.05 && abs(errorq(1))<0.05 && abs(error_qdot(0))<0.05 && abs(error_qdot(1))<0.05){
         reachedTarget = true;
     }
     else{
-        std::cout<<"the error of q1 is: " <<errorq[0]<< " the error of q2 is: "<<errorq[1]<<" the error of q1dot is: "<<error_qdot[0]<<" the error of q2dot is: "<<error_qdot[1]<<std::endl;
+        std::cout<<"the error of q1 is: " <<errorq(0)<< " the error of q2 is: "<<errorq(1)<<" the error of q1dot is: "<<error_qdot(0)<<" the error of q2dot is: "<<error_qdot(1)<<std::endl;
     }
 } 
 
@@ -321,13 +321,13 @@ void trajparametersCalc(double t){//PROSOXH!: allagh ton indexes apo matlab se c
     double z_free = 1;
     double ts_free = 0.1*t_free;
     double wn_free = 6/ts_free;
-    double z_contact = z_free*sqrt(kd[0,0]/(kd[0,0]+ke_star[0,0]));
-    double wn_contact = wn_free*sqrt(kd[0,0]/(kd[0,0]+ke_star[0,0]));
+    double z_contact = z_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
+    double wn_contact = wn_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
 
-    md_e << kd_e[0,0]/wn_free^2, 0, 0,
-            0, kd_e[1,1]/wn_free^2, 0,
-            0, 0, kd_e[2,2]/wn_free^2;
-    double v =  (Fdes[0]*z_contact)/(md_e[0,0]*wn_contact); 
+    md_e << kd_e(0,0)/wn_free^2, 0, 0,
+            0, kd_e(1,1)/wn_free^2, 0,
+            0, 0, kd_e(2,2)/wn_free^2;
+    double v =  (Fdes(0)*z_contact)/(md_e(0,0)*wn_contact); 
     double x_target_in = 10, y_target_in = 2.5, theta_target_in = 0;
     double xE_in = 6, yE_in = 7;
     
@@ -362,38 +362,40 @@ void trajparametersCalc(double t){//PROSOXH!: allagh ton indexes apo matlab se c
     a_x = a_matrix.inverse()*b1_x;
     a_y = a_matrix.inverse()*b1_y;
     a_theta = a_matrix.inverse()*b1_theta;
-    a0x = a_x[0];
-    a1x = a_x[1];
-    a2x = a_x[2];
-    a3x = a_x[3];
-    a4x = a_x[4];
-    a5x = a_x[5];
-    a0y = a_y[0];
-    a1y = a_y[1];
-    a2y = a_y[2];
-    a3y = a_y[3];
-    a4y = a_y[4];
-    a5y = a_y[5];
-    a0t = a_theta[0];
-    a1t = a_theta[1];
-    a2t = a_theta[2];
-    a3t = a_theta[3];
-    a4t = a_theta[4];
-    a5t = a_theta[5];
+    a0x = a_x(0);
+    a1x = a_x(1);
+    a2x = a_x(2);
+    a3x = a_x(3);
+    a4x = a_x(4);
+    a5x = a_x(5);
+    a0y = a_y(0);
+    a1y = a_y(1);
+    a2y = a_y(2);
+    a3y = a_y(3);
+    a4y = a_y(4);
+    a5y = a_y(5);
+    a0t = a_theta(0);
+    a1t = a_theta(1);
+    a2t = a_theta(2);
+    a3t = a_theta(3);
+    a4t = a_theta(4);
+    a5t = a_theta(5);
 
 
 }
 
 void desiredTrajectory(double t){
+    double a1 = 10000;
+    double a2 = 0.0001;
     s_x = a5x*t^5 + a4x*t^4 + a3x*t^3 + a2x*t^2 + a1x*t +a0x;
     s_y = a5y*t^5 + a4y*t^4 + a3y*t^3 + a2y*t^2 + a1y*t +a0y;
     s_theta = a5t*t^5 + a4t*t^4 + a3t*t^3 + a2t*t^2 + a1t*t +a0t;
-    xdf[0] = xch_in + s_x*(xt_in-xch_in); 
-    xdf[1] = ych_in + s_y*(yt_in-ych_in);
-    xdf[2] = thetach_in + s_theta*(thetat_in-thetach_in);
-    xdc[0] = xt;
-    xdc[1] = yt;
-    xdc[2] = thetat;
+    xdf(0) = xch_in + s_x*(xt_in-xch_in); 
+    xdf(1) = ych_in + s_y*(yt_in-ych_in);
+    xdf(2) = thetach_in + s_theta*(thetat_in-thetach_in);
+    xdc(0) = xt;
+    xdc(1) = yt;
+    xdc(2) = thetat;
     xd = xdf*((abs(1-fext.squaredNorm()/a1))/(1+a1*fext.squaredNorm())) + xdc*fext.squaredNorm()/(fext.squaredNorm()+a2);
 }
 

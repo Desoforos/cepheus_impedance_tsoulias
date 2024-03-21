@@ -113,9 +113,9 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     force_x = msg->wrench.force.x;
     force_y = msg->wrench.force.y;
 	torque_z = msg->wrench.torque.z;
-	fext[0] = force_x;
-	fext[1] = force_y;
-	fext[2] = torque_z;
+	fext(0) = force_x;
+	fext(1) = force_y;
+	fext(2) = torque_z;
     // if(force_y>10){
     //     ROS_INFO("[foros_simcontroller]: force_y detected: %f N \n",force_y);
     // } 

@@ -83,7 +83,6 @@ double a0x,a1x,a2x,a3x,a4x,a5x; //for s_x
 double a0y,a1y,a2y,a3y,a4y,a5y; //for s_y
 double a0t,a1t,a2t,a3t,a4t,a5t; //for s_theta
 double s_x,s_y,s_theta;  //to polyonymo..prepei na to ftiakso
-double a1, a2;
 Eigen::VectorXd xch_in(xti,yti,0);
 Eigen::VectorXd xch_c(0,0,0);
 Eigen::VectorXd xdf(0,0,0);
