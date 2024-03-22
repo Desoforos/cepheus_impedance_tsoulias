@@ -3,7 +3,7 @@
 #include "includes.h"
 
 
-/////////////// GLOBAL VARIABLES INITIALIZATION START////////////////////////
+/////////////// GLOBAL VARIABLES DECLARATION START////////////////////////
 /*Boolean flags*/
 bool reachedTarget = false;
 bool start_movement = false;
@@ -88,7 +88,8 @@ Eigen::VectorXd xch_c(0,0,0);
 Eigen::VectorXd xdf(0,0,0);
 Eigen::VectorXd xdc(xt,yt);
 Eigen::VectorXd fext(0,0,0); //fx,fy,n
-Eigen::VectorXd xd; //the ACTUAL DESIRED TRAJECTORY
+Eigen::VectorXd xd; //the  DESIRED TRAJECTORY
+Eigen::VectorXd xee(0,0,0); //the actual trajecotry (x,y,theta)
 Eigen::VectorXd c(6);
 Eigen::VectorXd fact;
 Eigen::VectorXd z;
@@ -101,7 +102,35 @@ Eigen::MatrixXd::Identity(6,6) i6;
 Eigen::MatrixXd::Identity(3,3) i3;
 Eigen::MatrixXd::Zero(6,6) z6;
 Eigen::MatrixXd::Zero(3,3) z3;
-Eigen::MatrixXd e;
+Eigen::VectorXd e; //error for x,y,theta
+Eigen::MatrixXd kd(6,6) = 100*Eigen::MatrixXd::Identity(6,6);
+Eigen::VectorXd a_x;
+Eigen::VectorXd a_y;
+Eigen::VectorXd a_theta;
+Eigen::VectorXd b1_x;
+Eigen::VectorXd b1_y;
+Eigen::VectorXd b1_theta;
+Eigen::MatrixXd a_matrix(6,6);
+Eigen::VectorXd fdes(0.1,0,0);
+Eigen::VectorXd fdes_star;
+Eigen::MatrixXd ke_star(3,3);
+Eigen::MatrixXd kd_e(3,3);
+Eigen::MatrixXd kd_b(3,3);
+Eigen::MatrixXd md_e(3,3);
+Eigen::MatrixXd md_b(3,3);
+Eigen::MatrixXd bd(6,6);
+Eigen::MatrixXd bd_e(3,3);
+Eigen::MatrixXd bd_b(3,3);
+
+
+
+
+double t0 =0 , t_free =200;
+double z_free = 1;
+double ts_free = 0.1*t_free;
+double wn_free = 6/ts_free;
+double z_contact = z_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
+double wn_contact = wn_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
 
 
 
@@ -136,6 +165,6 @@ double frequency = (float)1/DT;
 
 
 
-/////////////// GLOBAL VARIABLES INITIALIZATION END////////////////////////
+/////////////// GLOBAL VARIABLES DECLARATION END////////////////////////
 
 #endif

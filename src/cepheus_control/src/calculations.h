@@ -254,7 +254,20 @@ void calculateStep(){  //calculate stuff in each iteration
     h(5)(5) = h66;
 
     w = jacobian*h.inverse()*jacobian.transpose;
-    
+    md_b << kd_b(0,0)/wn_free^2, 0, 0,
+            0, kd_b(1,1)/wn_free^2, 0, 
+            0, 0, kd_b(2,2)/wn_free^2;
+
+    bd_e = 2*z_free*wn_free*md_e;
+    bd_b = 2*z_free*wn_free*md_b;
+    bd.topLeftCorner = bd_e;
+    bd.topRightCorner = Eigen::MatrixXd::Zero(3,3);
+    bd.bottomLeftCorner = Eigen::MatrixXd::Zero(3,3);
+    bd.bottomRightCorner = bd_b;
+
+    fdes_star = fdes*fext(0)/(fext(0)+0.01);
+    e = xee - xd;
+
     fact = (Eigen::MatrixXd::Identity(3, 3) - w.inverse() * md.inverse()) * fext +
                         w.inverse() * (jacobian * h.inverse()*c - jacobiandot * zdot) +
                         w.inverse() * md.inverse() * (fdes_star - (bd * edot) - (kd * e)) +
@@ -290,21 +303,6 @@ void JointControlUpdateStep(){
 
 void trajparametersCalc(double t){//PROSOXH!: allagh ton indexes apo matlab se c++ stous pinakes
     
-    Eigen::VectorXd a_x;
-    Eigen::VectorXd a_y;
-    Eigen::VectorXd a_theta;
-    Eigen::VectorXd b1_x;
-    Eigen::VectorXd b1_y;
-    Eigen::VectorXd b1_theta;
-    Eigen::MatrixXd a_matrix(6,6);
-    Eigen::VectorXd fdes(0.1,0,0);
-    Eigen::MatrixXd ke_star(3,3);
-    Eigen::MatrixXd kd_e(3,3);
-    Eigen::MatrixXd kd_b(3,3);
-    Eigen::MatrixXd kd(6,6) = 100*Eigen::MatrixXd::Identity(6,6);
-    Eigen::MatrixXd md_e(3,3);
-
-
     ke_star << 10000, 0, 0,
                 0, 10000, 0,
                 0, 0, 10000;
@@ -317,23 +315,12 @@ void trajparametersCalc(double t){//PROSOXH!: allagh ton indexes apo matlab se c
             0, 100, 0,
             0, 0, 100;
 
-    double t0 =0 , t_free =200;
-    double z_free = 1;
-    double ts_free = 0.1*t_free;
-    double wn_free = 6/ts_free;
-    double z_contact = z_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
-    double wn_contact = wn_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
-
     md_e << kd_e(0,0)/wn_free^2, 0, 0,
             0, kd_e(1,1)/wn_free^2, 0,
             0, 0, kd_e(2,2)/wn_free^2;
     double v =  (Fdes(0)*z_contact)/(md_e(0,0)*wn_contact); 
     double x_target_in = 10, y_target_in = 2.5, theta_target_in = 0;
     double xE_in = 6, yE_in = 7;
-    
-
-
-
     a_matrix << 1, t0, t0^2, t0^3, t0^4, t0^5,
                 0, 1, 2*t0, 3*t0^2, 4*t0^3, 5*t0^4,
                 0, 0, 2, 6*t0, 12*t0^2, 20*t0^3,

@@ -41,6 +41,9 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
     double rollee, pitchee, yawee;
     m_ee.getRPY(rollee, pitchee, yawee);
 	thetach = yawee; //angle of chaser(ee)
+	xee(0) = ee_x;
+	xee(1) = ee_y;
+	xee(2) = thetach;
 	if(firstTime){   //initialize the postiion of chaser and target for the first time ONLY
 		xch_in = ee_x;
 		ych_in = ee_y;
@@ -85,7 +88,7 @@ void lsPosCallback(const std_msgs::Float64::ConstPtr& cmd) {
 }
 
 
-void lePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
+/*void lePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	if (abs(cmd->data - le_position) > POS_FILTER)
 		return;
 	else
@@ -106,7 +109,7 @@ void leVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 		return;
 	else
 		le_velocity = cmd->data;
-}
+}*/
 /*thanks alex*/
 
 void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
