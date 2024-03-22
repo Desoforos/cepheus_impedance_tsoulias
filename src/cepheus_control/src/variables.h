@@ -16,7 +16,7 @@ double q3, q3dot;
 double q1dot;    // rate of first joint [rad/s] from callback
 double q2dot;    // rate of second joint [rad/s] from callback
 double theta0dot;   // reaction wheel velocity [rad/s]  h allios theta0dot
-double theta0;
+double theta0,thetaee;
 double force_x,force_y,torque_z;
 double ee_x, ee_y; //ee_Z not needed
 double xc0, yc0, xc0dot, yc0dot; //center of mass of base
@@ -72,8 +72,7 @@ double r1,m1,l1;
 double r2,m2,l2;
 double r3,m3,l3;
 double M;
-double theta0, thetaee;
-double a,b,c,d;
+//double a,b,c,d; not needed
 double ibzz;
 double i1zz, i2zz, i3zz, itzz;
 
@@ -83,7 +82,7 @@ double a0x,a1x,a2x,a3x,a4x,a5x; //for s_x
 double a0y,a1y,a2y,a3y,a4y,a5y; //for s_y
 double a0t,a1t,a2t,a3t,a4t,a5t; //for s_theta
 double s_x,s_y,s_theta;  //to polyonymo..prepei na to ftiakso
-Eigen::VectorXd xch_in(xti,yti,0);
+//Eigen::VectorXd xch_in(xti,yti,0); mallon den xreiazetai
 Eigen::VectorXd xch_c(0,0,0);
 Eigen::VectorXd xdf(0,0,0);
 Eigen::VectorXd xdc(xt,yt);
@@ -98,12 +97,12 @@ Eigen::MatrixXd w;
 Eigen::MatrixXd jacobian(6,9);
 Eigen::MatrixXd jacobiandot(6,9);
 Eigen::MatrixXd h(6,6); //imp.thesis sel 62 eksisosi 5-31
-Eigen::MatrixXd::Identity(6,6) i6;
-Eigen::MatrixXd::Identity(3,3) i3;
-Eigen::MatrixXd::Zero(6,6) z6;
-Eigen::MatrixXd::Zero(3,3) z3;
+Eigen::MatrixXd i6 = Eigen::MatrixXd::Identity(6,6);
+Eigen::MatrixXd i3 = Eigen::MatrixXd::Identity(3,3);
+Eigen::MatrixXd z6 = Eigen::MatrixXd::Zero(6,6);
+Eigen::MatrixXd z3 = Eigen::MatrixXd::Zero(3,3);
 Eigen::VectorXd e; //error for x,y,theta
-Eigen::MatrixXd kd(6,6) = 100*Eigen::MatrixXd::Identity(6,6);
+Eigen::MatrixXd kd = 100*Eigen::MatrixXd::Identity(6,6); //esvhsa to (6,6)
 Eigen::VectorXd a_x;
 Eigen::VectorXd a_y;
 Eigen::VectorXd a_theta;
@@ -116,6 +115,7 @@ Eigen::VectorXd fdes_star;
 Eigen::MatrixXd ke_star(3,3);
 Eigen::MatrixXd kd_e(3,3);
 Eigen::MatrixXd kd_b(3,3);
+Eigen::MatrixXd md(6,6);
 Eigen::MatrixXd md_e(3,3);
 Eigen::MatrixXd md_b(3,3);
 Eigen::MatrixXd bd(6,6);

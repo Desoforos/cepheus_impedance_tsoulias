@@ -37,10 +37,10 @@ void initialiseParameters(){//initialise constant parameters
     m3 = 6;
 
     M = m0 + m1 + m2 + m3;
-    a = r0*m0/M;
-    b = (l1*m0 + (m0+m1)*r1)/M;
-    c = (l2*(m0 + m1) + (m0 + m1 + m2)*r2)/M;
-    d = r3 + l3*(m0 + m1 + m2)/M;
+    // a = r0*m0/M;
+    // b = (l1*m0 + (m0+m1)*r1)/M;
+    // c = (l2*(m0 + m1) + (m0 + m1 + m2)*r2)/M;
+    // d = r3 + l3*(m0 + m1 + m2)/M;
 
     fext    << 0, 0, 0;
     z       << 0, 0, 0, 0, 0, 0; //xc0,yx0,theta0,q1,q2,q3
@@ -77,14 +77,14 @@ void calculateStep(){  //calculate stuff in each iteration
     j24 = j25 + l1*cos(theta0+q1);
     j23 = j24 + l0*cos(theta0);
 
-    jacobian(1)(3) = j13;
-    jacobian(1)(4) = j14;
-    jacobian(1)(5) = j15;
-    jacobian(1)(6) = j16;
-    jacobian(2)(3) = j23;
-    jacobian(2)(4) = j24;
-    jacobian(2)(5) = j25;
-    jacobian(2)(6) = j26;
+    jacobian(1,3) = j13;
+    jacobian(1,4) = j14;
+    jacobian(1,5) = j15;
+    jacobian(1,6) = j16;
+    jacobian(2,3) = j23;
+    jacobian(2,4) = j24;
+    jacobian(2,5) = j25;
+    jacobian(2,6) = j26;
 
     j16dot = -l3*cos(theta0+q1+q2+q3)*(theta0dot+q1dot+q2dot+q3dot);
     j15dot = j16dot - l2*cos(theta0+q1+q2)*(theta0dot+q1dot+q2dot);
@@ -96,14 +96,14 @@ void calculateStep(){  //calculate stuff in each iteration
     j24dot = j25dot - l1*sin(theta0+q1)*(theta0dot+q1dot);
     j23dot = j24dot - l0*sin(theta0)*theta0dot;
     
-    jacobiandot(1)(3) = j13dot;
-    jacobiandot(1)(4) = j14dot;
-    jacobiandot(1)(5) = j15dot;
-    jacobiandot(1)(6) = j16dot;
-    jacobiandot(2)(3) = j23dot;
-    jacobiandot(2)(4) = j24dot;
-    jacobiandot(2)(5) = j25dot;
-    jacobiandot(2)(6) = j26dot;
+    jacobiandot(1,3) = j13dot;
+    jacobiandot(1,4) = j14dot;
+    jacobiandot(1,5) = j15dot;
+    jacobiandot(1,6) = j16dot;
+    jacobiandot(2,3) = j23dot;
+    jacobiandot(2,4) = j24dot;
+    jacobiandot(2,5) = j25dot;
+    jacobiandot(2,6) = j26dot;
 
     z(0) = xc0;
     z(1) = yc0;
@@ -210,63 +210,69 @@ void calculateStep(){  //calculate stuff in each iteration
     h65 = i3zz+l3*l3*m3+l3*m3*(l2+r2)*cos(q3);
     h66 = i3zz+l3*l3*m3;
 
-    //na oriso h(0)(0) klp
-    h(0)(0) = h11;
-    h(0)(1) = h12;
-    h(0)(2) = h13;
-    h(0)(3) = h14;
-    h(0)(4) = h15;
-    h(0)(5) = h16;
+    
+    h(0,0) = h11;
+    h(0,1) = h12;
+    h(0,2) = h13;
+    h(0,3) = h14;
+    h(0,4) = h15;
+    h(0,5) = h16;
     //////////////
-    h(1)(0) = h21;
-    h(1)(1) = h22;
-    h(1)(2) = h23;
-    h(1)(3) = h24;
-    h(1)(4) = h25;
-    h(1)(5) = h26;
+    h(1,0) = h21;
+    h(1,1) = h22;
+    h(1,2) = h23;
+    h(1,3) = h24;
+    h(1,4) = h25;
+    h(1,5) = h26;
     /////////////
-    h(2)(0) = h31;
-    h(2)(1) = h32;
-    h(2)(2) = h33;
-    h(2)(3) = h34;
-    h(2)(4) = h35;
-    h(2)(5) = h36;
+    h(2,0) = h31;
+    h(2,1) = h32;
+    h(2,2) = h33;
+    h(2,3) = h34;
+    h(2,4) = h35;
+    h(2,5) = h36;
     /////////////
-    h(3)(0) = h41;
-    h(3)(1) = h42;
-    h(3)(2) = h43;
-    h(3)(3) = h44;
-    h(3)(4) = h45;
-    h(3)(5) = h46;
+    h(3,0) = h41;
+    h(3,1) = h42;
+    h(3,2) = h43;
+    h(3,3) = h44;
+    h(3,4) = h45;
+    h(3,5) = h46;
     ////////////
-    h(4)(0) = h51;
-    h(4)(1) = h52;
-    h(4)(2) = h53;
-    h(4)(3) = h54;
-    h(4)(4) = h55;
-    h(4)(5) = h56;
+    h(4,0) = h51;
+    h(4,1) = h52;
+    h(4,2) = h53;
+    h(4,3) = h54;
+    h(4,4) = h55;
+    h(4,5) = h56;
     /////////////
-    h(5)(0) = h61;
-    h(5)(1) = h62;
-    h(5)(2) = h63;
-    h(5)(3) = h64;
-    h(5)(4) = h65;
-    h(5)(5) = h66;
+    h(5,0) = h61;
+    h(5,1) = h62;
+    h(5,2) = h63;
+    h(5,3) = h64;
+    h(5,4) = h65;
+    h(5,5) = h66;
 
-    w = jacobian*h.inverse()*jacobian.transpose;
-    md_b << kd_b(0,0)/wn_free^2, 0, 0,
-            0, kd_b(1,1)/wn_free^2, 0, 
-            0, 0, kd_b(2,2)/wn_free^2;
+    w = jacobian*h.inverse()*jacobian.transpose();
+    md_b << kd_b(0,0)/pow(wn_free,2), 0, 0,
+            0, kd_b(1,1)/pow(wn_free,2), 0, 
+            0, 0, kd_b(2,2)/pow(wn_free,2);
 
     bd_e = 2*z_free*wn_free*md_e;
     bd_b = 2*z_free*wn_free*md_b;
-    bd.topLeftCorner = bd_e;
-    bd.topRightCorner = Eigen::MatrixXd::Zero(3,3);
-    bd.bottomLeftCorner = Eigen::MatrixXd::Zero(3,3);
-    bd.bottomRightCorner = bd_b;
+    bd.topLeftCorner(3,3) = bd_e;
+    bd.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    bd.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    bd.bottomRightCorner(3,3) = bd_b;
 
     fdes_star = fdes*fext(0)/(fext(0)+0.01);
     e = xee - xd;
+
+    md.topLeftCorner(3,3) = md;
+    md.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    md.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    md.bottomRightCorner(3,3) = md_b;
+    
 
     fact = (Eigen::MatrixXd::Identity(3, 3) - w.inverse() * md.inverse()) * fext +
                         w.inverse() * (jacobian * h.inverse()*c - jacobiandot * zdot) +
@@ -274,6 +280,7 @@ void calculateStep(){  //calculate stuff in each iteration
                         w.transpose().inverse() * xddotdot; //(H.colPivHouseholderQr().solve(C))) TODO:xddotdot(desired troxia), jacobiandot CHECK,zdot CHECK
 
     //na grapso thn sxesh pou syndeei ta torq[] me fact kai to n
+    //factx, facty,nact
 }
 
 void ImpedanceControlUpdateStep(){
@@ -315,18 +322,18 @@ void trajparametersCalc(double t){//PROSOXH!: allagh ton indexes apo matlab se c
             0, 100, 0,
             0, 0, 100;
 
-    md_e << kd_e(0,0)/wn_free^2, 0, 0,
-            0, kd_e(1,1)/wn_free^2, 0,
-            0, 0, kd_e(2,2)/wn_free^2;
-    double v =  (Fdes(0)*z_contact)/(md_e(0,0)*wn_contact); 
+    md_e << kd_e(0,0)/(wn_free*wn_free), 0, 0,
+            0, kd_e(1,1)/(wn_free*wn_free), 0,
+            0, 0, kd_e(2,2)/(wn_free*wn_free);
+    double v =  (fdes(0)*z_contact)/(md_e(0,0)*wn_contact); 
     double x_target_in = 10, y_target_in = 2.5, theta_target_in = 0;
     double xE_in = 6, yE_in = 7;
-    a_matrix << 1, t0, t0^2, t0^3, t0^4, t0^5,
-                0, 1, 2*t0, 3*t0^2, 4*t0^3, 5*t0^4,
-                0, 0, 2, 6*t0, 12*t0^2, 20*t0^3,
-                1, t_free, t_free^2, t_free^3, t_free^4, t_free^5,
-                0, 1, 2*t_free, 3*t_free^2, 4*t_free^3, 5*t_free^4,
-                0, 0, 2, 6*t_free, 12*t_free^2, 20*t_free^3 ;
+    a_matrix << 1, t0, pow(t0,2), pow(t0,3), pow(t0,4), pow(t0,5),
+                0, 1, 2*t0, 3*pow(t0,2), 4*pow(t0,3), 5*pow(t0,4),
+                0, 0, 2, 6*t0, 12*pow(t0,2), 20*pow(t0,3),
+                1, t_free, pow(t_free,2), pow(t_free,3), pow(t_free,4), pow(t_free,5),
+                0, 1, 2*t_free, 3*pow(t_free,2), 4*pow(t_free,3), 5*pow(t_free,4),
+                0, 0, 2, 6*t_free, 12*pow(t_free,2), 20*pow(t_free,3) ;
     ///////initial sinthikes///////////////
     double sin_x = 0, sdotin_x = 0, sdotdotin_x = 0;
     double sin_y = 0, sdotin_y = 0, sdotdotin_y = 0;
@@ -374,9 +381,9 @@ void trajparametersCalc(double t){//PROSOXH!: allagh ton indexes apo matlab se c
 void desiredTrajectory(double t){
     double a1 = 10000;
     double a2 = 0.0001;
-    s_x = a5x*t^5 + a4x*t^4 + a3x*t^3 + a2x*t^2 + a1x*t +a0x;
-    s_y = a5y*t^5 + a4y*t^4 + a3y*t^3 + a2y*t^2 + a1y*t +a0y;
-    s_theta = a5t*t^5 + a4t*t^4 + a3t*t^3 + a2t*t^2 + a1t*t +a0t;
+    s_x = a5x*pow(t,5) + a4x*pow(t,4) + a3x*pow(t,3) + a2x*pow(t,2) + a1x*t +a0x;
+    s_y = a5y*pow(t,5) + a4y*pow(t,4) + a3y*pow(t,3) + a2y*pow(t,2) + a1y*t +a0y;
+    s_theta = a5t*pow(t,5) + a4t*pow(t,4) + a3t*pow(t,3) + a2t*pow(t,2) + a1t*t +a0t;
     xdf(0) = xch_in + s_x*(xt_in-xch_in); 
     xdf(1) = ych_in + s_y*(yt_in-ych_in);
     xdf(2) = thetach_in + s_theta*(thetat_in-thetach_in);

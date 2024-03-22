@@ -80,13 +80,14 @@ void jointStatesCallback(const sensor_msgs::JointState::ConstPtr& msg){
 
 
 /*took from my boy alex*/
+/*
 void lsPosCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	if (abs(cmd->data - ls_position) > POS_FILTER)
 		return;
 	else
 		ls_position = cmd->data;
 }
-
+*/
 
 /*void lePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	if (abs(cmd->data - le_position) > POS_FILTER)
