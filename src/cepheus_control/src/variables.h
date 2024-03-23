@@ -93,6 +93,7 @@ Eigen::VectorXd c(6);
 Eigen::VectorXd fact(3);
 Eigen::VectorXd z(6);
 Eigen::VectorXd zdot(6);
+Eigen::VectorXd rEddotdot(3); //xEddotdot, yEddotdot, thetaEddotdot
 Eigen::MatrixXd w;
 Eigen::MatrixXd jacobian(6,9);
 Eigen::MatrixXd jacobiandot(6,9);
@@ -131,6 +132,8 @@ double ts_free = 0.1*t_free;
 double wn_free = 6/ts_free;
 double z_contact = z_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
 double wn_contact = wn_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
+
+double xEddotdot, yEddotdot, thetaEddotdot;
 
 
 

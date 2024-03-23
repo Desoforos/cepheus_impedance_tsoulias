@@ -283,7 +283,7 @@ void calculateStep(){  //calculate stuff in each iteration
     fact = (Eigen::MatrixXd::Identity(3, 3) - w.inverse() * md.inverse()) * fext +
                         w.inverse() * (jacobian * h.inverse()*c - jacobiandot * zdot) +
                         w.inverse() * md.inverse() * (fdes_star - (bd * edot) - (kd * e)) +
-                        w.transpose().inverse() * xddotdot; //(H.colPivHouseholderQr().solve(C))) TODO:xddotdot(desired troxia), jacobiandot CHECK,zdot CHECK
+                        w.transpose().inverse() * rEddotdot; //(H.colPivHouseholderQr().solve(C))) TODO:xddotdot(desired troxia), jacobiandot CHECK,zdot CHECK
 
     //na grapso thn sxesh pou syndeei ta torq[] me fact kai to n
     //factx, facty,nact
