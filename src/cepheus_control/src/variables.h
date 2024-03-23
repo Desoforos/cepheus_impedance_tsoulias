@@ -83,16 +83,16 @@ double a0y,a1y,a2y,a3y,a4y,a5y; //for s_y
 double a0t,a1t,a2t,a3t,a4t,a5t; //for s_theta
 double s_x,s_y,s_theta;  //to polyonymo..prepei na to ftiakso
 //Eigen::VectorXd xch_in(xti,yti,0); mallon den xreiazetai
-Eigen::VectorXd xch_c(0,0,0);
-Eigen::VectorXd xdf(0,0,0);
-Eigen::VectorXd xdc(xt,yt);
-Eigen::VectorXd fext(0,0,0); //fx,fy,n
+Eigen::VectorXd xch_c(3);//xch_c <<0 , 0 , 0;
+Eigen::VectorXd xdf(3); //xdf<<0 , 0 ,0 ;
+Eigen::VectorXd xdc(3); // <<xt,yt,thetat;
+Eigen::VectorXd fext(3); // << (0,0,0); //fx,fy,n
 Eigen::VectorXd xd; //the  DESIRED TRAJECTORY
-Eigen::VectorXd xee(0,0,0); //the actual trajecotry (x,y,theta)
+Eigen::VectorXd xee(3); //(0,0,0); //the actual trajecotry (x,y,theta)
 Eigen::VectorXd c(6);
-Eigen::VectorXd fact;
-Eigen::VectorXd z;
-Eigen::VectorXd zdot;
+Eigen::VectorXd fact(3);
+Eigen::VectorXd z(6);
+Eigen::VectorXd zdot(6);
 Eigen::MatrixXd w;
 Eigen::MatrixXd jacobian(6,9);
 Eigen::MatrixXd jacobiandot(6,9);
@@ -110,7 +110,7 @@ Eigen::VectorXd b1_x;
 Eigen::VectorXd b1_y;
 Eigen::VectorXd b1_theta;
 Eigen::MatrixXd a_matrix(6,6);
-Eigen::VectorXd fdes(0.1,0,0);
+Eigen::VectorXd fdes(3); //(0.1,0,0);
 Eigen::VectorXd fdes_star;
 Eigen::MatrixXd ke_star(3,3);
 Eigen::MatrixXd kd_e(3,3);

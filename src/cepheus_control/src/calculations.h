@@ -42,6 +42,11 @@ void initialiseParameters(){//initialise constant parameters
     // c = (l2*(m0 + m1) + (m0 + m1 + m2)*r2)/M;
     // d = r3 + l3*(m0 + m1 + m2)/M;
 
+    xch_c << 0, 0, 0;
+    xdf << 0, 0, 0;
+    xdc << 0, 0, 0;
+    xee << 0, 0;
+
     fext    << 0, 0, 0;
     z       << 0, 0, 0, 0, 0, 0; //xc0,yx0,theta0,q1,q2,q3
     zdot    << 0, 0, 0 ,0 ,0 ,0;
@@ -61,6 +66,7 @@ void initialiseParameters(){//initialise constant parameters
          0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0;
+
         
 
 
@@ -186,7 +192,7 @@ void calculateStep(){  //calculate stuff in each iteration
     h32 = (m1 + m2 + m3) * r0 * cos(theta0) + (l1 * (m1 + m2 + m3) + (m2 + m3) * r1) * cos(q1 + theta0) + (l2 * (m2 + m3) + m3 * r2) * cos(q1 + q2 + theta0) + l3 * m3 * cos(q1 + q2 + q3 + theta0);
     h33 = i1zz + i2zz + i3zz + ibzz + l2 * l2 * (m2 + m3) + l1 * l1 * (m1 + m2 + m3) + (m1 + m2) * r0 * r0 + 2 * l1 * (m2 + m3) * r1 + m2 * r1 * r1 + 2 * l2 * m3 * r2 + m3 * (l3 * l3 + r0 * r0 + r1 * r1 + r2 * r2) + 2 * (r0 * (l1 * (m1 + m2 + m3) + (m2 + m3) * r1) * cos(q1) + (l2 * (m2 + m3) + m3 * r2) * ((l1 + r1) * cos(q2) + r0 * cos(q1 + q2)) + l3 * m3 * (l2 + r2 + (l1 + r1) * cos(q2) + r0 * cos(q1 + q2)) * cos(q3) + (-1) * l3 * m3 * ((l1 + r1) * sin(q2) + r0 * sin(q1 + q2)) * sin(q3));
     h34 = i1zz + i2zz + i3zz + l2 * l2 * (m2 + m3) + l1 * l1 * (m1 + m2 + m3) + 2 * l1 * (m2 + m3) * r1 + m2 * r1 * r1 + 2 * l2 * m3 * r2 + m3 * (l3 * l3 + r1 * r1 + r2 * r2) + r0 * (l1 * (m1 + m2 + m3) + (m2 + m3) * r1) * cos(q1) + (l2 * (m2 + m3) + m3 * r2) * (2 * (l1 + r1) * cos(q2) + r0 * cos(q1 + q2)) + l3 * m3 * (2 * (l2 + r2 + (l1 + r1) * cos(q2)) + r0 * cos(q1 + q2)) * cos(q3) + (-1) * l3 * m3 * (2 * (l1 + r1) * sin(q2) + r0 * sin(q1 + q2)) * sin(q3);
-    h35 = i2zz+i3zz+l2^2*(m2+m3)+2*l2*m3*r2+m3*(l3^2+r2^2)+(l1+r1)*(l2*(m2+m3)+m3*r2)*cos(q2)+r0*(l2*(m2+m3)+m3*r2)*cos(q1+q2)+l3*m3*(2.*(l2+r2)*cos(q3)+(l1+r1)*cos(q2+q3)+r0*cos(q1+q2+q3));
+    h35 = i2zz+i3zz+pow(l2,2)*(m2+m3)+2*l2*m3*r2+m3*(pow(l3,2)+pow(r2,2))+(l1+r1)*(l2*(m2+m3)+m3*r2)*cos(q2)+r0*(l2*(m2+m3)+m3*r2)*cos(q1+q2)+l3*m3*(2.*(l2+r2)*cos(q3)+(l1+r1)*cos(q2+q3)+r0*cos(q1+q2+q3));
     h36 = i3zz+l3*l3*m3+l3*m3*((l2+r2)*cos(q3)+(l1+r1)*cos(q2+q3)+r0*cos(q1+q2+q3));
     //////////////
     h41 = (-1)*(l1*(m1+m2+m3)+(m2+m3)*r1)*sin(q1+theta0)+(-1)*(l2*(m2+m3)+m3*r2)*sin(q1+q2+theta0)+(-1)*l3*m3*sin(q1+q2+q3+theta0);
@@ -198,7 +204,7 @@ void calculateStep(){  //calculate stuff in each iteration
     //////////////
     h51 = (-1)*(l2*(m2+m3)+m3*r2)*sin(q1+q2+theta0)+(-1)*l3*m3*sin(q1+q2+q3+theta0);
     h52 = (l2*(m2+m3)+m3*r2)*cos(q1+q2+theta0)+l3*m3*cos(q1+q2+q3+theta0);
-    h53 = i2zz+i3zz+l2^2*(m2+m3)+2*l2*m3*r2+m3*(l3*l3+r2*r2)+(l1+r1)*(l2*(m2+m3)+m3*r2)*cos(q2)+r0*(l2*(m2+m3)+m3*r2)*cos(q1+q2)+l3*m3*(2*(l2+r2)*cos(q3)+(l1+r1)*cos(q2+q3)+r0*cos(q1+q2+q3));
+    h53 = i2zz+i3zz+pow(l2,2)*(m2+m3)+2*l2*m3*r2+m3*(l3*l3+r2*r2)+(l1+r1)*(l2*(m2+m3)+m3*r2)*cos(q2)+r0*(l2*(m2+m3)+m3*r2)*cos(q1+q2)+l3*m3*(2*(l2+r2)*cos(q3)+(l1+r1)*cos(q2+q3)+r0*cos(q1+q2+q3));
     h54 = i2zz+i3zz+l2*l2*(m2+m3)+2*l2*m3*r2+m3*(l3*l3+r2*r2)+(l1+r1)*(l2*(m2+m3)+m3*r2)*cos(q2)+l3*m3*(2*(l2+r2)*cos(q3)+(l1+r1)*cos(q2+q3));
     h55 = i2zz+i3zz+l2*l2*(m2+m3)+2*l2*m3*r2+m3*(l3*l3+r2*r2)+2*l3*m3*(l2+r2)*cos(q3);
     h56 = i3zz+l3*l3*m3+l3*m3*(l2+r2)*cos(q3);
