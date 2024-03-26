@@ -65,7 +65,13 @@ void initialiseParameters(){//initialise constant parameters
          0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0;
+         0, 0, 0, 0, 0, 0;      
+    
+    rEddotdot << 0, 0, 0;
+
+    je << 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0;
 
         
 
@@ -278,6 +284,14 @@ void calculateStep(){  //calculate stuff in each iteration
     md.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
     md.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
     md.bottomRightCorner(3,3) = md_b;
+
+    xEddotdot = fext(0)/mt;
+    yEddotdot = 0;
+    thetaEddotdot = 0;
+    rEddotdot(0) = xEddotdot;
+    rEddotdot(1) = yEddotdot;
+    rEddotdot(2) = thetaEddotdot;
+
     
 
     fact = (Eigen::MatrixXd::Identity(3, 3) - w.inverse() * md.inverse()) * fext +
@@ -287,6 +301,54 @@ void calculateStep(){  //calculate stuff in each iteration
 
     //na grapso thn sxesh pou syndeei ta torq[] me fact kai to n
     //factx, facty,nact
+    je11 = 1;
+    je12 = 0;
+    je13 = (-1)*r0*sin(theta0)+(-1)*(l1+r1)*sin(q1+theta0)+(-1)*(l2+r2)*sin(q1+q2+theta0)+(-1)*(l3+r3)*sin(q1+q2+q3+theta0);
+    je14 = ((-1)*l1+(-1)*r1)*sin(q1+theta0)+(-1)*(l2+r2)*sin(q1+q2+theta0)+(-1)*(l3+r3)*sin(q1+q2+q3+theta0);
+    je15 = ((-1)*l2+(-1)*r2)*sin(q1+q2+theta0)+(-1)*(l3+r3)*sin(q1+q2+q3+theta0);
+    je16 = ((-1)*l3+(-1)*r3)*sin(q1+q2+q3+theta0); 
+    ////////////
+    je21 = 0;
+    je22 = 1;
+    je23 = r0*cos(theta0)+(l1+r1)*cos(q1+theta0)+(l2+r2)*cos(q1+q2+theta0)+(l3+r3)*cos(q1+q2+q3+theta0);
+    je24 = (l1+r1)*cos(q1+theta0)+(l2+r2)*cos(q1+q2+theta0)+(l3+r3)*cos(q1+q2+q3+theta0);
+    je25 = (l2+r2)*cos(q1+q2+theta0)+(l3+r3)*cos(q1+q2+q3+theta0);
+    je26 = (l3+r3)*cos(q1+q2+q3+theta0);
+    ///////////
+    je31 = 0;
+    je32 = 0;
+    je33 = 1;
+    je34 = 1;
+    je35 = 1;
+    je36 = 1;
+    ///////////
+    je(0,0) = je11;
+    je(0,1) = je12;
+    je(0,2) = je13;
+    je(0,3) = je14;
+    je(0,4) = je15;
+    je(0,5) = je16;
+    ///////////
+    je(1,0) = je21;
+    je(1,1) = je22;
+    je(1,2) = je23;
+    je(1,3) = je24;
+    je(1,4) = je25;
+    je(1,5) = je26;
+    ///////////
+    je(2,0) = je31;
+    je(2,1) = je32;
+    je(2,2) = je33;
+    je(2,3) = je34;
+    je(2,4) = je35;
+    je(2,5) = je36;
+
+    qact = je.transpose()*fact;
+
+    torq[0] = qact(3); //torque of q1
+    torq[1] = qact(4); // of q2
+    torq[2] = qact(5); // of q3
+     
 }
 
 void ImpedanceControlUpdateStep(){

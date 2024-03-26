@@ -69,19 +69,19 @@ int main(int argc, char **argv) {
     ros::NodeHandle nh;
 
     /* Create publishers */
-    ros::Publisher RW_velocity_pub = nh.advertise<std_msgs::Float64>("/cepheus/reaction_wheel_velocity_controller/command", 1);
-    ros::Publisher LE_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_elbow_effort_controller/command", 1);
+    ros::Publisher RW_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/reaction_wheel_effort_controller/command", 1);
     ros::Publisher LS_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_shoulder_effort_controller/command", 1);
+    ros::Publisher LE_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_elbow_effort_controller/command", 1);
+    ros::Publisher LW_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_wrist_effort_controller/command", 1);
 
-    /* messages to publish */
-    // std_msgs::Float64 msg_RW;
-    // std_msgs::Float64 msg_LE;
-    // std_msgs::Float64 msg_LS;
-    
     /* init messages */ 
-    msg_RW.data = 0.1;
-    msg_LE.data = 0.1;
-    msg_LS.data = 0.1;
+    msg_RW.data = 0.0;
+    msg_LS.data = 0.0;
+    msg_LE.data = 0.0;
+    msg_LW.data = 0.0;
+
+    ROS_INFO("[foros_simcontroller]: torques initialized to 0. \n");
+    
 
     // double frequency = (float)1/DT;
 
@@ -106,8 +106,7 @@ int main(int argc, char **argv) {
 		prev_torq[i] = 0.0;
 	}
 
-    ROS_INFO("[foros_simcontroller]: torques initialized to 0. \n");
-
+    
     // ROS_INFO("[foros_simcontroller]: Give me Kp, Kd. \n");
     // std::cin>>Kp>>Kd;  //kala einai ta kp=5 kai kd=0.5
     // ROS_INFO("[foros_simcontroller]: Give me q1des, q2des. \n");
@@ -137,13 +136,18 @@ int main(int argc, char **argv) {
             desiredTrajectory(t); //na oriso time t
             calculateStep();
             //ImpedanceControlUpdateStep();
-			msg_LS.data = torq[0];
-			msg_LE.data = torq[1];
-			msg_RW.data = torq[2];
 
-            RW_velocity_pub.publish(msg_RW);
-            LE_torque_pub.publish(msg_LE);
+            /*UPDATE THE ROS MESSAGES*/
+            msg_RW.data = qact(2);
+			msg_LS.data = qact(3);
+			msg_LE.data = qact(4);
+			msg_Lw.data = qact(5);
+
+            RW_torque_pub.publish(msg_RW);
             LS_torque_pub.publish(msg_LS);
+            LE_torque_pub.publish(msg_LE);
+            LW_torque_pub.publish(msg_LW);
+            
 
         }
 		if(reachedTarget){ //na ftiakso to reachedGoal kalytera gia na teleionei to peirama, na ftiakso xrono

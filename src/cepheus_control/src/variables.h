@@ -51,13 +51,15 @@ double Kd = 0.5;
 /* Initialize variables needed for the control loop*/
 double errorq[3];
 double error_qdot[3];
-double torq[3];
+double torq[3]; //might be not needed
 double prev_torq[3];
 
 /*Messages to publish */
-std_msgs::Float64 msg_RW;
-std_msgs::Float64 msg_LE;
-std_msgs::Float64 msg_LS;
+std_msgs::Float64 msg_RW; //reaction wheel
+std_msgs::Float64 msg_LS; //left shoulder
+std_msgs::Float64 msg_LE; //left elbow
+std_msgs::Float64 msg_LW; //left wrist
+
 
 
 /*Impedance control variables*/
@@ -72,6 +74,7 @@ double r1,m1,l1;
 double r2,m2,l2;
 double r3,m3,l3;
 double M;
+double mt;
 //double a,b,c,d; not needed
 double ibzz;
 double i1zz, i2zz, i3zz, itzz;
@@ -122,6 +125,8 @@ Eigen::MatrixXd md_b(3,3);
 Eigen::MatrixXd bd(6,6);
 Eigen::MatrixXd bd_e(3,3);
 Eigen::MatrixXd bd_b(3,3);
+Eigen::MatrixXd je(3,6); //second jacobian for the qact = je*Fact
+Eigen::VectorXd qact(6); //fx,fy,ns,t1,t2,t3
 
 
 
@@ -154,6 +159,10 @@ double h11, h12, h13, h14, h15, h16,
         h51, h52, h53, h54, h55, h56,
         h61, h62, h63, h64, h65, h66;
 
+/*JE coefficients*/
+double je11, je12, je13, je14, je15, je16;
+double je21, je22, je23, je24, je25, je26;
+double je31, je32, je33, je34, je35, je36;
 
 
 
