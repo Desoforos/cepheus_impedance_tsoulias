@@ -78,7 +78,7 @@ void initialiseParameters(){//initialise constant parameters
 
 }
 
-void calculateStep(){  //calculate stuff in each iteration
+void calculateStep(double t){  //calculate stuff in each iteration
     j16 = -l3*sin(theta0+q1+q2+q3);
     j15 = j16 - l2*sin(theta0+q1+q2);
     j14 = j15 - l1*sin(theta0+q1);
@@ -180,10 +180,10 @@ void calculateStep(){  //calculate stuff in each iteration
     c(4) = c51;
     c(5) = c61;
 
-    h11 = m1 + m2 + m3 + mb; //na oriso mb
+    h11 = m1 + m2 + m3 + mb;
     h12 = 0;
     h13 = (-1) * (m1 + m2 + m3) * r0 * sin(theta0) + (-1) * (l1 * (m1 + m2 + m3) + (m2 + m3) * r1) * sin(q1 + theta0) + (-1) * (l2 * (m2 + m3) + m3 * r2) * sin(q1 + q2 + theta0) + (-1) * l3 * m3 * sin(q1 + q2 + q3 + theta0);
-    h14 = (-1).*(l1*(m1+m2+m3)+(m2+m3)*r1)*sin(q1+theta0)+(-1)*(l2*(m2+m3)+m3*r2)*sin(q1+q2+theta0)+(-1)*l3*m3*sin(q1+q2+q3+theta0);
+    h14 = (-1)*(l1*(m1+m2+m3)+(m2+m3)*r1)*sin(q1+theta0)+(-1)*(l2*(m2+m3)+m3*r2)*sin(q1+q2+theta0)+(-1)*l3*m3*sin(q1+q2+q3+theta0);
     h15 = (-1) * (l2 * (m2 + m3) + m3 * r2) * sin(q1 + q2 + theta0) + (-1) * l3 * m3 * sin(q1 + q2 + q3 + theta0);
     h16 = (-1) * l3 * m3 * sin(q1 + q2 + q3 + theta0); 
     ///////////////
@@ -198,12 +198,12 @@ void calculateStep(){  //calculate stuff in each iteration
     h32 = (m1 + m2 + m3) * r0 * cos(theta0) + (l1 * (m1 + m2 + m3) + (m2 + m3) * r1) * cos(q1 + theta0) + (l2 * (m2 + m3) + m3 * r2) * cos(q1 + q2 + theta0) + l3 * m3 * cos(q1 + q2 + q3 + theta0);
     h33 = i1zz + i2zz + i3zz + ibzz + l2 * l2 * (m2 + m3) + l1 * l1 * (m1 + m2 + m3) + (m1 + m2) * r0 * r0 + 2 * l1 * (m2 + m3) * r1 + m2 * r1 * r1 + 2 * l2 * m3 * r2 + m3 * (l3 * l3 + r0 * r0 + r1 * r1 + r2 * r2) + 2 * (r0 * (l1 * (m1 + m2 + m3) + (m2 + m3) * r1) * cos(q1) + (l2 * (m2 + m3) + m3 * r2) * ((l1 + r1) * cos(q2) + r0 * cos(q1 + q2)) + l3 * m3 * (l2 + r2 + (l1 + r1) * cos(q2) + r0 * cos(q1 + q2)) * cos(q3) + (-1) * l3 * m3 * ((l1 + r1) * sin(q2) + r0 * sin(q1 + q2)) * sin(q3));
     h34 = i1zz + i2zz + i3zz + l2 * l2 * (m2 + m3) + l1 * l1 * (m1 + m2 + m3) + 2 * l1 * (m2 + m3) * r1 + m2 * r1 * r1 + 2 * l2 * m3 * r2 + m3 * (l3 * l3 + r1 * r1 + r2 * r2) + r0 * (l1 * (m1 + m2 + m3) + (m2 + m3) * r1) * cos(q1) + (l2 * (m2 + m3) + m3 * r2) * (2 * (l1 + r1) * cos(q2) + r0 * cos(q1 + q2)) + l3 * m3 * (2 * (l2 + r2 + (l1 + r1) * cos(q2)) + r0 * cos(q1 + q2)) * cos(q3) + (-1) * l3 * m3 * (2 * (l1 + r1) * sin(q2) + r0 * sin(q1 + q2)) * sin(q3);
-    h35 = i2zz+i3zz+pow(l2,2)*(m2+m3)+2*l2*m3*r2+m3*(pow(l3,2)+pow(r2,2))+(l1+r1)*(l2*(m2+m3)+m3*r2)*cos(q2)+r0*(l2*(m2+m3)+m3*r2)*cos(q1+q2)+l3*m3*(2.*(l2+r2)*cos(q3)+(l1+r1)*cos(q2+q3)+r0*cos(q1+q2+q3));
+    h35 = i2zz+i3zz+pow(l2,2)*(m2+m3)+2*l2*m3*r2+m3*(pow(l3,2)+pow(r2,2))+(l1+r1)*(l2*(m2+m3)+m3*r2)*cos(q2)+r0*(l2*(m2+m3)+m3*r2)*cos(q1+q2)+l3*m3*(2*(l2+r2)*cos(q3)+(l1+r1)*cos(q2+q3)+r0*cos(q1+q2+q3));
     h36 = i3zz+l3*l3*m3+l3*m3*((l2+r2)*cos(q3)+(l1+r1)*cos(q2+q3)+r0*cos(q1+q2+q3));
     //////////////
     h41 = (-1)*(l1*(m1+m2+m3)+(m2+m3)*r1)*sin(q1+theta0)+(-1)*(l2*(m2+m3)+m3*r2)*sin(q1+q2+theta0)+(-1)*l3*m3*sin(q1+q2+q3+theta0);
     h42 = (l1*(m1+m2+m3)+(m2+m3)*r1)*cos(q1+theta0)+(l2*(m2+m3)+m3*r2)*cos(q1+q2+theta0)+l3*m3*cos(q1+q2+q3+theta0);
-    h43 = i1zz+i2zz+i3zz+l2*l2*(m2+m3)+l1*l1*(m1+m2+m3)+2*l1*(m2+m3)*r1+m2*r1*r1+2*l2*m3*r2+m3*(l3*l3+r1*r1+r2*r2)+r0*(l1*(m1+m2+m3)+(m2+m3)*r1)*cos(q1)+(l2*(m2+m3)+m3.*r2)*(2*(l1+r1)*cos(q2)+r0*cos(q1+q2))+l3*m3*(2*(l2+r2+(l1+r1)*cos(q2))+r0*cos(q1+q2))*cos(q3)+(-1)*l3*m3*(2*(l1+r1)*sin(q2)+r0*sin(q1+q2))*sin(q3);
+    h43 = i1zz+i2zz+i3zz+l2*l2*(m2+m3)+l1*l1*(m1+m2+m3)+2*l1*(m2+m3)*r1+m2*r1*r1+2*l2*m3*r2+m3*(l3*l3+r1*r1+r2*r2)+r0*(l1*(m1+m2+m3)+(m2+m3)*r1)*cos(q1)+(l2*(m2+m3)+m3*r2)*(2*(l1+r1)*cos(q2)+r0*cos(q1+q2))+l3*m3*(2*(l2+r2+(l1+r1)*cos(q2))+r0*cos(q1+q2))*cos(q3)+(-1)*l3*m3*(2*(l1+r1)*sin(q2)+r0*sin(q1+q2))*sin(q3);
     h44 = i1zz+i2zz+i3zz+l2*l2*m2+l2*l2*m3+l3*l3*m3+l1*l1*(m1+m2+m3)+2*l1*(m2+m3)*r1+m2*r1*r1+m3*r1*r1+2*l2*m3*r2+m3*r2*r2+2*(l1+r1)*(l2*(m2+m3)+m3*r2)*cos(q2)+2*l3*m3*((l2+r2)*cos(q3)+(l1+r1)*cos(q2+q3));
     h45 = i2zz+i3zz+l2*l2*(m2+m3)+2*l2*m3*r2+m3*(l3*l3+r2*r2)+(l1+r1)*(l2*(m2+m3)+m3*r2)*cos(q2)+l3*m3*(2*(l2+r2)*cos(q3)+(l1+r1)*cos(q2+q3));
     h46 = i3zz+l3*l3*m3+l3*m3*(l2+r2)*cos(q3)+l3*m3*(l1+r1)*cos(q2+q3);

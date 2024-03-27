@@ -67,6 +67,8 @@ int main(int argc, char **argv) {
     /* ros init */
     ros::init(argc, argv, "foros_simcontroller_node");
     ros::NodeHandle nh;
+    ros::Time curr_time, t_beg;
+    ros::Duration dur_time; //duration of movement
 
     /* Create publishers */
     ros::Publisher RW_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/reaction_wheel_effort_controller/command", 1);
@@ -131,9 +133,12 @@ int main(int argc, char **argv) {
             if(!hasbegun){
                 ROS_INFO("[foros_simcontroller]: initializing movement with given target position");
                 hasbegun = true; //apla gia to rosinfo na mas pei oti ksekinaei tin kinhsh
+                t_beg  = ros::Time::now(); //initialize starting moment
             }
-            trajparametersCalc(t);
-            desiredTrajectory(t); //na oriso time t
+            curr_time = ros::Time::now();
+		    dur_time = curr_time - t_beg;
+            trajparametersCalc(dur_time.toSec());
+            desiredTrajectory(dur_time.toSec()); 
             calculateStep();
             //ImpedanceControlUpdateStep();
 
@@ -141,7 +146,7 @@ int main(int argc, char **argv) {
             msg_RW.data = qact(2);
 			msg_LS.data = qact(3);
 			msg_LE.data = qact(4);
-			msg_Lw.data = qact(5);
+			msg_LW.data = qact(5);
 
             RW_torque_pub.publish(msg_RW);
             LS_torque_pub.publish(msg_LS);

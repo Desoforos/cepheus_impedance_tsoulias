@@ -75,6 +75,7 @@ double r2,m2,l2;
 double r3,m3,l3;
 double M;
 double mt;
+double mb;
 //double a,b,c,d; not needed
 double ibzz;
 double i1zz, i2zz, i3zz, itzz;
@@ -97,6 +98,7 @@ Eigen::VectorXd fact(3);
 Eigen::VectorXd z(6);
 Eigen::VectorXd zdot(6);
 Eigen::VectorXd rEddotdot(3); //xEddotdot, yEddotdot, thetaEddotdot
+Eigen::VectorXd rEddot(3); //xEddot, yEddot, thetaEddot
 Eigen::MatrixXd w;
 Eigen::MatrixXd jacobian(6,9);
 Eigen::MatrixXd jacobiandot(6,9);
@@ -127,6 +129,10 @@ Eigen::MatrixXd bd_e(3,3);
 Eigen::MatrixXd bd_b(3,3);
 Eigen::MatrixXd je(3,6); //second jacobian for the qact = je*Fact
 Eigen::VectorXd qact(6); //fx,fy,ns,t1,t2,t3
+Eigen::VectorXd edot(3);
+
+
+
 
 
 
