@@ -85,20 +85,25 @@ double i1zz, i2zz, i3zz, itzz;
 double a0x,a1x,a2x,a3x,a4x,a5x; //for s_x
 double a0y,a1y,a2y,a3y,a4y,a5y; //for s_y
 double a0t,a1t,a2t,a3t,a4t,a5t; //for s_theta
-double s_x,s_y,s_theta;  //to polyonymo..prepei na to ftiakso
+double s_x,s_y,s_theta;  //to polyonymo
+double sdot_x, sdot_y, sdot_theta;
+double sdotdot_x, sdotdot_y, sdotdot_theta;
+double xEd, yEd, thetaEd;
+double xEddot, yEddot, thetaEddot;
+double xEddotdot, yEddotdot, thetaEddotdot;
 //Eigen::VectorXd xch_in(xti,yti,0); mallon den xreiazetai
 Eigen::VectorXd xch_c(3);//xch_c <<0 , 0 , 0;
 Eigen::VectorXd xdf(3); //xdf<<0 , 0 ,0 ;
 Eigen::VectorXd xdc(3); // <<xt,yt,thetat;
 Eigen::VectorXd fext(3); // << (0,0,0); //fx,fy,n
-Eigen::VectorXd xd; //the  DESIRED TRAJECTORY
+Eigen::VectorXd xd(3); //the  DESIRED TRAJECTORY xEd,yEd,thetaEd
+Eigen::VectorXd xddot(3); //xEddot, yEddot, thetaEddot
+Eigen::VectorXd xddotdot(3); //xEddotdot, yEddotdot, thetaEddotdot
 Eigen::VectorXd xee(3); //(0,0,0); //the actual trajecotry (x,y,theta)
 Eigen::VectorXd c(6);
 Eigen::VectorXd fact(3);
 Eigen::VectorXd z(6);
 Eigen::VectorXd zdot(6);
-Eigen::VectorXd rEddotdot(3); //xEddotdot, yEddotdot, thetaEddotdot
-Eigen::VectorXd rEddot(3); //xEddot, yEddot, thetaEddot
 Eigen::MatrixXd w;
 Eigen::MatrixXd jacobian(6,9);
 Eigen::MatrixXd jacobiandot(6,9);
@@ -108,6 +113,8 @@ Eigen::MatrixXd i3 = Eigen::MatrixXd::Identity(3,3);
 Eigen::MatrixXd z6 = Eigen::MatrixXd::Zero(6,6);
 Eigen::MatrixXd z3 = Eigen::MatrixXd::Zero(3,3);
 Eigen::VectorXd e; //error for x,y,theta
+Eigen::VectorXd edot(3);
+Eigen::VectorXd edotdot(3);
 Eigen::MatrixXd kd = 100*Eigen::MatrixXd::Identity(6,6); //esvhsa to (6,6)
 Eigen::VectorXd a_x;
 Eigen::VectorXd a_y;
@@ -129,7 +136,7 @@ Eigen::MatrixXd bd_e(3,3);
 Eigen::MatrixXd bd_b(3,3);
 Eigen::MatrixXd je(3,6); //second jacobian for the qact = je*Fact
 Eigen::VectorXd qact(6); //fx,fy,ns,t1,t2,t3
-Eigen::VectorXd edot(3);
+
 
 
 
@@ -144,7 +151,7 @@ double wn_free = 6/ts_free;
 double z_contact = z_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
 double wn_contact = wn_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
 
-double xEddotdot, yEddotdot, thetaEddotdot;
+
 
 
 

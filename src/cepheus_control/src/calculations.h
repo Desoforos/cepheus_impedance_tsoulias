@@ -328,7 +328,9 @@ void calculateStep(double t){  //calculate stuff in each iteration
     je(0,3) = je14;
     je(0,4) = je15;
     je(0,5) = je16;
-    ///////////
+    ///////////thetaEd=thetaE_contact;
+thetaEddot=0;
+thetaEddotdot=0;
     je(1,0) = je21;
     je(1,1) = je22;
     je(1,2) = je23;
@@ -421,27 +423,76 @@ void trajparametersCalc(double t){//PROSOXH!: allagh ton indexes apo matlab se c
     b1_theta << sin_theta, sdotin_theta, sdotdotin_theta, sfin_theta, sdotfin_theta, sdotdotfin_theta;
 
     //kanonika edo thelei ena if t<=t_free (??)
-    a_x = a_matrix.inverse()*b1_x;
-    a_y = a_matrix.inverse()*b1_y;
-    a_theta = a_matrix.inverse()*b1_theta;
-    a0x = a_x(0);
-    a1x = a_x(1);
-    a2x = a_x(2);
-    a3x = a_x(3);
-    a4x = a_x(4);
-    a5x = a_x(5);
-    a0y = a_y(0);
-    a1y = a_y(1);
-    a2y = a_y(2);
-    a3y = a_y(3);
-    a4y = a_y(4);
-    a5y = a_y(5);
-    a0t = a_theta(0);
-    a1t = a_theta(1);
-    a2t = a_theta(2);
-    a3t = a_theta(3);
-    a4t = a_theta(4);
-    a5t = a_theta(5);
+    if(t<=t_free){
+        a_x = a_matrix.inverse()*b1_x;
+        a_y = a_matrix.inverse()*b1_y;
+        a_theta = a_matrix.inverse()*b1_theta;
+        a0x = a_x(0);
+        a1x = a_x(1);
+        a2x = a_x(2);
+        a3x = a_x(3);
+        a4x = a_x(4);
+        a5x = a_x(5);
+        a0y = a_y(0);
+        a1y = a_y(1);
+        a2y = a_y(2);
+        a3y = a_y(3);
+        a4y = a_y(4);
+        a5y = a_y(5);
+        a0t = a_theta(0);
+        a1t = a_theta(1);
+        a2t = a_theta(2);
+        a3t = a_theta(3);
+        a4t = a_theta(4);
+        a5t = a_theta(5);
+        s_x = a5x*pow(t,5) + a4x*pow(t,4) + a3x*pow(t,3) + a2x*pow(t,2) + a1x*t +a0x;
+        s_y = a5y*pow(t,5) + a4y*pow(t,4) + a3y*pow(t,3) + a2y*pow(t,2) + a1y*t +a0y;
+        s_theta = a5t*pow(t,5) + a4t*pow(t,4) + a3t*pow(t,3) + a2t*pow(t,2) + a1t*t +a0t;
+        /////
+        sdot_x=a1x+2*a2x*t+3*a3x*pow(t,2)+4*a4x*pow(t,3)+5*a5x*pow(t,4);
+        sdot_y=a1y+2*a2y*t+3*a3y*pow(t,2)+4*a4y*pow(t,3)+5*a5y*pow(t,4);
+        sdot_theta=a1t+2*a2t*t+3*a3t*pow(t,2)+4*a4t*pow(t,3)+5*a5t*pow(t,4);
+        /////
+        sdotdot_x=2*a2x+6*a3x*t+12*a4x*pow(t,2)+20*a5x*pow(t,3);
+        sdotdot_y=2*a2y+6*a3y*t+12*a4y*pow(t,2)+20*a5y*pow(t,3);
+        sdotdot_theta=2*a2t+6*a3t*t+12*a4t*pow(t,2)+20*a5t*pow(t,3);
+        /////
+        xEd=xE_in+s_x*(xE_contact-xE_in);
+        xEddot=sdot_x*(xE_contact-xE_in);
+        xEddotdot=sdotdot_x*(xE_contact-xE_in);
+        /////
+        yEd=xE_in+s_y*(yE_contact-yE_in);
+        yEddot=sdot_y*(yE_contact-yE_in);
+        yEddotdot=sdotdot_y*(yE_contact-yE_in);
+        /////
+        thetaEd=thetaE_in+s_theta*(thetaE_contact-thetaE_in);
+        thetaEddot=sdot_theta*(thetaE_contact-thetaE_in);
+        thetaEddotdot=sdotdot_theta*(thetaE_contact-thetaE_in);
+    }
+    else{
+        xEd=x_target+xE_contact-x_target_in;
+        xEddot=x_target_dot;
+        xEddotdot=Fext_x/mt;
+        /////
+        yEd=yE_contact;
+        yEddot=0;
+        yEddotdot=0;
+        /////
+        thetaEd=thetaE_contact;
+        thetaEddot=0;
+        thetaEddotdot=0; 
+
+    }
+    xd(0) = xEd;
+    xd(1) = yEd;
+    xd(2) = thetaEd;
+    xddot(0) = xEddot;
+    xddot(1) = yEddot;
+    xddot(2) = thetaEddotdot;
+    xddotdot(0) = xEddotdot;
+    xddotdot(1) = yEddotdot;
+    xddotdot(2) = thetaEddotdot;
+    
 
 
 }
