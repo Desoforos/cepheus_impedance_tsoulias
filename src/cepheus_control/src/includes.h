@@ -1,6 +1,7 @@
 #ifndef MY_HEADER1_H
 #define MY_HEADER1_H
 #include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <fstream>
 #include <sstream>
 #include <cmath>

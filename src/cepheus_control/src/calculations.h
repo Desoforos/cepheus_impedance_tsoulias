@@ -281,7 +281,7 @@ void calculateStep(){  //calculate stuff in each iteration
     fdes_star = fdes*fext(0)/(fext(0)+0.01);
 
 
-    md.topLeftCorner(3,3) = md;
+    md.topLeftCorner(3,3) = md_e;
     md.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
     md.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
     md.bottomRightCorner(3,3) = md_b;
@@ -299,7 +299,7 @@ void calculateStep(){  //calculate stuff in each iteration
     fact = (Eigen::MatrixXd::Identity(3, 3) - w.inverse() * md.inverse()) * fext +
                         w.inverse() * (jacobian * h.inverse()*c - jacobiandot * zdot) +
                         w.inverse() * md.inverse() * (fdes_star - (bd * edot) - (kd * e)) +
-                        w.transpose().inverse() * rEddotdot; //(H.colPivHouseholderQr().solve(C))) TODO:xddotdot(desired troxia), jacobiandot CHECK,zdot CHECK
+                        w.inverse() * rEddotdot; //(H.colPivHouseholderQr().solve(C))) TODO:xddotdot(desired troxia), jacobiandot CHECK,zdot CHECK
 
     //na grapso thn sxesh pou syndeei ta torq[] me fact kai to n
     //factx, facty,nact
