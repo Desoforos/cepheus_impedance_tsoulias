@@ -137,8 +137,7 @@ int main(int argc, char **argv) {
             }
             curr_time = ros::Time::now();
 		    dur_time = curr_time - t_beg;
-            trajparametersCalc(dur_time.toSec());
-            desiredTrajectory(dur_time.toSec()); 
+            desiredTrajectory(dur_time.toSec());
             calculateStep();
             //ImpedanceControlUpdateStep();
 

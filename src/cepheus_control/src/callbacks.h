@@ -12,6 +12,9 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 	yc0 = msg->pose[1].position.y;
 	xc0dot = msg->twist[1].linear.x; //velocity of base 
 	yc0dot = msg->twist[1].linear.y;
+	xtdot = msg->twist[7].linear.x;
+	ytdot = msg->twist[7].linear.y;
+	thetatdot = msg->twist[7].angular.z;
 	tf::Quaternion q( //for angle of base
         msg->pose[1].orientation.x,
         msg->pose[1].orientation.y,
@@ -44,6 +47,9 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 	xee(0) = ee_x;
 	xee(1) = ee_y;
 	xee(2) = thetach;
+	xeedot(0) = msg->twist[4].linear.x;
+	xeedot(1) = msg->twist[4].linear.y;
+	xeedot(2) = msg->twist[4].angular.z;
 	if(firstTime){   //initialize the postiion of chaser and target for the first time ONLY
 		xch_in = ee_x;
 		ych_in = ee_y;

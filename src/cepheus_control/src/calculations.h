@@ -45,7 +45,8 @@ void initialiseParameters(){//initialise constant parameters
     xch_c << 0, 0, 0;
     xdf << 0, 0, 0;
     xdc << 0, 0, 0;
-    xee << 0, 0;
+    xee << 0, 0, 0;
+    xeedot << 0, 0, 0;
 
     fext    << 0, 0, 0;
     z       << 0, 0, 0, 0, 0, 0; //xc0,yx0,theta0,q1,q2,q3
@@ -78,7 +79,7 @@ void initialiseParameters(){//initialise constant parameters
 
 }
 
-void calculateStep(double t){  //calculate stuff in each iteration
+void calculateStep(){  //calculate stuff in each iteration
     j16 = -l3*sin(theta0+q1+q2+q3);
     j15 = j16 - l2*sin(theta0+q1+q2);
     j14 = j15 - l1*sin(theta0+q1);
@@ -278,19 +279,20 @@ void calculateStep(double t){  //calculate stuff in each iteration
     bd.bottomRightCorner(3,3) = bd_b;
 
     fdes_star = fdes*fext(0)/(fext(0)+0.01);
-    e = xee - xd;
+
 
     md.topLeftCorner(3,3) = md;
     md.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
     md.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
     md.bottomRightCorner(3,3) = md_b;
 
-    xEddotdot = fext(0)/mt;
-    yEddotdot = 0;
-    thetaEddotdot = 0;
     rEddotdot(0) = xEddotdot;
     rEddotdot(1) = yEddotdot;
     rEddotdot(2) = thetaEddotdot;
+
+    e = xee - xd;
+    edot = xeedot - xddot; 
+
 
     
 
@@ -328,9 +330,7 @@ void calculateStep(double t){  //calculate stuff in each iteration
     je(0,3) = je14;
     je(0,4) = je15;
     je(0,5) = je16;
-    ///////////thetaEd=thetaE_contact;
-thetaEddot=0;
-thetaEddotdot=0;
+    ///////////
     je(1,0) = je21;
     je(1,1) = je22;
     je(1,2) = je23;
@@ -378,7 +378,7 @@ void JointControlUpdateStep(){
     }
 } 
 
-void trajparametersCalc(double t){//PROSOXH!: allagh ton indexes apo matlab se c++ stous pinakes
+void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c++ stous pinakes
     
     ke_star << 10000, 0, 0,
                 0, 10000, 0,
@@ -470,9 +470,9 @@ void trajparametersCalc(double t){//PROSOXH!: allagh ton indexes apo matlab se c
         thetaEddotdot=sdotdot_theta*(thetaE_contact-thetaE_in);
     }
     else{
-        xEd=x_target+xE_contact-x_target_in;
-        xEddot=x_target_dot;
-        xEddotdot=Fext_x/mt;
+        xEd=xt+xE_contact-xt_in; //anti gia x_target=xt
+        xEddot=xtdot;
+        xEddotdot=fext(0)/mt;
         /////
         yEd=yE_contact;
         yEddot=0;
@@ -497,7 +497,7 @@ void trajparametersCalc(double t){//PROSOXH!: allagh ton indexes apo matlab se c
 
 }
 
-void desiredTrajectory(double t){
+void trajparams(double t){
     double a1 = 10000;
     double a2 = 0.0001;
     s_x = a5x*pow(t,5) + a4x*pow(t,4) + a3x*pow(t,3) + a2x*pow(t,2) + a1x*t +a0x;
