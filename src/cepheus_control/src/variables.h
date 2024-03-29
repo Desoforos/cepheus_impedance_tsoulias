@@ -107,8 +107,8 @@ Eigen::VectorXd fact(3);
 Eigen::VectorXd z(6);
 Eigen::VectorXd zdot(6);
 Eigen::MatrixXd w;
-Eigen::MatrixXd jacobian(6,9);
-Eigen::MatrixXd jacobiandot(6,9);
+Eigen::MatrixXd jacobian(3,6);
+Eigen::MatrixXd jacobiandot(3,6);
 Eigen::MatrixXd h(6,6); //imp.thesis sel 62 eksisosi 5-31
 Eigen::MatrixXd i6 = Eigen::MatrixXd::Identity(6,6);
 Eigen::MatrixXd i3 = Eigen::MatrixXd::Identity(3,3);
@@ -121,9 +121,9 @@ Eigen::MatrixXd kd = 100*Eigen::MatrixXd::Identity(6,6); //esvhsa to (6,6)
 Eigen::VectorXd a_x;
 Eigen::VectorXd a_y;
 Eigen::VectorXd a_theta;
-Eigen::VectorXd b1_x;
-Eigen::VectorXd b1_y;
-Eigen::VectorXd b1_theta;
+Eigen::VectorXd b1_x(6);
+Eigen::VectorXd b1_y(6);
+Eigen::VectorXd b1_theta(6);
 Eigen::MatrixXd a_matrix(6,6);
 Eigen::VectorXd fdes(3); //(0.1,0,0);
 Eigen::VectorXd fdes_star;

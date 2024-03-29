@@ -90,14 +90,14 @@ void calculateStep(){  //calculate stuff in each iteration
     j24 = j25 + l1*cos(theta0+q1);
     j23 = j24 + l0*cos(theta0);
 
-    jacobian(1,3) = j13;
-    jacobian(1,4) = j14;
-    jacobian(1,5) = j15;
-    jacobian(1,6) = j16;
-    jacobian(2,3) = j23;
-    jacobian(2,4) = j24;
-    jacobian(2,5) = j25;
-    jacobian(2,6) = j26;
+    jacobian(0,2) = j13;
+    jacobian(0,3) = j14;
+    jacobian(0,4) = j15;
+    jacobian(0,5) = j16;
+    jacobian(1,2) = j23;
+    jacobian(1,3) = j24;
+    jacobian(1,4) = j25;
+    jacobian(1,5) = j26;
 
     j16dot = -l3*cos(theta0+q1+q2+q3)*(theta0dot+q1dot+q2dot+q3dot);
     j15dot = j16dot - l2*cos(theta0+q1+q2)*(theta0dot+q1dot+q2dot);
@@ -109,14 +109,14 @@ void calculateStep(){  //calculate stuff in each iteration
     j24dot = j25dot - l1*sin(theta0+q1)*(theta0dot+q1dot);
     j23dot = j24dot - l0*sin(theta0)*theta0dot;
     
-    jacobiandot(1,3) = j13dot;
-    jacobiandot(1,4) = j14dot;
-    jacobiandot(1,5) = j15dot;
-    jacobiandot(1,6) = j16dot;
-    jacobiandot(2,3) = j23dot;
-    jacobiandot(2,4) = j24dot;
-    jacobiandot(2,5) = j25dot;
-    jacobiandot(2,6) = j26dot;
+    jacobiandot(0,2) = j13dot;
+    jacobiandot(0,3) = j14dot;
+    jacobiandot(0,4) = j15dot;
+    jacobiandot(0,5) = j16dot;
+    jacobiandot(1,2) = j23dot;
+    jacobiandot(1,3) = j24dot;
+    jacobiandot(1,4) = j25dot;
+    jacobiandot(1,5) = j26dot;
 
     z(0) = xc0;
     z(1) = yc0;
