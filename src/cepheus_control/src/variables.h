@@ -76,7 +76,7 @@ double r2,m2,l2;
 double r3,m3,l3;
 double M;
 double mt;
-double mb;
+double r0x,r0y;
 //double a,b,c,d; not needed
 double ibzz;
 double i1zz, i2zz, i3zz, itzz;
@@ -124,7 +124,7 @@ Eigen::VectorXd a_theta(6);
 Eigen::VectorXd b1_x(6);
 Eigen::VectorXd b1_y(6);
 Eigen::VectorXd b1_theta(6);
-Eigen::MatrixXd a_matrix(6,6);
+Eigen::MatrixXd a_matrix = Eigen::MatrixXd::Identity(6,6);
 Eigen::VectorXd fdes(3); //(0.1,0,0);
 Eigen::VectorXd fdes_star(3);
 Eigen::MatrixXd ke_star(3,3);
@@ -155,6 +155,23 @@ double wn_free = 6/ts_free;
 double z_contact = z_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
 double wn_contact = wn_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
 double thetaE_in=30*(M_PI/180);
+
+double v;
+double x_target_in = 10, y_target_in = 2.5, theta_target_in = 0;
+double xE_in = 6, yE_in = 7;
+///////initial sinthikes///////////////
+double sin_x = 0, sdotin_x = 0, sdotdotin_x = 0;
+double sin_y = 0, sdotin_y = 0, sdotdotin_y = 0;
+double sin_theta = 0, sdotin_theta = 0, sdotdotin_theta = 0;
+///////telikes sinthikes/////////////
+double xE_contact = x_target_in - l0;
+double yE_contact = y_target_in;
+double thetaE_contact = theta_target_in;
+double sfin_x = 1, sdotfin_x = v/(xE_contact-xE_in), sdotdotfin_x = 0;
+double sfin_y = 1, sdotfin_y = 0, sdotdotfin_y = 0;
+double sfin_theta = 1, sdotfin_theta = 0, sdotdotfin_theta = 0;
+
+
 
 
 

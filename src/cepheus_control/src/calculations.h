@@ -24,17 +24,36 @@ void inverseKinematics(){
 */
 
 void initialiseParameters(){//initialise constant parameters
-    m0 = 54; //physical parameters from alex paper
-    r0 = 0.16;
-    l1 = 0.26931;
-    r1 = 0.100069;
-    m1 = 0.2314;
-    l2 = 0.143;
-    r2 = 0.143;
-    m2 = 0.08797;
-    l3 = 0.17732;
-    r3 = 0.09768;
-    m3 = 6;
+    // m0 = 54; //physical parameters from alex paper
+    // r0 = 0.16;
+    // l1 = 0.26931;
+    // r1 = 0.100069;
+    // m1 = 0.2314;
+    // l2 = 0.143;
+    // r2 = 0.143;
+    // m2 = 0.08797;
+    // l3 = 0.17732;
+    // r3 = 0.09768;
+    // m3 = 6;
+    m0 = 400; //apo pinaka 5.1 impedance thesis
+    r0x = 1;
+    r0y = 1;
+    r0 = 1;
+    m1 = 50;
+    r1 = 1;
+    l1 = 1;
+    m2 = 50;
+    r2 = 1;
+    l2 = 1;
+    m3 = 50;
+    r3 = 0.5;
+    l3 = 0.5;
+    mt = 100;
+    ibzz=(1/2)*m0*(r0x*r0x+r0y*r0y);
+    i1zz=(1/12)*m1*pow((l1+r1),2);
+    i2zz=(1/12)*m2*pow((l2+r2),2);
+    i3zz=(1/12)*m3*pow((l3+r3),2);
+    itzz = 0.67; //itzz=(1/6)*mt*(lt^2);
 
     M = m0 + m1 + m2 + m3;
     // a = r0*m0/M;
@@ -73,6 +92,34 @@ void initialiseParameters(){//initialise constant parameters
     je << 0, 0, 0, 0, 0, 0,
           0, 0, 0, 0, 0, 0,
           0, 0, 0, 0, 0, 0;
+    
+    ke_star << 10000, 0, 0,
+                0, 10000, 0,
+                0, 0, 10000;
+    
+    kd_e << 100, 0, 0,
+            0, 100, 0,
+            0, 0, 100;
+
+    kd_b << 100, 0, 0,
+            0, 100, 0,
+            0, 0, 100;
+
+    md_e << kd_e(0,0)/(wn_free*wn_free), 0, 0,
+            0, kd_e(1,1)/(wn_free*wn_free), 0,
+            0, 0, kd_e(2,2)/(wn_free*wn_free);
+    
+    bd_e = 2*z_free*wn_free*md_e;
+
+    v =  (fdes(0)*z_contact)/(md_e(0,0)*wn_contact); 
+
+
+
+    
+
+    b1_x << sin_x, sdotin_x, sdotdotin_x, sfin_x, sdotfin_x, sdotdotfin_x;
+    b1_y <<sin_y, sdotin_y, sdotdotin_y, sfin_y, sdotfin_y, sdotdotfin_y;
+    b1_theta << sin_theta, sdotin_theta, sdotdotin_theta, sfin_theta, sdotfin_theta, sdotdotfin_theta;
 
         
 
@@ -181,7 +228,7 @@ void calculateStep(){  //calculate stuff in each iteration
     c(4) = c51;
     c(5) = c61;
 
-    h11 = m1 + m2 + m3 + mb;
+    h11 = m1 + m2 + m3 + m0;
     h12 = 0;
     h13 = (-1) * (m1 + m2 + m3) * r0 * sin(theta0) + (-1) * (l1 * (m1 + m2 + m3) + (m2 + m3) * r1) * sin(q1 + theta0) + (-1) * (l2 * (m2 + m3) + m3 * r2) * sin(q1 + q2 + theta0) + (-1) * l3 * m3 * sin(q1 + q2 + q3 + theta0);
     h14 = (-1)*(l1*(m1+m2+m3)+(m2+m3)*r1)*sin(q1+theta0)+(-1)*(l2*(m2+m3)+m3*r2)*sin(q1+q2+theta0)+(-1)*l3*m3*sin(q1+q2+q3+theta0);
@@ -189,7 +236,7 @@ void calculateStep(){  //calculate stuff in each iteration
     h16 = (-1) * l3 * m3 * sin(q1 + q2 + q3 + theta0); 
     ///////////////
     h21 = 0;
-    h22 = m1 + m2 + m3 + mb;
+    h22 = m1 + m2 + m3 + m0;
     h23 = (m1 + m2 + m3) * r0 * cos(theta0) + (l1 * (m1 + m2 + m3) + (m2 + m3) * r1) * cos(q1 + theta0) + (l2 * (m2 + m3) + m3 * r2) * cos(q1 + q2 + theta0) + l3 * m3 * cos(q1 + q2 + q3 + theta0); 
     h24 = (l1 * (m1 + m2 + m3) + (m2 + m3) * r1) * cos(q1 + theta0) + (l2 * (m2 + m3) + m3 * r2) * cos(q1 + q2 + theta0) + l3 * m3 * cos(q1 + q2 + q3 + theta0);
     h25 = (l2 * (m2 + m3) + m3 * r2) * cos(q1 + q2 + theta0) + l3 * m3 * cos(q1 + q2 + q3 + theta0);
@@ -267,16 +314,17 @@ void calculateStep(){  //calculate stuff in each iteration
     h(5,5) = h66;
 
     w = jacobian*h.inverse()*jacobian.transpose();
-    md_b << kd_b(0,0)/pow(wn_free,2), 0, 0,
-            0, kd_b(1,1)/pow(wn_free,2), 0, 
-            0, 0, kd_b(2,2)/pow(wn_free,2);
+    //isos w = jacobian.lu().solve(h) afou einai jacobian/h
+    // md_b << kd_b(0,0)/pow(wn_free,2), 0, 0,
+    //         0, kd_b(1,1)/pow(wn_free,2), 0, 
+    //         0, 0, kd_b(2,2)/pow(wn_free,2);
 
-    bd_e = 2*z_free*wn_free*md_e;
-    bd_b = 2*z_free*wn_free*md_b;
-    bd.topLeftCorner(3,3) = bd_e;
-    bd.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
-    bd.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
-    bd.bottomRightCorner(3,3) = bd_b;
+    
+    // bd_b = 2*z_free*wn_free*md_b;
+    // bd.topLeftCorner(3,3) = bd_e;
+    // bd.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    // bd.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    // bd.bottomRightCorner(3,3) = bd_b;
 
     fdes_star = fdes*fext(0)/(fext(0)+0.01);
 
@@ -296,9 +344,9 @@ void calculateStep(){  //calculate stuff in each iteration
 
     
 
-    fact = (Eigen::MatrixXd::Identity(3, 3) - w.inverse() * md.inverse()) * fext +
+    fact = (Eigen::MatrixXd::Identity(3, 3) - w.inverse() * md_e.inverse()) * fext +
                         w.inverse() * (jacobian * h.inverse()*c - jacobiandot * zdot) +
-                        w.inverse() * md.inverse() * (fdes_star - (bd * edot) - (kd * e)) +
+                        w.inverse() * md_e.inverse() * (fdes_star - (bd_e * edot) - (kd_e * e)) +
                         w.inverse() * rEddotdot; //(H.colPivHouseholderQr().solve(C))) TODO:xddotdot(desired troxia), jacobiandot CHECK,zdot CHECK
 
     //na grapso thn sxesh pou syndeei ta torq[] me fact kai to n
@@ -380,47 +428,63 @@ void JointControlUpdateStep(){
 
 void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c++ stous pinakes
     
-    ke_star << 10000, 0, 0,
-                0, 10000, 0,
-                0, 0, 10000;
-    
-    kd_e << 100, 0, 0,
-            0, 100, 0,
-            0, 0, 100;
 
-    kd_b << 100, 0, 0,
-            0, 100, 0,
-            0, 0, 100;
-
-    md_e << kd_e(0,0)/(wn_free*wn_free), 0, 0,
-            0, kd_e(1,1)/(wn_free*wn_free), 0,
-            0, 0, kd_e(2,2)/(wn_free*wn_free);
     double v =  (fdes(0)*z_contact)/(md_e(0,0)*wn_contact); 
     double x_target_in = 10, y_target_in = 2.5, theta_target_in = 0;
     double xE_in = 6, yE_in = 7;
-    a_matrix << 1, t0, pow(t0,2), pow(t0,3), pow(t0,4), pow(t0,5),
-                0, 1, 2*t0, 3*pow(t0,2), 4*pow(t0,3), 5*pow(t0,4),
-                0, 0, 2, 6*t0, 12*pow(t0,2), 20*pow(t0,3),
-                1, t_free, pow(t_free,2), pow(t_free,3), pow(t_free,4), pow(t_free,5),
-                0, 1, 2*t_free, 3*pow(t_free,2), 4*pow(t_free,3), 5*pow(t_free,4),
-                0, 0, 2, 6*t_free, 12*pow(t_free,2), 20*pow(t_free,3) ;
-    ///////initial sinthikes///////////////
-    double sin_x = 0, sdotin_x = 0, sdotdotin_x = 0;
-    double sin_y = 0, sdotin_y = 0, sdotdotin_y = 0;
-    double sin_theta = 0, sdotin_theta = 0, sdotdotin_theta = 0;
-    ///////telikes sinthikes/////////////
-    double xE_contact = x_target_in - l0;
-    double yE_contact = y_target_in;
-    double thetaE_contact = theta_target_in;
-    double sfin_x = 1, sdotfin_x = v/(xE_contact-xE_in), sdotdotfin_x = 0;
-    double sfin_y = 1, sdotfin_y = 0, sdotdotfin_y = 0;
-    double sfin_theta = 1, sdotfin_theta = 0, sdotdotfin_theta = 0;
+    // a_matrix << 1, t0, pow(t0,2), pow(t0,3), pow(t0,4), pow(t0,5),
+    //             0, 1, 2*t0, 3*pow(t0,2), 4*pow(t0,3), 5*pow(t0,4),
+    //             0, 0, 2, 6*t0, 12*pow(t0,2), 20*pow(t0,3),
+    //             1, t_free, pow(t_free,2), pow(t_free,3), pow(t_free,4), pow(t_free,5),
+    //             0, 1, 2*t_free, 3*pow(t_free,2), 4*pow(t_free,3), 5*pow(t_free,4),
+    //             0, 0, 2, 6*t_free, 12*pow(t_free,2), 20*pow(t_free,3) ;
+
+    a_matrix(0,0) = 1;
+    a_matrix(0,1) = t0;
+    a_matrix(0,2) = pow(t0,2);
+    a_matrix(0,3) = pow(t0,3);
+    a_matrix(0,4) = pow(t0,4);
+    a_matrix(0,5) = pow(t0,5);
+    ///////
+    a_matrix(1,0) = 0;
+    a_matrix(1,1) = 1;
+    a_matrix(1,2) = 2*t0;
+    a_matrix(1,3) = 3*pow(t0,2);
+    a_matrix(1,4) = 4*pow(t0,3);
+    a_matrix(1,5) = 5*pow(t0,4);
+    ///////
+    a_matrix(2,0) = 0;
+    a_matrix(2,1) = 0;
+    a_matrix(2,2) = 2;
+    a_matrix(2,3) = 6*t0;
+    a_matrix(2,4) = 12*pow(t0,2);
+    a_matrix(2,5) = 20*pow(t0,3);
+    //////
+    a_matrix(3,0) = 1;
+    a_matrix(3,1) = t_free;
+    a_matrix(3,2) = pow(t_free,2);
+    a_matrix(3,3) = pow(t_free,3);
+    a_matrix(3,4) = pow(t_free,4);
+    a_matrix(3,5) = pow(t_free,5);
+    //////
+    a_matrix(4,0) = 0;
+    a_matrix(4,1) = 1;
+    a_matrix(4,2) = 2*t_free;
+    a_matrix(4,3) = 3*pow(t_free,2);
+    a_matrix(4,4) = 4*pow(t_free,3);
+    a_matrix(4,5) = 5*pow(t_free,4);
+    ////////
+    a_matrix(5,0) = 0;
+    a_matrix(5,1) = 0;
+    a_matrix(5,2) = 2;
+    a_matrix(5,3) = 6*t_free;
+    a_matrix(5,4) = 12*pow(t_free,2);
+    a_matrix(5,5) = 20*pow(t_free,3);
+
+
+
 
     
-
-    b1_x << sin_x, sdotin_x, sdotdotin_x, sfin_x, sdotfin_x, sdotdotfin_x;
-    b1_y <<sin_y, sdotin_y, sdotdotin_y, sfin_y, sdotfin_y, sdotdotfin_y;
-    b1_theta << sin_theta, sdotin_theta, sdotdotin_theta, sfin_theta, sdotfin_theta, sdotdotfin_theta;
 
     //kanonika edo thelei ena if t<=t_free (??)
     if(t<=t_free){
