@@ -118,7 +118,52 @@
 	</joint>
 	den ksero ti kanoun akomh, nikiforos -->
 	<!-- extra links addition END -->
-	<link name="cepheus">
+	<link name="world">
+		<inertial>
+			<origin
+				xyz="0.00 0.0 0.0"
+				rpy="0 0 0" />
+			<mass value="10000" />
+			<inertia
+				ixx="0"
+				ixy="0"
+				ixz="0"
+				iyy="0"
+				iyz="0"
+				izz="1000" />
+		</inertial>
+		<visual>
+			<material name="LightGrey"/>
+			<geometry>
+				<box size="1000 1000 0.001"/>
+			</geometry>
+		</visual>
+		<collision>
+			<origin
+				xyz="0 0 0"
+				rpy="0 0 0" />
+			<geometry>
+				<box size="1000 1000 0.001"/>
+			</geometry>
+		</collision>
+	</link>
+	<joint name="thrusterx_joint" type="prismatic">
+		<parent link="world"/>
+		<child link="cepheus_base"/>
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<axis xyz="1 0 0"/>
+		<limit lower="-100.0" upper="100.0" effort="10.0" velocity="1.0"/>
+		<dynamics damping="1.0" friction="1.0"/>
+	</joint>
+	<!-- <joint name="thrustery_joint" type="prismatic">
+		<parent link="world"/>
+		<child link="cepheus_base"/>
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<axis xyz="0 1 0"/>
+		<limit lower="-100.0" upper="100.0" effort="10.0" velocity="1.0"/>
+		<dynamics damping="1.0" friction="1.0"/>
+	</joint> -->
+	<link name="cepheus_base">
 		<inertial>
 			<origin
 				xyz="0.0024 0.02937 0.15711"
@@ -150,8 +195,30 @@
 			</geometry>
 		</collision>
 	</link>
+	<transmission name="tran0x">
+		<type>
+			transmission_interface/SimpleTransmission</type>
+		<joint name="thrusterx_joint">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor0x">
+			<hardwareInterface>EffortJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+	<!-- <transmission name="tran0y">
+		<type>
+			transmission_interface/SimpleTransmission</type>
+		<joint name="thrustery_joint">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor0y">
+			<hardwareInterface>EffortJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission> -->
 	<joint name="reaction_wheel_joint" type="continuous">
-		<parent link="cepheus"/>
+		<parent link="cepheus_base"/>
 		<child link="reaction_wheel"/>
 		<origin xyz="0.065 0 0.03815" rpy="0 0 0"/>
 		<axis xyz="0 0 1" />
@@ -178,7 +245,7 @@
 				izz="0.00197" />
 		</inertial>
 	</link>
-	<gazebo reference="cepheus">
+	<gazebo reference="cepheus_base">
 		<mu1>0</mu1>
 		<mu2>0</mu2>
 	</gazebo>
@@ -193,11 +260,11 @@
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
-	<joint name="left_shoulder" type="revolute">
+	<joint name="left_shoulder_joint" type="revolute">
 		<origin
 			xyz="0.17271 0.091404 0.05875"
 			rpy="0 0 0" />
-		<parent link="cepheus" />
+		<parent link="cepheus_base" />
 		<child link="left_arm" />
 		<axis xyz="0 0 1" />
 		<limit
@@ -243,7 +310,7 @@
 	</link>
 	<transmission name="tran2">
 		<type>transmission_interface/SimpleTransmission</type>
-		<joint name="left_shoulder">
+		<joint name="left_shoulder_joint">
 			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor2">
@@ -251,7 +318,7 @@
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
-	<joint name="left_elbow" type="revolute">
+	<joint name="left_elbow_joint" type="revolute">
 		<origin
 			xyz="0.1810 0 0"
 			rpy="0 0 0" />
@@ -301,7 +368,7 @@
 	</link>
 	<transmission name="tran3">
 		<type>transmission_interface/SimpleTransmission</type>
-		<joint name="left_elbow">
+		<joint name="left_elbow_joint">
 			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor3">
@@ -309,7 +376,7 @@
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
-	<joint name="left_wrist" type="revolute">
+	<joint name="left_wrist_joint" type="revolute">
 		<origin
 			xyz="0.15965 0.01176 -0.00838"
 			rpy="0 0 0 " />
@@ -360,7 +427,7 @@
 	</link> 
 	<transmission name="tran4">
 		<type>transmission_interface/SimpleTransmission</type>
-		<joint name="left_wrist">
+		<joint name="left_wrist_joint">
 			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor4">
@@ -399,8 +466,8 @@
 		</inertial>
 	</link> -->
 
-	<!-- <gazebo reference="left_wrist">
-		<sensor name="left_wrist_force_torque" type="force_torque">
+	<!-- <gazebo reference="left_wrist_joint">
+		<sensor name="left_wrist_joint_force_torque" type="force_torque">
     	<always_on>true</always_on>
     	<update_rate>20.0</update_rate>
     	<visualize>true</visualize>
@@ -418,12 +485,12 @@
 			<updateRate>10.0</updateRate>
 			<topicName>ft_sensor_topic</topicName>
 			<gaussianNoise>0.0</gaussianNoise>
-			<jointName>left_wrist</jointName>
+			<jointName>left_wrist_joint</jointName>
 			<visualize>true</visualize>
 		</plugin> 
 	</gazebo> -->
 
-	<gazebo reference="left_wrist">
+	<gazebo reference="left_wrist_joint">
 		<disableFixedJointLumping>true</disableFixedJointLumping>
 		<sensor name="my_cool_sensor" type="force_torque">
 			<force_torque>
@@ -436,7 +503,7 @@
 		<plugin name="ft_sensor" filename="libgazebo_ros_ft_sensor.so">
 			<updateRate>0</updateRate>   <!--poly shmantiko na einai 0, allios kanei bug!!!!(nikhforos)-->
 			<topicName>ft_sensor_topic</topicName>
-			<jointName>left_wrist</jointName>
+			<jointName>left_wrist_joint</jointName>
 		</plugin>
 	</gazebo>
 </robot>

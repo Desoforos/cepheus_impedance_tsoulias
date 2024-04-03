@@ -3,23 +3,29 @@
   joint_state_controller:
     type: joint_state_controller/JointStateController
     publish_rate: 50
-  # Position Controllers ---------------------------------------
+  # Effort Controllers ---------------------------------------
+  thrusterx_effort_controller:
+    type: effort_controllers/JointEffortController
+    joint: thrusterx_joint
+    pid: {p: 10.0, i: 0.1, d: 1.0}
+  # thrustery_effort_controller:
+  #   type: effort_controllers/JointEffortController
+  #   joint: thrustery_joint
+  #   pid: {p: 10.0, i: 0.1, d: 1.0}
   left_shoulder_effort_controller:
     type: effort_controllers/JointEffortController
-    joint: left_shoulder
+    joint: left_shoulder_joint
     pid: {p: 10.0, i: 0.1, d: 1.0}
     # pid: {p: 1.0, i: 0.1, d: 1.0}
-  # Position Controllers ---------------------------------------
   left_elbow_effort_controller:
     type: effort_controllers/JointEffortController
-    joint: left_elbow
+    joint: left_elbow_joint
     pid: {p: 10.0, i: 0.1, d: 1.0}
   left_wrist_effort_controller:
     type: effort_controllers/JointEffortController
-    joint: left_wrist
+    joint: left_wrist_joint
     pid: {p: 10.0, i: 0.1, d: 1.0}
     # pid: {p: 1.0, i: 0.1, d: 1.0}
-  # Velocity Controllers ---------------------------------------
   reaction_wheel_effort_controller:
     type: effort_controllers/JointEffortController
     joint: reaction_wheel_joint
