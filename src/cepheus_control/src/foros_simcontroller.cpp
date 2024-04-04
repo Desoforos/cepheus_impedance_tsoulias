@@ -75,12 +75,17 @@ int main(int argc, char **argv) {
     ros::Publisher LS_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_shoulder_effort_controller/command", 1);
     ros::Publisher LE_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_elbow_effort_controller/command", 1);
     ros::Publisher LW_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_wrist_effort_controller/command", 1);
+    ros::Publisher thruster_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/thrusterx_effort_controller/command", 1);
+    ros::Publisher thruster_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/thrustery_effort_controller/command", 1);
 
     /* init messages */ 
     msg_RW.data = 0.0;
     msg_LS.data = 0.0;
     msg_LE.data = 0.0;
     msg_LW.data = 0.0;
+    msg_TX.data = 0.0;
+    msg_TY.data = 0.0;
+
 
     ROS_INFO("[foros_simcontroller]: torques initialized to 0. \n");
     
@@ -142,11 +147,15 @@ int main(int argc, char **argv) {
             //ImpedanceControlUpdateStep();
 
             /*UPDATE THE ROS MESSAGES*/
+            msg_TX.data = qact(0);
+            msg_TY.data = qact(1);
             msg_RW.data = qact(2);
 			msg_LS.data = qact(3);
 			msg_LE.data = qact(4);
 			msg_LW.data = qact(5);
 
+            thruster_x_pub.publish(msg_TX);
+            thruster_y_pub.publish(msg_TY);
             RW_torque_pub.publish(msg_RW);
             LS_torque_pub.publish(msg_LS);
             LE_torque_pub.publish(msg_LE);

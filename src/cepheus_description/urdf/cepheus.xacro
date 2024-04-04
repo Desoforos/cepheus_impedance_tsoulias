@@ -21,8 +21,9 @@
 		<child link="cepheus"/>
 		<dynamics damping="0" friction="0"/>
 	</joint> -->
-	<!--
-	<joint name="p1_joint" type="prismatic">
+	<link name = "world"/>
+
+	<joint name="thrusterx_joint" type="prismatic">
 		<parent link="world"/>
 		<child link="p1"/>
 		<axis xyz="1 0 0"/>
@@ -50,7 +51,7 @@
 	</gazebo>
 	<transmission name="lin1">
 		<type>transmission_interface/SimpleTransmission</type>
-		<joint name="p1_joint">
+		<joint name="thrusterx_joint">
 			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="lin_motor1">
@@ -58,9 +59,9 @@
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
-	<joint name="p2_joint" type="prismatic">
+	<joint name="thrustery_joint" type="prismatic">
 		<parent link="p1"/>
-		<child link="p2"/>
+		<child link="cepheus_base"/>
 		<axis xyz="0 1 0"/>
 		<limit
 			lower="-100"
@@ -71,7 +72,7 @@
 			damping="0"
 			friction="0"/>
 	</joint>
-	<link name="p2">
+	<!-- <link name="p2">
 		<inertial>
 			<origin
 				xyz="0.0 0.0 0.0"
@@ -99,10 +100,10 @@
 	<gazebo reference="p2">
 		<mu1>0</mu1>
 		<mu2>0</mu2>
-	</gazebo>
+	</gazebo> -->
 	<transmission name="lin2">
 		<type>transmission_interface/SimpleTransmission</type>
-		<joint name="p2_joint">
+		<joint name="thrustery_joint">
 			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="lin_motor2">
@@ -110,15 +111,18 @@
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
-	<joint name="r_joint" type="continuous">
+	<!-- <joint name="p2_to_base" type="fixed">
+		<parent link ="p2"/>
+		<child link="cepheus_base"/>
+	</joint> -->
+	<!-- <joint name="r_joint" type="continuous">
 		<axis xyz="0 0 1"/>
 		<parent link="p2"/>
 		<origin rpy="0 0 0" xyz="0 0 0"/>
 		<child link="cepheus"/>
-	</joint>
-	den ksero ti kanoun akomh, nikiforos -->
+	</joint> -->
 	<!-- extra links addition END -->
-	<link name="world">
+	<!-- <link name="world">
 		<inertial>
 			<origin
 				xyz="0.00 0.0 0.0"
@@ -146,19 +150,48 @@
 				<box size="1000 1000 0.001"/>
 			</geometry>
 		</collision>
-	</link>
-	<joint name="thrusterx_joint" type="prismatic">
+	</link> -->
+	<!-- <joint name="thrusterx_joint" type="prismatic">
 		<parent link="world"/>
-		<child link="cepheus_base"/>
-		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<child link="dummy_link"/>
+		<origin xyz="0 0 0"/>
 		<axis xyz="1 0 0"/>
 		<limit lower="-100.0" upper="100.0" effort="10.0" velocity="1.0"/>
-		<dynamics damping="1.0" friction="1.0"/>
+		<dynamics damping="1.0" />
 	</joint>
-	<!-- <joint name="thrustery_joint" type="prismatic">
-		<parent link="world"/>
+		<link name="dummy_link">
+		<inertial>
+			<origin
+				xyz="0.0 0.0 0.0"
+				rpy="0 0 0" />
+			<mass value="1" />
+			<inertia
+				ixx="0"
+				ixy="0"
+				ixz="0"
+				iyy="0"
+				iyz="0"
+				izz="0.001" />
+		</inertial>
+		<visual>
+			<material name="LightGrey"/>
+			<geometry>
+				<box size="0.001 0.001 0.001"/>
+			</geometry>
+		</visual>
+		<collision>
+			<origin
+				xyz="0 0 0"
+				rpy="0 0 0" />
+			<geometry>
+				<box size="0.001 0.001 0.001"/>
+			</geometry>
+		</collision>
+	</link>
+	<joint name="thrustery_joint" type="prismatic">
+		<parent link="dummy_link"/>
 		<child link="cepheus_base"/>
-		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<origin xyz="0 0 0"/>
 		<axis xyz="0 1 0"/>
 		<limit lower="-100.0" upper="100.0" effort="10.0" velocity="1.0"/>
 		<dynamics damping="1.0" friction="1.0"/>
@@ -195,7 +228,7 @@
 			</geometry>
 		</collision>
 	</link>
-	<transmission name="tran0x">
+	<!-- <transmission name="tran0x">
 		<type>
 			transmission_interface/SimpleTransmission</type>
 		<joint name="thrusterx_joint">
@@ -206,7 +239,7 @@
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
-	<!-- <transmission name="tran0y">
+	<transmission name="tran0y">
 		<type>
 			transmission_interface/SimpleTransmission</type>
 		<joint name="thrustery_joint">

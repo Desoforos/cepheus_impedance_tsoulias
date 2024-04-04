@@ -8,6 +8,9 @@
 	<gazebo reference="world">
 		<material>Gazebo/White</material>
 	</gazebo>
+	<gazebo reference="dummy_link">
+		<material>Gazebo/White</material>
+	</gazebo>
 	<gazebo reference="cepheus_base">
 		<material>Gazebo/White</material>
 	</gazebo>

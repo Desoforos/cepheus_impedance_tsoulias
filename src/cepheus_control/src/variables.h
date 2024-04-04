@@ -60,6 +60,8 @@ std_msgs::Float64 msg_RW; //reaction wheel
 std_msgs::Float64 msg_LS; //left shoulder
 std_msgs::Float64 msg_LE; //left elbow
 std_msgs::Float64 msg_LW; //left wrist
+std_msgs::Float64 msg_TX; //thruster_x
+std_msgs::Float64 msg_TY; //thruster_y
 
 
 
