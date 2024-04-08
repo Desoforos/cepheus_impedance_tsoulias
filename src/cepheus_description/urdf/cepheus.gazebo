@@ -5,12 +5,12 @@
 			<robotNamespace>/cepheus</robotNamespace>
 		</plugin>
 	</gazebo>
-	<gazebo reference="world">
+	<!-- <gazebo reference="world">
 		<material>Gazebo/White</material>
-	</gazebo>
-	<gazebo reference="dummy_link">
+	</gazebo> -->
+	<!-- <gazebo reference="dummy_link">
 		<material>Gazebo/White</material>
-	</gazebo>
+	</gazebo> -->
 	<gazebo reference="cepheus_base">
 		<material>Gazebo/White</material>
 	</gazebo>

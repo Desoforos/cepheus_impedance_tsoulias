@@ -4,14 +4,14 @@
     type: joint_state_controller/JointStateController
     publish_rate: 50
   # Effort Controllers ---------------------------------------
-  thrusterx_effort_controller:
-    type: effort_controllers/JointEffortController
-    joint: thrusterx_joint
-    pid: {p: 10.0, i: 0.1, d: 1.0}
-  thrustery_effort_controller:
-    type: effort_controllers/JointEffortController
-    joint: thrustery_joint
-    pid: {p: 10.0, i: 0.1, d: 1.0}
+  # thrusterx_effort_controller:
+  #   type: effort_controllers/JointEffortController
+  #   joint: thrusterx_joint
+  #   pid: {p: 10.0, i: 0.1, d: 1.0}
+  # thrustery_effort_controller:
+  #   type: effort_controllers/JointEffortController
+  #   joint: thrustery_joint
+  #   pid: {p: 10.0, i: 0.1, d: 1.0}
   left_shoulder_effort_controller:
     type: effort_controllers/JointEffortController
     joint: left_shoulder_joint

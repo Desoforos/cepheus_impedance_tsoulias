@@ -329,10 +329,10 @@ void calculateStep(){  //calculate stuff in each iteration
     fdes_star = fdes*fext(0)/(fext(0)+0.01);
 
 
-    md.topLeftCorner(3,3) = md_e;
-    md.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
-    md.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
-    md.bottomRightCorner(3,3) = md_b;
+    // md.topLeftCorner(3,3) = md_e;
+    // md.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    // md.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    // md.bottomRightCorner(3,3) = md_b;
 
     rEddotdot(0) = xEddotdot;
     rEddotdot(1) = yEddotdot;
@@ -395,9 +395,9 @@ void calculateStep(){  //calculate stuff in each iteration
 
     qact = je.transpose()*fact;
 
-    torq[0] = qact(3); //torque of q1
-    torq[1] = qact(4); // of q2
-    torq[2] = qact(5); // of q3
+    // torq[0] = qact(3); //torque of q1
+    // torq[1] = qact(4); // of q2
+    // torq[2] = qact(5); // of q3
      
 }
 
