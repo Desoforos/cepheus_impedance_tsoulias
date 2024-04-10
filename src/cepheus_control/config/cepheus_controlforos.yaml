@@ -12,6 +12,10 @@
   #   type: effort_controllers/JointEffortController
   #   joint: thrustery_joint
   #   pid: {p: 10.0, i: 0.1, d: 1.0}
+  reaction_wheel_effort_controller:
+    type: effort_controllers/JointEffortController
+    joint: reaction_wheel_joint
+    pid: {p: 1, i: 0.1, d: 0.001}
   left_shoulder_effort_controller:
     type: effort_controllers/JointEffortController
     joint: left_shoulder_joint
@@ -26,7 +30,3 @@
     joint: left_wrist_joint
     pid: {p: 10.0, i: 0.1, d: 1.0}
     # pid: {p: 1.0, i: 0.1, d: 1.0}
-  reaction_wheel_effort_controller:
-    type: effort_controllers/JointEffortController
-    joint: reaction_wheel_joint
-    pid: {p: 1.0, i: 0.1, d: 0.001}

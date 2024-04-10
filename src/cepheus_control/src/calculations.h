@@ -35,27 +35,27 @@ void initialiseParameters(){//initialise constant parameters
     // l3 = 0.17732;
     // r3 = 0.09768;
     // m3 = 6;
-    m0 = 400; //apo pinaka 5.1 impedance thesis
+    m0 = 13.3; //apo pinaka 5.1 impedance thesis(not anymore 400), tora apo peleq
     r0x = 1;
     r0y = 1;
     r0 = 1;
-    m1 = 50;
+    m1 = 0.083;
     r1 = 1;
     l1 = 1;
-    m2 = 50;
+    m2 = 0.187;
     r2 = 1;
     l2 = 1;
-    m3 = 50;
+    m3 = 0.03547;
     r3 = 0.5;
     l3 = 0.5;
-    mt = 100;
+    mt = 10; //anti gia 100
     ibzz=(1/2)*m0*(r0x*r0x+r0y*r0y);
     i1zz=(1/12)*m1*pow((l1+r1),2);
     i2zz=(1/12)*m2*pow((l2+r2),2);
     i3zz=(1/12)*m3*pow((l3+r3),2);
-    itzz = 0.67; //itzz=(1/6)*mt*(lt^2);
+    itzz = 0.067; //itzz=(1/6)*mt*(lt^2);
 
-    M = m0 + m1 + m2 + m3;
+    M = m0 + m1 + m2 + m3+1; //1 apo to reaction wheel
     // a = r0*m0/M;
     // b = (l1*m0 + (m0+m1)*r1)/M;
     // c = (l2*(m0 + m1) + (m0 + m1 + m2)*r2)/M;

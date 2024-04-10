@@ -13,18 +13,23 @@
 	</gazebo> -->
 	<gazebo reference="cepheus_base">
 		<material>Gazebo/White</material>
+		<!-- <selfCollide>true</selfCollide> -->
 	</gazebo>
 	<gazebo reference="reaction_wheel">
 		<material>Gazebo/Red</material>
+		<!-- <selfCollide>true</selfCollide> -->
 	</gazebo>
 	<gazebo reference="left_arm">
 		<material>Gazebo/Blue</material>
+		<!-- <selfCollide>true</selfCollide> -->
 	</gazebo>
 	<gazebo reference="left_forearm">
 		<material>Gazebo/Yellow</material>
+		<!-- <selfCollide>true</selfCollide> -->
 	</gazebo>
 	<gazebo reference="left_grip">
 		<material>Gazebo/Grey</material>
+		<!-- <selfCollide>true</selfCollide> -->
 	</gazebo>
 	<!-- <gazebo reference="left_wrist">
 		<provideFeedback>true</provideFeedback>

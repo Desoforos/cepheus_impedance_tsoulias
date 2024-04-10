@@ -4,42 +4,42 @@
 /////////////// CALLBACK FUNCTIONS DEFINITION START////////////////////////
 
 void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update the current position of ee and ring
-    ee_x = msg->pose[4].position.x;
-    ee_y = msg->pose[4].position.y;
-    xt= msg->pose[7].position.x; //ringx
-    yt = msg->pose[7].position.y; //ringy
-	xc0 = msg->pose[1].position.x; //pose of base
-	yc0 = msg->pose[1].position.y;
-	xc0dot = msg->twist[1].linear.x; //velocity of base 
-	yc0dot = msg->twist[1].linear.y;
-	xtdot = msg->twist[7].linear.x;
-	ytdot = msg->twist[7].linear.y;
+    ee_x = msg->pose[6].position.x;//left grip pose[6]
+    ee_y = msg->pose[6].position.y;
+    xt= msg->pose[9].position.x; //ringx
+    yt = msg->pose[9].position.y; //ringy
+	xc0 = msg->pose[3].position.x; //pose of base
+	yc0 = msg->pose[3].position.y;
+	xc0dot = msg->twist[3].linear.x; //velocity of base 
+	yc0dot = msg->twist[3].linear.y;
+	xtdot = msg->twist[9].linear.x;
+	ytdot = msg->twist[9].linear.y;
 	thetatdot = msg->twist[7].angular.z;
 	tf::Quaternion q( //for angle of base
-        msg->pose[1].orientation.x,
-        msg->pose[1].orientation.y,
-        msg->pose[1].orientation.z,
-        msg->pose[1].orientation.w);
+        msg->pose[3].orientation.x,
+        msg->pose[3].orientation.y,
+        msg->pose[3].orientation.z,
+        msg->pose[3].orientation.w);
     tf::Matrix3x3 m(q);
     double roll, pitch, yaw;
     m.getRPY(roll, pitch, yaw);
 	theta0 = yaw; //angle of base
-	theta0dot = msg->twist[1].angular.z; //angledot of base
+	theta0dot = msg->twist[3].angular.z; //angledot of base
 	//////kai gia stoxo
 	tf::Quaternion qring(
-        msg->pose[7].orientation.x,
-        msg->pose[7].orientation.y,
-        msg->pose[7].orientation.z,
-        msg->pose[7].orientation.w);
+        msg->pose[9].orientation.x,
+        msg->pose[9].orientation.y,
+        msg->pose[9].orientation.z,
+        msg->pose[9].orientation.w);
     tf::Matrix3x3 mring(qring);
     double rollring, pitchring, yawring;
     mring.getRPY(rollring, pitchring, yawring);
 	thetat = yawring; //angle of base
-	tf::Quaternion qee( //for angle of base
-        msg->pose[4].orientation.x,
-        msg->pose[4].orientation.y,
-        msg->pose[4].orientation.z,
-        msg->pose[4].orientation.w);
+	tf::Quaternion qee( //for angle of ee
+        msg->pose[6].orientation.x,
+        msg->pose[6].orientation.y,
+        msg->pose[6].orientation.z,
+        msg->pose[6].orientation.w);
     tf::Matrix3x3 m_ee(qee);	
     double rollee, pitchee, yawee;
     m_ee.getRPY(rollee, pitchee, yawee);
@@ -47,9 +47,9 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 	xee(0) = ee_x;
 	xee(1) = ee_y;
 	xee(2) = thetach;
-	xeedot(0) = msg->twist[4].linear.x;
-	xeedot(1) = msg->twist[4].linear.y;
-	xeedot(2) = msg->twist[4].angular.z;
+	xeedot(0) = msg->twist[6].linear.x;
+	xeedot(1) = msg->twist[6].linear.y;
+	xeedot(2) = msg->twist[6].angular.z;
 	if(firstTime){   //initialize the postiion of chaser and target for the first time ONLY
 		xch_in = ee_x;
 		ych_in = ee_y;

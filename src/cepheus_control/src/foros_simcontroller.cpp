@@ -155,7 +155,7 @@ int main(int argc, char **argv) {
 
             /*UPDATE THE ROS MESSAGES*/
             // msg_TX.data = qact(0);
-            // msg_TY.data = qact(1);
+            // msg_TY.data = qact(1); 
             base_wrench.force.x = qact(0);
             base_wrench.force.y = qact(1);
             msg_RW.data = qact(2);
@@ -170,6 +170,18 @@ int main(int argc, char **argv) {
             LS_torque_pub.publish(msg_LS);
             LE_torque_pub.publish(msg_LE);
             LW_torque_pub.publish(msg_LW);
+
+            //clear msgs after publish
+            msg_RW.data = 0.0;
+            msg_LS.data = 0.0;
+            msg_LE.data = 0.0;
+            msg_LW.data = 0.0;
+            base_wrench.force.x = 0.0;
+            base_wrench.force.y = 0.0;
+            base_wrench.force.z = 0.0;
+            base_wrench.torque.x = 0.0;
+            base_wrench.torque.y = 0.0;
+            base_wrench.torque.z = 0.0;
             
 
         }
