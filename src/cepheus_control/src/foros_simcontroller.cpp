@@ -77,7 +77,14 @@ int main(int argc, char **argv) {
     ros::Publisher LW_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_wrist_effort_controller/command", 1);
     // ros::Publisher thruster_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/thrusterx_effort_controller/command", 1); evgala ta dyo prismatic joints ki ebala gazebo plugin
     // ros::Publisher thruster_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/thrustery_effort_controller/command", 1);
-    ros::Publisher base_force_pub = nh.advertise<geometry_msgs::Wrench>("/cepheus/force_base_topic", 1);
+    ros::Publisher base_force_pub = nh.advertise<geometry_msgs::Wrench>("/cepheus/force_base_topic", 10);
+    /*Publisher for debugging purposes*/
+    ros::Publisher error_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_x", 1);
+    ros::Publisher error_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_y", 1);
+    ros::Publisher error_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_theta", 1);
+
+
+
 
     /* init messages */ 
     msg_RW.data = 0.0;
@@ -90,6 +97,9 @@ int main(int argc, char **argv) {
     base_wrench.torque.x = 0.0;
     base_wrench.torque.y = 0.0;
     base_wrench.torque.z = 0.0;
+    msg_ex.data = 0.0;
+    msg_ey.data = 0.0;
+    msg_etheta.data = 0.0;
     // msg_TX.data = 0.0;
     // msg_TY.data = 0.0;
 
@@ -162,6 +172,9 @@ int main(int argc, char **argv) {
 			msg_LS.data = qact(3);
 			msg_LE.data = qact(4);
 			msg_LW.data = qact(5);
+            msg_ex.data = e(0);
+            msg_ey.data = e(1);
+            msg_etheta.data = e(2);
 
             // thruster_x_pub.publish(msg_TX);
             // thruster_y_pub.publish(msg_TY);
@@ -170,18 +183,22 @@ int main(int argc, char **argv) {
             LS_torque_pub.publish(msg_LS);
             LE_torque_pub.publish(msg_LE);
             LW_torque_pub.publish(msg_LW);
+            error_x_pub.publish(msg_ex);
+            error_y_pub.publish(msg_ey);
+            error_theta_pub.publish(msg_etheta);
+
 
             //clear msgs after publish
-            msg_RW.data = 0.0;
-            msg_LS.data = 0.0;
-            msg_LE.data = 0.0;
-            msg_LW.data = 0.0;
-            base_wrench.force.x = 0.0;
-            base_wrench.force.y = 0.0;
-            base_wrench.force.z = 0.0;
-            base_wrench.torque.x = 0.0;
-            base_wrench.torque.y = 0.0;
-            base_wrench.torque.z = 0.0;
+            // msg_RW.data = 0.0;
+            // msg_LS.data = 0.0;
+            // msg_LE.data = 0.0;
+            // msg_LW.data = 0.0;
+            // base_wrench.force.x = 0.0;
+            // base_wrench.force.y = 0.0;
+            // base_wrench.force.z = 0.0;
+            // base_wrench.torque.x = 0.0;
+            // base_wrench.torque.y = 0.0;
+            // base_wrench.torque.z = 0.0;
             
 
         }

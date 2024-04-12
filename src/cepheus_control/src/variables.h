@@ -60,6 +60,9 @@ std_msgs::Float64 msg_RW; //reaction wheel
 std_msgs::Float64 msg_LS; //left shoulder
 std_msgs::Float64 msg_LE; //left elbow
 std_msgs::Float64 msg_LW; //left wrist
+std_msgs::Float64 msg_ex; //errorx
+std_msgs::Float64 msg_ey; //errory
+std_msgs::Float64 msg_etheta; //errortheta
 // std_msgs::Float64 msg_TX; //thruster_x
 // std_msgs::Float64 msg_TY; //thruster_y
 geometry_msgs::Wrench base_wrench; //x,y force of thrusters
