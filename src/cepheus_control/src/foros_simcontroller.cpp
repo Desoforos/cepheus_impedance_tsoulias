@@ -141,9 +141,9 @@ int main(int argc, char **argv) {
     initialiseParameters();
 
     while(ros::ok()){
-        for (int i = 0; i < 3; i++) {
-			prev_torq[i] = torq[i];
-		}
+        // for (int i = 0; i < 3; i++) {
+		// 	prev_torq[i] = torq[i];
+		// }
         //ros::spinOnce(); //once it spins it will read the current rw, le, ls and the callbacks will update the values q1,q2,q3 and the velocities
         //now we update the errors and we recalculate the desired efforts to publish as msg_LE,msg_LS
         if(!start_movement){
@@ -172,7 +172,7 @@ int main(int argc, char **argv) {
 			msg_LS.data = qact(3);
 			msg_LE.data = qact(4);
 			msg_LW.data = qact(5);
-            msg_ex.data = e(0);
+            msg_ex.data = e(0); //for error plotting
             msg_ey.data = e(1);
             msg_etheta.data = e(2);
 
