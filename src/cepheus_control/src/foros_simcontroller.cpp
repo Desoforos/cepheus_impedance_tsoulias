@@ -179,10 +179,10 @@ int main(int argc, char **argv) {
             // thruster_x_pub.publish(msg_TX);
             // thruster_y_pub.publish(msg_TY);
             base_force_pub.publish(base_wrench);
-            RW_torque_pub.publish(msg_RW);
-            LS_torque_pub.publish(msg_LS);
-            LE_torque_pub.publish(msg_LE);
-            LW_torque_pub.publish(msg_LW);
+            // RW_torque_pub.publish(msg_RW);
+            // LS_torque_pub.publish(msg_LS);
+            // LE_torque_pub.publish(msg_LE);
+            // LW_torque_pub.publish(msg_LW);
             error_x_pub.publish(msg_ex);
             error_y_pub.publish(msg_ey);
             error_theta_pub.publish(msg_etheta);

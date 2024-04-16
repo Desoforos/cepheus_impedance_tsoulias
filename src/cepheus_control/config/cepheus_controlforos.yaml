@@ -19,14 +19,14 @@
   left_shoulder_effort_controller:
     type: effort_controllers/JointEffortController
     joint: left_shoulder_joint
-    pid: {p: 10.0, i: 0.1, d: 1.0}
+    pid: {p: 1.0, i: 0.1, d: 1.0}
     # pid: {p: 1.0, i: 0.1, d: 1.0}
   left_elbow_effort_controller:
     type: effort_controllers/JointEffortController
     joint: left_elbow_joint
-    pid: {p: 10.0, i: 0.1, d: 1.0}
+    pid: {p: 1.0, i: 0.1, d: 1.0}
   left_wrist_effort_controller:
     type: effort_controllers/JointEffortController
     joint: left_wrist_joint
-    pid: {p: 10.0, i: 0.1, d: 1.0}
+    pid: {p: 1.0, i: 0.1, d: 1.0}
     # pid: {p: 1.0, i: 0.1, d: 1.0}

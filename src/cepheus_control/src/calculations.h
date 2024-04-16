@@ -49,11 +49,15 @@ void initialiseParameters(){//initialise constant parameters
     r3 = 0.5;
     l3 = 0.085; //0.5;
     mt = 10; //anti gia 100
-    ibzz=(1/2)*m0*(r0x*r0x+r0y*r0y);
-    i1zz=(1/12)*m1*pow((l1+r1),2);
-    i2zz=(1/12)*m2*pow((l2+r2),2);
-    i3zz=(1/12)*m3*pow((l3+r3),2);
-    itzz = 0.067; //itzz=(1/6)*mt*(lt^2);
+    // ibzz=(1/2)*m0*(r0x*r0x+r0y*r0y);
+    // i1zz=(1/12)*m1*pow((l1+r1),2);
+    // i2zz=(1/12)*m2*pow((l2+r2),2);
+    // i3zz=(1/12)*m3*pow((l3+r3),2);
+    // itzz = 0.067; //itzz=(1/6)*mt*(lt^2);
+    ibzz = 0.160875;
+    i1zz = 0.000346;
+    i2zz = 0.000346;
+    i3zz = 0.091927;
 
     M = m0 + m1 + m2 + m3+1; //1 apo to reaction wheel
     // a = r0*m0/M;
@@ -139,14 +143,14 @@ void calculateStep(){  //calculate stuff in each iteration
     j24 = j25 + l1*cos(theta0+q1);
     j23 = j24 + l0*cos(theta0);
 
-    jacobian(0,2) = j13;
-    jacobian(0,3) = j14;
-    jacobian(0,4) = j15;
-    jacobian(0,5) = j16;
-    jacobian(1,2) = j23;
-    jacobian(1,3) = j24;
-    jacobian(1,4) = j25;
-    jacobian(1,5) = j26;
+    // jacobian(0,2) = j13;
+    // jacobian(0,3) = j14;
+    // jacobian(0,4) = j15;
+    // jacobian(0,5) = j16;
+    // jacobian(1,2) = j23;
+    // jacobian(1,3) = j24;
+    // jacobian(1,4) = j25;
+    // jacobian(1,5) = j26;
 
     j16dot = -l3*cos(theta0+q1+q2+q3)*(theta0dot+q1dot+q2dot+q3dot);
     j15dot = j16dot - l2*cos(theta0+q1+q2)*(theta0dot+q1dot+q2dot);
@@ -158,14 +162,56 @@ void calculateStep(){  //calculate stuff in each iteration
     j24dot = j25dot - l1*sin(theta0+q1)*(theta0dot+q1dot);
     j23dot = j24dot - l0*sin(theta0)*theta0dot;
     
-    jacobiandot(0,2) = j13dot;
-    jacobiandot(0,3) = j14dot;
-    jacobiandot(0,4) = j15dot;
-    jacobiandot(0,5) = j16dot;
-    jacobiandot(1,2) = j23dot;
-    jacobiandot(1,3) = j24dot;
-    jacobiandot(1,4) = j25dot;
-    jacobiandot(1,5) = j26dot;
+    // jacobiandot(0,2) = j13dot;
+    // jacobiandot(0,3) = j14dot;
+    // jacobiandot(0,4) = j15dot;
+    // jacobiandot(0,5) = j16dot;
+    // jacobiandot(1,2) = j23dot;
+    // jacobiandot(1,3) = j24dot;
+    // jacobiandot(1,4) = j25dot;
+    // jacobiandot(1,5) = j26dot;
+
+    /*dokimi, vazo je kai jedot tou kosta*/
+    jacobian(0,0) = 1;
+    jacobian(0,1) = 0;
+    jacobian(0,2) = (-1)*r0*sin(theta0)+(-1)*(l1+r1)*sin(q1+theta0)+(-1)*(l2+r2) *sin(q1+q2+theta0)+(-1)*(l3+r3)*sin(q1+q2+q3+theta0);
+    jacobian(0,3) = ((-1)*l1+(-1)*r1)*sin(q1+theta0)+(-1)*(l2+r2)*sin(q1+q2+theta0)+(-1)*(l3+r3)*sin(q1+q2+q3+theta0);
+    jacobian(0,4) = ((-1)*l2+(-1)*r2)*sin(q1+q2+theta0)+(-1)*(l3+r3)*sin(q1+q2+q3+theta0);
+    jacobian(0,5) = ((-1)*l3+(-1)*r3)*sin(q1+q2+q3+theta0);
+    jacobian(1,0) = 0;
+    jacobian(1,1) = 1;
+    jacobian(1,2) = r0*cos(theta0)+(l1+r1)*cos(q1+theta0)+(l2+r2)*cos(q1+q2+theta0)+(l3+r3)*cos(q1+q2+q3+theta0);
+    jacobian(1,3) = (l1+r1)*cos(q1+theta0)+(l2+r2)*cos(q1+q2+theta0)+(l3+r3)*cos(q1+q2+q3+theta0);
+    jacobian(1,4) = (l2+r2)*cos(q1+q2+theta0)+(l3+r3)*cos(q1+q2+q3+theta0);
+    jacobian(1,5) = (l3+r3)*cos(q1+q2+q3+theta0);
+    jacobian(2,0) = 0;
+    jacobian(2,1) = 0;
+    jacobian(2,2) = 1;
+    jacobian(2,3) = 1;
+    jacobian(2,4) = 1;
+    jacobian(2,5) = 1;
+
+
+    jacobiandot(0,0) = 0;
+    jacobiandot(0,1) = 0;
+    jacobiandot(0,2) = (-1)*r0*theta0dot*cos(theta0)+(-1)*(l1+r1)*(q1dot+theta0dot)*cos(q1+theta0)+(-1)*(l2+r2)*(q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)+(-1)*(l3+r3)*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0);
+    jacobiandot(0,3) = (-1)*(l1+r1)*(q1dot+theta0dot)*cos(q1+theta0)+(-1)*(l2+r2)*(q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)+(-1)*(l3+r3)*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0);
+    jacobiandot(0,4) = (-1)*(l2+r2)*(q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)+(-1)*(l3+r3)*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0);
+    jacobiandot(0,5) = (-1)*(l3+r3)*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0);
+    jacobiandot(1,0) = 0;
+    jacobiandot(1,1) = 0;
+    jacobiandot(1,2) = (-1)*r0*theta0dot*sin(theta0)+(-1)*(l1+r1)*(q1dot+theta0dot)*sin(q1+theta0)+(-1)*(l2+r2)*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0)+(-1)*(l3+r3)*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0);
+    jacobiandot(1,3) = (-1)*(l1+r1)*(q1dot+theta0dot)*sin(q1+theta0)+(-1)*(l2+r2)*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0)+(-1)*(l3+r3)*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0);
+    jacobiandot(1,4) = (-1)*(l2+r2)*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0)+(-1)*(l3+r3)*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0);
+    jacobiandot(1,5) = (-1)*(l3+r3)*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0);
+    jacobiandot(2,0) = 0;
+    jacobiandot(2,1) = 0;
+    jacobiandot(2,2) = 0;
+    jacobiandot(2,3) = 0;
+    jacobiandot(2,4) = 0;
+    jacobiandot(2,5) = 0;
+
+    
 
     z(0) = xc0;
     z(1) = yc0;
@@ -342,6 +388,8 @@ void calculateStep(){  //calculate stuff in each iteration
 
     e = xee - xd;
     edot = xeedot - xddot; 
+
+    e(0) = xee(0) - xd(0);//NA TO SYNEXISO
 
 
     

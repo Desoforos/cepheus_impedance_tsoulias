@@ -112,7 +112,7 @@
 				ixz="0"
 				iyy="0"
 				iyz="0"
-				izz="0.160875" />
+				izz="0.160875" /> <!-- 13.3 -->
 		</inertial>
 		<visual>
 			<origin
@@ -203,7 +203,7 @@
 				ixz="0"
 				iyy="0"
 				iyz="0"
-				izz="0.000346" />
+				izz="0.000346" /> <!--0.0083 -->
 		</inertial>
 		<visual>
 			<origin
@@ -261,7 +261,7 @@
 				ixz="0"
 				iyy="0"
 				iyz="0"
-				izz="0.000346" />
+				izz="0.000346" /> <!--0.0199 -->
 		</inertial>
 		<visual>
 			<origin
@@ -319,7 +319,7 @@
 				ixz="0"
 				iyy="0"
 				iyz="0"
-				izz="0.0919273463968869" />
+				izz="0.091927" /> <!--0.00101 "-->
 		</inertial>
 		<visual>
 			<origin
