@@ -111,6 +111,8 @@ void initialiseParameters(){//initialise constant parameters
     
     bd_e = 2*z_free*wn_free*md_e;
 
+    fdes << 0.1, 0, 0;
+
     v =  (fdes(0)*z_contact)/(md_e(0,0)*wn_contact); 
 
 
@@ -193,22 +195,22 @@ void calculateStep(){  //calculate stuff in each iteration
     
     c31 = -q1dot * r0 * (l1 * (m1 + m2 + m3) + (m2 + m3) * r1) * (q1dot + 2 * theta0dot) * sin(q1)
             + l3 * m3 * cos(q3) * (- (q1dot + q2dot + q3dot) * r0 * (q1dot + q2dot + q3dot + 2 * theta0dot) * cos(q2) * sin(q1)
-                                    - ((q2dot + q3dot) * (l1 + r1) * (2 * q1dot + q2dot + q3dot + 2 * theta0dot)
-                                       + (q1dot + q2dot + q3dot) * r0 * (q1dot + q2dot + q3dot + 2 * theta0dot) * cos(q1)) * sin(q2))
+            - ((q2dot + q3dot) * (l1 + r1) * (2 * q1dot + q2dot + q3dot + 2 * theta0dot)
+            + (q1dot + q2dot + q3dot) * r0 * (q1dot + q2dot + q3dot + 2 * theta0dot) * cos(q1)) * sin(q2))
             + (l2 * (m2 + m3) + m3 * r2) * ( - q2dot * (l1 + r1) * (2 * q1dot + q2dot + 2 * theta0dot) * sin(q2)
-                                              - (q1dot + q2dot) * r0 * (q1dot + q2dot + 2 * theta0dot) * sin(q1 + q2))
+            - (q1dot + q2dot) * r0 * (q1dot + q2dot + 2 * theta0dot) * sin(q1 + q2))
             - l3 * m3 * (q3dot * (l2 + r2) * (2 * q1dot + 2 * q2dot + q3dot + 2 * theta0dot)
-                          + (q2dot + q3dot) * (l1 + r1) * (2 * q1dot + q2dot + q3dot + 2 * theta0dot) * cos(q2)
-                          + (q1dot + q2dot + q3dot) * r0 * (q1dot + q2dot + q3dot + 2 * theta0dot) * cos(q1 + q2)) * sin(q3);
+            + (q2dot + q3dot) * (l1 + r1) * (2 * q1dot + q2dot + q3dot + 2 * theta0dot) * cos(q2)
+            + (q1dot + q2dot + q3dot) * r0 * (q1dot + q2dot + q3dot + 2 * theta0dot) * cos(q1 + q2)) * sin(q3);
     
     c41 = r0 * theta0dot * theta0dot * (l1 * (m1 + m2 + m3) + (m2 + m3) * r1 + l3 * m3 * cos(q2) * cos(q3)) * sin(q1)
             - l3 * m3 * ((q2dot + q3dot) * (l1 + r1) * (2 * q1dot + q2dot + q3dot + 2 * theta0dot)
-                          - r0 * theta0dot * theta0dot * cos(q1)) * cos(q3) * sin(q2)
+            - r0 * theta0dot * theta0dot * cos(q1)) * cos(q3) * sin(q2)
             + (l2 * (m2 + m3) + m3 * r2) * ( - q2dot * (l1 + r1) * (2 * q1dot + q2dot + 2 * theta0dot) * sin(q2)
-                                              + r0 * theta0dot * theta0dot * sin(q1 + q2))
+            + r0 * theta0dot * theta0dot * sin(q1 + q2))
             - l3 * m3 * (q3dot * (l2 + r2) * (2 * q1dot + 2 * q2dot + q3dot + 2 * theta0dot)
-                          + (q2dot + q3dot) * (l1 + r1) * (2 * q1dot + q2dot + q3dot + 2 * theta0dot) * cos(q2)
-                          - r0 * theta0dot * theta0dot * cos(q1 + q2)) * sin(q3);
+            + (q2dot + q3dot) * (l1 + r1) * (2 * q1dot + q2dot + q3dot + 2 * theta0dot) * cos(q2)
+            - r0 * theta0dot * theta0dot * cos(q1 + q2)) * sin(q3);
     
     c51 = (l2 * (m2 + m3) + m3 * r2 + l3 * m3 * cos(q3)) 
             * ((l1 + r1) * (q1dot + theta0dot) * (q1dot + theta0dot) * sin(q2) 
