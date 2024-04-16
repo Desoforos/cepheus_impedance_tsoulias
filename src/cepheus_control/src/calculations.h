@@ -35,6 +35,7 @@ void initialiseParameters(){//initialise constant parameters
     // l3 = 0.17732;
     // r3 = 0.09768;
     // m3 = 6;
+    l0 = 0.2;
     m0 = 13.3; // OXIapo pinaka 5.1 impedance thesis(not anymore 400), tora apo peleq
     r0x = 1;
     r0y = 1;
@@ -70,6 +71,8 @@ void initialiseParameters(){//initialise constant parameters
     xdc << 0, 0, 0;
     xee << 0, 0, 0;
     xeedot << 0, 0, 0;
+    e << 0, 0, 0;
+    edot << 0, 0, 0;
 
     fext    << 0, 0, 0;
     z       << 0, 0, 0, 0, 0, 0; //xc0,yx0,theta0,q1,q2,q3
@@ -386,10 +389,16 @@ void calculateStep(){  //calculate stuff in each iteration
     rEddotdot(1) = yEddotdot;
     rEddotdot(2) = thetaEddotdot;
 
-    e = xee - xd;
-    edot = xeedot - xddot; 
+    // e = xee - xd;
+    // edot = xeedot - xddot; 
 
-    e(0) = xee(0) - xd(0);//NA TO SYNEXISO
+    e(0) = xee(0) - xd(0);
+    e(1) = xee(1) - xd(1);
+    e(2) = xee(2) - xd(2);
+
+    edot(0) = xeedot(0) - xddot(0);
+    edot(1) = xeedot(1) - xddot(1);
+    edot(2) = xeedot(2) - xddot(2);
 
 
     
