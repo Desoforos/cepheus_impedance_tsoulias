@@ -154,7 +154,7 @@ Eigen::VectorXd rEddotdot(3);
 
 
 
-double t0 =0 , t_free =200;
+double t0 =0 , t_free =200; //anti gia 200
 double z_free = 1;
 double ts_free = 0.1*t_free;
 double wn_free = 6/ts_free;
@@ -163,8 +163,8 @@ double wn_contact = wn_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
 double thetaE_in=30*(M_PI/180);
 
 double v;
-double x_target_in = 10, y_target_in = 2.5, theta_target_in = 0;
-double xE_in = 6, yE_in = 7;
+double x_target_in, y_target_in , theta_target_in;
+double xE_in, yE_in;
 ///////initial sinthikes///////////////
 double sin_x = 0, sdotin_x = 0, sdotdotin_x = 0;
 double sin_y = 0, sdotin_y = 0, sdotdotin_y = 0;

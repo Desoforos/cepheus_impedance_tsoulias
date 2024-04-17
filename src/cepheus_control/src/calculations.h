@@ -35,7 +35,7 @@ void initialiseParameters(){//initialise constant parameters
     // l3 = 0.17732;
     // r3 = 0.09768;
     // m3 = 6;
-    l0 = 0.2;
+    l0 = 0.2; 
     m0 = 13.3; // OXIapo pinaka 5.1 impedance thesis(not anymore 400), tora apo peleq
     r0x = 1;
     r0y = 1;
@@ -488,9 +488,7 @@ void JointControlUpdateStep(){
 void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c++ stous pinakes
     
 
-    double v =  (fdes(0)*z_contact)/(md_e(0,0)*wn_contact); 
-    double x_target_in = 10, y_target_in = 2.5, theta_target_in = 0;
-    double xE_in = 6, yE_in = 7;
+     v =  (fdes(0)*z_contact)/(md_e(0,0)*wn_contact); 
     // a_matrix << 1, t0, pow(t0,2), pow(t0,3), pow(t0,4), pow(t0,5),
     //             0, 1, 2*t0, 3*pow(t0,2), 4*pow(t0,3), 5*pow(t0,4),
     //             0, 0, 2, 6*t0, 12*pow(t0,2), 20*pow(t0,3),

@@ -57,6 +57,12 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 		yt_in = yt;
 		thetach_in = thetach;
 		thetat_in = thetat;
+		x_target_in = xt;
+		y_target_in = yt;
+		theta_target_in = thetat;
+		xE_in = ee_x;
+		yE_in = ee_y;
+		thetaE_in = thetach; //ousiastika to egrapsa 2 fores, useless
 	}
 	firstTime = false;
 }
