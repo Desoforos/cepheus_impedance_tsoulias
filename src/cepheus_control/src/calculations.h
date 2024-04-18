@@ -24,51 +24,59 @@ void inverseKinematics(){
 */
 
 void initialiseParameters(){//initialise constant parameters
-    // m0 = 54; //physical parameters from alex paper
-    // r0 = 0.16;
-    // l1 = 0.26931;
-    // r1 = 0.100069;
-    // m1 = 0.2314;
-    // l2 = 0.143;
-    // r2 = 0.143;
-    // m2 = 0.08797;
-    // l3 = 0.17732;
-    // r3 = 0.09768;
-    // m3 = 6;
-    l0 = 0.2; 
-    m0 = 13.3; // OXIapo pinaka 5.1 impedance thesis(not anymore 400), tora apo peleq
-    r0x = 1;
-    r0y = 1;
-    r0 = 1;
-    m1 = 0.083;
-    r1 = 1;
-    l1 = 0.13; //1; ta allaksa, ta phga apo xacro tou peleq
-    m2 = 0.187;
-    r2 = 1;
-    l2 = 0.13; //1;
-    m3 = 0.03547;
-    r3 = 0.5;
-    l3 = 0.085; //0.5;
-    mt = 10; //anti gia 100
+    // l0 = 0.2; 
+    // m0 = 13.3; // OXIapo pinaka 5.1 impedance thesis(not anymore 400), tora apo peleq
+    // r0x = 1;
+    // r0y = 1;
+    // r0 = 1;
+    // m1 = 0.083;
+    // r1 = 1;
+    // l1 = 0.13; //1; ta allaksa, ta phga apo xacro tou peleq
+    // m2 = 0.187;
+    // r2 = 1;
+    // l2 = 0.13; //1;
+    // m3 = 0.03547;
+    // r3 = 0.5;
+    // l3 = 0.085; //0.5;
+    // mt = 10; //anti gia 100
     // ibzz=(1/2)*m0*(r0x*r0x+r0y*r0y);
     // i1zz=(1/12)*m1*pow((l1+r1),2);
     // i2zz=(1/12)*m2*pow((l2+r2),2);
     // i3zz=(1/12)*m3*pow((l3+r3),2);
     // itzz = 0.067; //itzz=(1/6)*mt*(lt^2);
-    ibzz = 0.160875;
-    i1zz = 0.000346;
-    i2zz = 0.000346;
-    i3zz = 0.091927;
+    // ibzz = 0.160875;
+    // i1zz = 0.000346;
+    // i2zz = 0.000346;
+    // i3zz = 0.091927;
+    m0 = 53.53;
+    m1 = 0.4409;
+    m2 = 0.1304;
+    m3 = 6.2229;
+    ibzz = 2.2491;
+    i1zz = 0.0068;
+    i2zz = 0.0010;
+    i3zz = 0.0787;
+    r0 = 0.1628;
+    r1 = 0.1010;
+    r2 = 0.1430;
+    r3 = 0.1915;
+    //l0???
+    l1 = 0.2690;
+    l2 = 0.1430;
+    l3 = 0.1082;
 
-    M = m0 + m1 + m2 + m3+1; //1 apo to reaction wheel
+    mt = 10;
+    itzz = 0.067;
+
+    M = m0 + m1 + m2 + m3; //1 apo to reaction wheel
     // a = r0*m0/M;
     // b = (l1*m0 + (m0+m1)*r1)/M;
     // c = (l2*(m0 + m1) + (m0 + m1 + m2)*r2)/M;
     // d = r3 + l3*(m0 + m1 + m2)/M;
 
     xch_c << 0, 0, 0;
-    xdf << 0, 0, 0;
-    xdc << 0, 0, 0;
+    // xdf << 0, 0, 0;
+    // xdc << 0, 0, 0;
     xee << 0, 0, 0;
     xeedot << 0, 0, 0;
     e << 0, 0, 0;
@@ -136,15 +144,16 @@ void initialiseParameters(){//initialise constant parameters
 }
 
 void calculateStep(){  //calculate stuff in each iteration
-    j16 = -l3*sin(theta0+q1+q2+q3);
-    j15 = j16 - l2*sin(theta0+q1+q2);
-    j14 = j15 - l1*sin(theta0+q1);
-    j13 = j14 - l0*sin(theta0);
+    //nikiforos we dont use
+    // j16 = -l3*sin(theta0+q1+q2+q3);
+    // j15 = j16 - l2*sin(theta0+q1+q2);
+    // j14 = j15 - l1*sin(theta0+q1);
+    // j13 = j14 - l0*sin(theta0);
 
-    j26 = l3*cos(theta0+q1+q2+q3);
-    j25 = j26 + l2*cos(theta0+q1+q2);
-    j24 = j25 + l1*cos(theta0+q1);
-    j23 = j24 + l0*cos(theta0);
+    // j26 = l3*cos(theta0+q1+q2+q3);
+    // j25 = j26 + l2*cos(theta0+q1+q2);
+    // j24 = j25 + l1*cos(theta0+q1);
+    // j23 = j24 + l0*cos(theta0);
 
     // jacobian(0,2) = j13;
     // jacobian(0,3) = j14;
@@ -155,15 +164,16 @@ void calculateStep(){  //calculate stuff in each iteration
     // jacobian(1,4) = j25;
     // jacobian(1,5) = j26;
 
-    j16dot = -l3*cos(theta0+q1+q2+q3)*(theta0dot+q1dot+q2dot+q3dot);
-    j15dot = j16dot - l2*cos(theta0+q1+q2)*(theta0dot+q1dot+q2dot);
-    j14dot = j15dot - l1*cos(theta0+q1)*(theta0dot+q1dot);
-    j13dot = j14dot - l0*cos(theta0)*theta0dot;
+    //nikiforos jacobian we dont use
+    // j16dot = -l3*cos(theta0+q1+q2+q3)*(theta0dot+q1dot+q2dot+q3dot);
+    // j15dot = j16dot - l2*cos(theta0+q1+q2)*(theta0dot+q1dot+q2dot);
+    // j14dot = j15dot - l1*cos(theta0+q1)*(theta0dot+q1dot);
+    // j13dot = j14dot - l0*cos(theta0)*theta0dot;
 
-    j26dot = -l3*sin(theta0+q1+q2+q3)*(theta0dot+q1dot+q2dot+q3dot);
-    j25dot = j26dot - l2*sin(theta0+q1+q2)*(theta0dot+q1dot+q2dot);
-    j24dot = j25dot - l1*sin(theta0+q1)*(theta0dot+q1dot);
-    j23dot = j24dot - l0*sin(theta0)*theta0dot;
+    // j26dot = -l3*sin(theta0+q1+q2+q3)*(theta0dot+q1dot+q2dot+q3dot);
+    // j25dot = j26dot - l2*sin(theta0+q1+q2)*(theta0dot+q1dot+q2dot);
+    // j24dot = j25dot - l1*sin(theta0+q1)*(theta0dot+q1dot);
+    // j23dot = j24dot - l0*sin(theta0)*theta0dot;
     
     // jacobiandot(0,2) = j13dot;
     // jacobiandot(0,3) = j14dot;
@@ -385,9 +395,10 @@ void calculateStep(){  //calculate stuff in each iteration
     // md.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
     // md.bottomRightCorner(3,3) = md_b;
 
-    rEddotdot(0) = xEddotdot;
-    rEddotdot(1) = yEddotdot;
-    rEddotdot(2) = thetaEddotdot;
+    // rEddotdot(0) = xEddotdot;
+    // rEddotdot(1) = yEddotdot;
+    // rEddotdot(2) = thetaEddotdot;
+    
 
     // e = xee - xd;
     // edot = xeedot - xddot; 
@@ -406,7 +417,7 @@ void calculateStep(){  //calculate stuff in each iteration
     fact = (Eigen::MatrixXd::Identity(3, 3) - w.inverse() * md_e.inverse()) * fext +
                         w.inverse() * (jacobian * h.inverse()*c - jacobiandot * zdot) +
                         w.inverse() * md_e.inverse() * (fdes_star - (bd_e * edot) - (kd_e * e)) +
-                        w.inverse() * rEddotdot; //(H.colPivHouseholderQr().solve(C))) TODO:xddotdot(desired troxia), jacobiandot CHECK,zdot CHECK
+                        w.inverse() * xddotdot; //(H.colPivHouseholderQr().solve(C))) TODO:xddotdot(desired troxia), jacobiandot CHECK,zdot CHECK
 
     //na grapso thn sxesh pou syndeei ta torq[] me fact kai to n
     //factx, facty,nact
@@ -544,94 +555,108 @@ void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c+
     
 
     //kanonika edo thelei ena if t<=t_free (??)
-    if(t<=t_free){
-        a_x = a_matrix.inverse()*b1_x;
-        a_y = a_matrix.inverse()*b1_y;
-        a_theta = a_matrix.inverse()*b1_theta;
-        a0x = a_x(0);
-        a1x = a_x(1);
-        a2x = a_x(2);
-        a3x = a_x(3);
-        a4x = a_x(4);
-        a5x = a_x(5);
-        a0y = a_y(0);
-        a1y = a_y(1);
-        a2y = a_y(2);
-        a3y = a_y(3);
-        a4y = a_y(4);
-        a5y = a_y(5);
-        a0t = a_theta(0);
-        a1t = a_theta(1);
-        a2t = a_theta(2);
-        a3t = a_theta(3);
-        a4t = a_theta(4);
-        a5t = a_theta(5);
-        s_x = a5x*pow(t,5) + a4x*pow(t,4) + a3x*pow(t,3) + a2x*pow(t,2) + a1x*t +a0x;
-        s_y = a5y*pow(t,5) + a4y*pow(t,4) + a3y*pow(t,3) + a2y*pow(t,2) + a1y*t +a0y;
-        s_theta = a5t*pow(t,5) + a4t*pow(t,4) + a3t*pow(t,3) + a2t*pow(t,2) + a1t*t +a0t;
-        /////
-        sdot_x=a1x+2*a2x*t+3*a3x*pow(t,2)+4*a4x*pow(t,3)+5*a5x*pow(t,4);
-        sdot_y=a1y+2*a2y*t+3*a3y*pow(t,2)+4*a4y*pow(t,3)+5*a5y*pow(t,4);
-        sdot_theta=a1t+2*a2t*t+3*a3t*pow(t,2)+4*a4t*pow(t,3)+5*a5t*pow(t,4);
-        /////
-        sdotdot_x=2*a2x+6*a3x*t+12*a4x*pow(t,2)+20*a5x*pow(t,3);
-        sdotdot_y=2*a2y+6*a3y*t+12*a4y*pow(t,2)+20*a5y*pow(t,3);
-        sdotdot_theta=2*a2t+6*a3t*t+12*a4t*pow(t,2)+20*a5t*pow(t,3);
-        /////
-        xEd=xE_in+s_x*(xE_contact-xE_in);
-        xEddot=sdot_x*(xE_contact-xE_in);
-        xEddotdot=sdotdot_x*(xE_contact-xE_in);
-        /////
-        yEd=xE_in+s_y*(yE_contact-yE_in);
-        yEddot=sdot_y*(yE_contact-yE_in);
-        yEddotdot=sdotdot_y*(yE_contact-yE_in);
-        /////
-        thetaEd=thetaE_in+s_theta*(thetaE_contact-thetaE_in);
-        thetaEddot=sdot_theta*(thetaE_contact-thetaE_in);
-        thetaEddotdot=sdotdot_theta*(thetaE_contact-thetaE_in);
-    }
-    else{
-        xEd=xt+xE_contact-xt_in; //anti gia x_target=xt
-        xEddot=xtdot;
-        xEddotdot=fext(0)/mt;
-        /////
-        yEd=yE_contact;
-        yEddot=0;
-        yEddotdot=0;
-        /////
-        thetaEd=thetaE_contact;
-        thetaEddot=0;
-        thetaEddotdot=0; 
+    a_x = a_matrix.inverse()*b1_x;
+    a_y = a_matrix.inverse()*b1_y;
+    a_theta = a_matrix.inverse()*b1_theta;
+    a0x = a_x(0);
+    a1x = a_x(1);
+    a2x = a_x(2);
+    a3x = a_x(3);
+    a4x = a_x(4);
+    a5x = a_x(5);
+    a0y = a_y(0);
+    a1y = a_y(1);
+    a2y = a_y(2);
+    a3y = a_y(3);
+    a4y = a_y(4);
+    a5y = a_y(5);
+    a0t = a_theta(0);
+    a1t = a_theta(1);
+    a2t = a_theta(2);
+    a3t = a_theta(3);
+    a4t = a_theta(4);
+    a5t = a_theta(5);
+    s_x = a5x*pow(t,5) + a4x*pow(t,4) + a3x*pow(t,3) + a2x*pow(t,2) + a1x*t +a0x;
+    s_y = a5y*pow(t,5) + a4y*pow(t,4) + a3y*pow(t,3) + a2y*pow(t,2) + a1y*t +a0y;
+    s_theta = a5t*pow(t,5) + a4t*pow(t,4) + a3t*pow(t,3) + a2t*pow(t,2) + a1t*t +a0t;
+    /////
+    sdot_x=a1x+2*a2x*t+3*a3x*pow(t,2)+4*a4x*pow(t,3)+5*a5x*pow(t,4);
+    sdot_y=a1y+2*a2y*t+3*a3y*pow(t,2)+4*a4y*pow(t,3)+5*a5y*pow(t,4);
+    sdot_theta=a1t+2*a2t*t+3*a3t*pow(t,2)+4*a4t*pow(t,3)+5*a5t*pow(t,4);
+    /////
+    sdotdot_x=2*a2x+6*a3x*t+12*a4x*pow(t,2)+20*a5x*pow(t,3);
+    sdotdot_y=2*a2y+6*a3y*t+12*a4y*pow(t,2)+20*a5y*pow(t,3);
+    sdotdot_theta=2*a2t+6*a3t*t+12*a4t*pow(t,2)+20*a5t*pow(t,3);
+    /////
+    /*free space phase trajectory*/
+    xfEd=xE_in+s_x*(xE_contact-xE_in);
+    xfEddot=sdot_x*(xE_contact-xE_in);
+    xfEddotdot=sdotdot_x*(xE_contact-xE_in);
+    /////
+    yfEd=xE_in+s_y*(yE_contact-yE_in);
+    yfEddot=sdot_y*(yE_contact-yE_in);
+    yfEddotdot=sdotdot_y*(yE_contact-yE_in);
+    /////
+    thetafEd=thetaE_in+s_theta*(thetaE_contact-thetaE_in);
+    thetafEddot=sdot_theta*(thetaE_contact-thetaE_in);
+    thetafEddotdot=sdotdot_theta*(thetaE_contact-thetaE_in);
+    
+    /*contact phase trajectory*/
+    xcEd=xt+xE_contact-xt_in; //anti gia x_target=xt
+    xcEddot=xtdot;
+    xcEddotdot=fext(0)/mt;
+    /////
+    ycEd=yE_contact;
+    ycEddot=0;
+    ycEddotdot=0;
+    /////
+    thetacEd=thetaE_contact;
+    thetacEddot=0;
+    thetacEddotdot=0; 
 
-    }
-    xd(0) = xEd;
-    xd(1) = yEd;
-    xd(2) = thetaEd;
-    xddot(0) = xEddot;
-    xddot(1) = yEddot;
-    xddot(2) = thetaEddotdot;
-    xddotdot(0) = xEddotdot;
-    xddotdot(1) = yEddotdot;
-    xddotdot(2) = thetaEddotdot;
+    
+    xfd(0) = xfEd;
+    xfd(1) = yfEd;
+    xfd(2) = thetafEd;
+    xfddot(0) = xfEddot;
+    xfddot(1) = yfEddot;
+    xfddot(2) = thetafEddotdot;
+    xfddotdot(0) = xfEddotdot;
+    xfddotdot(1) = yfEddotdot;
+    xfddotdot(2) = thetafEddotdot;
+
+    xcd(0) = xcEd;
+    xcd(1) = ycEd;
+    xcd(2) = thetacEd;
+    xcddot(0) = xcEddot;
+    xcddot(1) = ycEddot;
+    xcddot(2) = thetacEddotdot;
+    xcddotdot(0) = xcEddotdot;
+    xcddotdot(1) = ycEddotdot;
+    xcddotdot(2) = thetacEddotdot;
+
+    xd = xfd*((abs(1-fext.squaredNorm()/a1))/(1+a1*fext.squaredNorm())) + xcd*fext.squaredNorm()/(fext.squaredNorm()+a2);
+    xddot = xfddot*((abs(1-fext.squaredNorm()/a1))/(1+a1*fext.squaredNorm())) + xcddot*fext.squaredNorm()/(fext.squaredNorm()+a2);
+    xddotdot = xfddotdot*((abs(1-fext.squaredNorm()/a1))/(1+a1*fext.squaredNorm())) + xcddotdot*fext.squaredNorm()/(fext.squaredNorm()+a2);
     
 
 
 }
 
-void trajparams(double t){
-    double a1 = 10000;
-    double a2 = 0.0001;
-    s_x = a5x*pow(t,5) + a4x*pow(t,4) + a3x*pow(t,3) + a2x*pow(t,2) + a1x*t +a0x;
-    s_y = a5y*pow(t,5) + a4y*pow(t,4) + a3y*pow(t,3) + a2y*pow(t,2) + a1y*t +a0y;
-    s_theta = a5t*pow(t,5) + a4t*pow(t,4) + a3t*pow(t,3) + a2t*pow(t,2) + a1t*t +a0t;
-    xdf(0) = xch_in + s_x*(xt_in-xch_in); 
-    xdf(1) = ych_in + s_y*(yt_in-ych_in);
-    xdf(2) = thetach_in + s_theta*(thetat_in-thetach_in);
-    xdc(0) = xt;
-    xdc(1) = yt;
-    xdc(2) = thetat;
-    xd = xdf*((abs(1-fext.squaredNorm()/a1))/(1+a1*fext.squaredNorm())) + xdc*fext.squaredNorm()/(fext.squaredNorm()+a2);
-}
+// void trajparams(double t){
+//     double a1 = 10000;
+//     double a2 = 0.0001;
+//     s_x = a5x*pow(t,5) + a4x*pow(t,4) + a3x*pow(t,3) + a2x*pow(t,2) + a1x*t +a0x;
+//     s_y = a5y*pow(t,5) + a4y*pow(t,4) + a3y*pow(t,3) + a2y*pow(t,2) + a1y*t +a0y;
+//     s_theta = a5t*pow(t,5) + a4t*pow(t,4) + a3t*pow(t,3) + a2t*pow(t,2) + a1t*t +a0t;
+//     xdf(0) = xch_in + s_x*(xt_in-xch_in); 
+//     xdf(1) = ych_in + s_y*(yt_in-ych_in);
+//     xdf(2) = thetach_in + s_theta*(thetat_in-thetach_in);
+//     xdc(0) = xt;
+//     xdc(1) = yt;
+//     xdc(2) = thetat;
+//     xd = xdf*((abs(1-fext.squaredNorm()/a1))/(1+a1*fext.squaredNorm())) + xdc*fext.squaredNorm()/(fext.squaredNorm()+a2);
+// }
 
 /////////////// CALCULATION FUNCTIONS DEFINITION END////////////////////////
 

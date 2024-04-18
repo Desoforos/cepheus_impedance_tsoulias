@@ -95,17 +95,26 @@ double a0t,a1t,a2t,a3t,a4t,a5t; //for s_theta
 double s_x,s_y,s_theta;  //to polyonymo
 double sdot_x, sdot_y, sdot_theta;
 double sdotdot_x, sdotdot_y, sdotdot_theta;
-double xEd, yEd, thetaEd;
-double xEddot, yEddot, thetaEddot;
-double xEddotdot, yEddotdot, thetaEddotdot;
+double xfEd, yfEd, thetafEd;
+double xfEddot, yfEddot, thetafEddot;
+double xfEddotdot, yfEddotdot, thetafEddotdot;
+double xcEd, ycEd, thetacEd;
+double xcEddot, ycEddot, thetacEddot;
+double xcEddotdot, ycEddotdot, thetacEddotdot;
 //Eigen::VectorXd xch_in(xti,yti,0); mallon den xreiazetai
 Eigen::VectorXd xch_c(3);//xch_c <<0 , 0 , 0;
-Eigen::VectorXd xdf(3); //xdf<<0 , 0 ,0 ;
-Eigen::VectorXd xdc(3); // <<xt,yt,thetat;
+// Eigen::VectorXd xdf(3); //xdf<<0 , 0 ,0 ;
+// Eigen::VectorXd xdc(3); // <<xt,yt,thetat;
 Eigen::VectorXd fext(3); // << (0,0,0); //fx,fy,n
 Eigen::VectorXd xd(3); //the  DESIRED TRAJECTORY xEd,yEd,thetaEd
 Eigen::VectorXd xddot(3); //xEddot, yEddot, thetaEddot
 Eigen::VectorXd xddotdot(3); //xEddotdot, yEddotdot, thetaEddotdot
+Eigen::VectorXd xfd(3); //the  DESIRED TRAJECTORY xEd,yEd,thetaEd
+Eigen::VectorXd xfddot(3); //xEddot, yEddot, thetaEddot
+Eigen::VectorXd xfddotdot(3); //xEddotdot, yEddotdot, thetaEddotdot
+Eigen::VectorXd xcd(3); //the  DESIRED TRAJECTORY xEd,yEd,thetaEd
+Eigen::VectorXd xcddot(3); //xEddot, yEddot, thetaEddot
+Eigen::VectorXd xcddotdot(3); //xEddotdot, yEddotdot, thetaEddotdot
 Eigen::VectorXd xee(3); //(0,0,0); //the actual trajecotry (x,y,theta)
 Eigen::VectorXd xeedot(3); //(0,0,0); //the actual trajecotry (x,y,theta)
 Eigen::VectorXd c(6);
@@ -153,7 +162,8 @@ Eigen::VectorXd rEddotdot(3);
 
 
 
-
+double a1 = 10000; //for xd
+double a2 = 0.0001;
 double t0 =0 , t_free =200; //anti gia 200
 double z_free = 1;
 double ts_free = 0.1*t_free;

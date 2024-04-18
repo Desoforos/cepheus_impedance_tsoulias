@@ -68,7 +68,8 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "foros_simcontroller_node");
     ros::NodeHandle nh;
     ros::Time curr_time, t_beg;
-    ros::Duration dur_time; //duration of movement
+    // ros::Duration dur_time; //duration of movement
+    double dur_time;
 
     /* Create publishers */
     ros::Publisher RW_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/reaction_wheel_effort_controller/command", 1);
@@ -158,8 +159,8 @@ int main(int argc, char **argv) {
                 t_beg  = ros::Time::now(); //initialize starting moment
             }
             curr_time = ros::Time::now();
-		    dur_time = curr_time - t_beg;
-            desiredTrajectory(dur_time.toSec());
+		    dur_time = curr_time.toSec() - t_beg.toSec();
+            desiredTrajectory(dur_time);
             calculateStep();
             //ImpedanceControlUpdateStep();
 
