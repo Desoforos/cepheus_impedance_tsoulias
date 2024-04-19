@@ -83,6 +83,8 @@ int main(int argc, char **argv) {
     ros::Publisher error_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_x", 1);
     ros::Publisher error_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_y", 1);
     ros::Publisher error_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_theta", 1);
+    ros::Publisher xd_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_x", 1);
+    ros::Publisher xd_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_y", 1);
 
 
 
@@ -176,10 +178,13 @@ int main(int argc, char **argv) {
             msg_ex.data = e(0); //for error plotting
             msg_ey.data = e(1);
             msg_etheta.data = e(2);
+            msg_xd_x.data = xd(0);
+            msg_xd_y.data = xd(1);
+
 
             // thruster_x_pub.publish(msg_TX);
             // thruster_y_pub.publish(msg_TY);
-            base_force_pub.publish(base_wrench);
+            //base_force_pub.publish(base_wrench);
             // RW_torque_pub.publish(msg_RW);
             // LS_torque_pub.publish(msg_LS);
             // LE_torque_pub.publish(msg_LE);
@@ -187,6 +192,14 @@ int main(int argc, char **argv) {
             error_x_pub.publish(msg_ex);
             error_y_pub.publish(msg_ey);
             error_theta_pub.publish(msg_etheta);
+            xd_x_pub.publish(msg_xd_x);
+            xd_y_pub.publish(msg_xd_y);
+
+            std::cout<<"xd_x is: "<< xd(0)<<std::endl;
+            std::cout<<"xd_y is: "<< xd(1)<<std::endl;
+            std::cout<<"xd_theta is: "<< xd(2)<<std::endl;
+
+
 
 
             //clear msgs after publish

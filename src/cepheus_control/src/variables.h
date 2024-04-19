@@ -66,6 +66,8 @@ std_msgs::Float64 msg_etheta; //errortheta
 // std_msgs::Float64 msg_TX; //thruster_x
 // std_msgs::Float64 msg_TY; //thruster_y
 geometry_msgs::Wrench base_wrench; //x,y force of thrusters
+std_msgs::Float64 msg_xd_x; //xd_x
+std_msgs::Float64 msg_xd_y; //xd_y
 
 
 
@@ -180,9 +182,9 @@ double sin_x = 0, sdotin_x = 0, sdotdotin_x = 0;
 double sin_y = 0, sdotin_y = 0, sdotdotin_y = 0;
 double sin_theta = 0, sdotin_theta = 0, sdotdotin_theta = 0;
 ///////telikes sinthikes/////////////
-double xE_contact = x_target_in - l0;
-double yE_contact = y_target_in;
-double thetaE_contact = theta_target_in;
+double xE_contact; // = x_target_in - l0;
+double yE_contact; // = y_target_in;
+double thetaE_contact; // = theta_target_in;
 double sfin_x = 1, sdotfin_x = v/(xE_contact-xE_in), sdotdotfin_x = 0;
 double sfin_y = 1, sdotfin_y = 0, sdotdotfin_y = 0;
 double sfin_theta = 1, sdotfin_theta = 0, sdotdotfin_theta = 0;
