@@ -641,28 +641,32 @@ void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c+
     /*!!!DIAGNOSTICS!!!*/
     std::cout<<"current duration time is: "<<t<<std::endl;
     std::cout<<"xfd(0) is: "<<xfd(0)<<" and xcd(0) is: "<<xcd(0)<<std::endl;
-    std::cout<<"s_x is: "<<s_x<<std::endl;
+    //std::cout<<"s_x is: "<<s_x<<std::endl;
     //std::cout<<"s_y is: "<<s_y<<std::endl;
     //std::cout<<"s_theta is: "<<s_theta<<std::endl;
-    std::cout<<"a5x is: "<<a5x<<" a4x is: "<<a4x<<" a3x is: "<<a3x<<" a2x is: "<<a2x<<" a1x is: "<<a1x<<" a0x is: "<<a0x<<std::endl;
-    std::cout<<"a_matrix is: "<<a_matrix<<std::endl;
-    std::cout<<"b1_x is: "<<b1_x<<std::endl;
-    std::cout<<"a_matrix inverse is: "<<a_matrix.inverse()<<std::endl;
+    //std::cout<<"a5x is: "<<a5x<<" a4x is: "<<a4x<<" a3x is: "<<a3x<<" a2x is: "<<a2x<<" a1x is: "<<a1x<<" a0x is: "<<a0x<<std::endl;
+    //std::cout<<"a_matrix is: "<<a_matrix<<std::endl;
+    //std::cout<<"b1_x is: "<<b1_x<<std::endl;
+    //std::cout<<"a_matrix inverse is: "<<a_matrix.inverse()<<std::endl;
 
 
 
+    /*allazo ligo se if else*/
+    //xd = xfd*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcd*abs(fext(0))/(abs(fext(0))+a2);
+    //xddot = xfddot*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcddot*abs(fext(0))/(abs(fext(0))+a2);
+    //xddotdot = xfddotdot*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcddotdot*abs(fext(0))/(abs(fext(0))+a2);
 
-    xd = xfd*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcd*abs(fext(0))/(abs(fext(0))+a2);
-    xddot = xfddot*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcddot*abs(fext(0))/(abs(fext(0))+a2);
-    xddotdot = xfddotdot*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcddotdot*abs(fext(0))/(abs(fext(0))+a2);
+    if(abs(fext(0))<3){
+        xd = xfd;
+        xddot = xfddot;
+        xddotdot = xfddotdot;
+    }
+    else{
+        xd = xcd;
+        xddot = xcddot;
+        xddotdot = xcddotdot;
+    }
 
-//     xd(1) = xfd(1)*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcd(1)*abs(fext(0))/(abs(fext(0))+a2);
-//     xddot(1) = xfddot(1)*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcddot(1)*abs(fext(0))/(abs(fext(0))+a2);
-//     xddotdot(1) = xfddotdot(1)*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcddotdot(1)*abs(fext(0))/(abs(fext(0))+a2);
-
-//     xd(2) = xfd(2)*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcd(2)*abs(fext(0))/(abs(fext(0))+a2);
-//     xddot(2) = xfddot(2)*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcddot(2)*abs(fext(0))/(abs(fext(0))+a2);
-//     xddotdot(2) = xfddotdot(2)*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcddotdot(2)*abs(fext(0))/(abs(fext(0))+a2);
 
 
 }

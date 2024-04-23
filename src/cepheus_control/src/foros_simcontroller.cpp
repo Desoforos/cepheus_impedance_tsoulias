@@ -193,12 +193,13 @@ int main(int argc, char **argv) {
 
 
             // thruster_x_pub.publish(msg_TX);
-            // thruster_y_pub.publish(msg_TY);
-            //base_force_pub.publish(base_wrench);
-            // RW_torque_pub.publish(msg_RW);
-            // LS_torque_pub.publish(msg_LS);
-            // LE_torque_pub.publish(msg_LE);
-            // LW_torque_pub.publish(msg_LW);
+            // thruster_y_pub.publish(msg_TY); den xreiazontai pia exo to base force
+
+            base_force_pub.publish(base_wrench);
+            RW_torque_pub.publish(msg_RW);
+            //LS_torque_pub.publish(msg_LS);
+            //LE_torque_pub.publish(msg_LE);
+            //LW_torque_pub.publish(msg_LW);
             error_x_pub.publish(msg_ex);
             error_y_pub.publish(msg_ey);
             error_theta_pub.publish(msg_etheta);
@@ -207,9 +208,15 @@ int main(int argc, char **argv) {
 
             //std::cout<<"current duration time is: "<<dur_time<<std::endl;
 
+            std::cout<<"fext_x is: "<<fext(0)<<" N "<<std::endl;
+            std::cout<<"fext_y is: "<<fext(1)<<" N "<<std::endl;
             std::cout<<"xd_x is: "<< xd(0) <<std::endl;
             std::cout<<"xd_y is: "<< xd(1) <<std::endl;
             std::cout<<"xd_theta is: "<< xd(2) <<std::endl;
+            std::cout<<"fx is: "<<qact(0)<<" N "<<std::endl;
+            std::cout<<"fy is: "<<qact(1)<<" N "<<std::endl;
+            std::cout<<"RW torque is: "<<qact(2)<<" Nm "<<std::endl;
+
 
 
 

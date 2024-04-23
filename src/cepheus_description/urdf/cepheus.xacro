@@ -164,6 +164,10 @@
 		<mu1>0</mu1>
 		<mu2>0</mu2>
 	</gazebo>
+	<gazebo reference="reaction_wheel">
+		<mu1>0</mu1>
+		<mu2>0</mu2>
+	</gazebo>
 	<transmission name="tran1">
 		<type>
 			transmission_interface/SimpleTransmission</type>
@@ -402,15 +406,25 @@
 		</sensor>
 	</gazebo> -->
 	<gazebo reference="left_wrist_joint">
-	<provideFeedback>true</provideFeedback>
+		<provideFeedback>true</provideFeedback>
+		<!-- <sensor name="force_torque" type="force_torque">
+          <update_rate>30</update_rate>
+    	</sensor> -->
 	</gazebo>
+	
 	<gazebo>
 		<plugin name="ft_sensor" filename="libgazebo_ros_ft_sensor.so">
 			<updateRate>0</updateRate>   <!--poly shmantiko na einai 0, allios kanei bug!!!!(nikhforos)-->
 			<topicName>ft_sensor_topic</topicName>
 			<jointName>left_wrist_joint</jointName>
+			<noise>
+          		<type>gaussian</type>
+          		<mean>0.0</mean>
+          		<stddev>0.003</stddev> <!-- change this to simulate noise --> 
+        	</noise>
 		</plugin>
 	</gazebo>
+
 
 	<gazebo>
 		<plugin filename="libgazebo_ros_force.so" name="gazebo_ros_force" >
