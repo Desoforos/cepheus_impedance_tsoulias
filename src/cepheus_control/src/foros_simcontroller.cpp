@@ -63,6 +63,7 @@ int main(int argc, char **argv) {
 
     
     bool hasbegun = false;
+    bool paramsinit = false;
 
     /* ros init */
     ros::init(argc, argv, "foros_simcontroller_node");
@@ -141,7 +142,7 @@ int main(int argc, char **argv) {
     // q1des = q1des* (M_PI / 180);
     // q2des = q2des* (M_PI / 180);
     char command;
-    initialiseParameters();
+    //initialiseParameters();
 
     while(ros::ok()){
         // for (int i = 0; i < 3; i++) {
@@ -150,15 +151,24 @@ int main(int argc, char **argv) {
         //ros::spinOnce(); //once it spins it will read the current rw, le, ls and the callbacks will update the values q1,q2,q3 and the velocities
         //now we update the errors and we recalculate the desired efforts to publish as msg_LE,msg_LS
         if(!start_movement){
-            ROS_INFO("[foros_simcontroller]: Press Y to start the controller \n");
+            ROS_INFO("[foros_simcontroller]: Press Y to start the controller. Caution! Do not press it before running Gazebo. \n");
             std::cin>> command;
-            if(command == 'Y') start_movement= true;
+            if(command == 'Y'){
+                start_movement= true;
+            }
         }
         else{
             if(!hasbegun){
-                ROS_INFO("[foros_simcontroller]: initializing movement with given target position");
+                ROS_INFO("[foros_simcontroller]: initializing movement");
                 hasbegun = true; //apla gia to rosinfo na mas pei oti ksekinaei tin kinhsh
                 t_beg  = ros::Time::now(); //initialize starting moment
+            }
+            if(!paramsinit){
+                ros::spinOnce();
+                initialiseParameters();
+                paramsinit = true;
+                ROS_INFO("[foros_simcontroller]: Parameters have been initialized. \n");
+                continue;
             }
             curr_time = ros::Time::now();
 		    dur_time = curr_time.toSec() - t_beg.toSec();
@@ -195,9 +205,11 @@ int main(int argc, char **argv) {
             xd_x_pub.publish(msg_xd_x);
             xd_y_pub.publish(msg_xd_y);
 
-            std::cout<<"xd_x is: "<< xd(0)<<std::endl;
-            std::cout<<"xd_y is: "<< xd(1)<<std::endl;
-            std::cout<<"xd_theta is: "<< xd(2)<<std::endl;
+            //std::cout<<"current duration time is: "<<dur_time<<std::endl;
+
+            std::cout<<"xd_x is: "<< xd(0) <<std::endl;
+            std::cout<<"xd_y is: "<< xd(1) <<std::endl;
+            std::cout<<"xd_theta is: "<< xd(2) <<std::endl;
 
 
 

@@ -144,7 +144,7 @@ Eigen::VectorXd b1_theta(6);
 Eigen::MatrixXd a_matrix = Eigen::MatrixXd::Identity(6,6);
 Eigen::VectorXd fdes(3); //(0.1,0,0);
 Eigen::VectorXd fdes_star(3);
-Eigen::MatrixXd ke_star(3,3);
+Eigen::MatrixXd ke_star=10000*Eigen::MatrixXd::Identity(3,3);
 Eigen::MatrixXd kd_e(3,3);
 Eigen::MatrixXd kd_b(3,3);
 Eigen::MatrixXd md(6,6);
@@ -164,14 +164,14 @@ Eigen::VectorXd rEddotdot(3);
 
 
 
-double a1 = 10000; //for xd
-double a2 = 0.0001;
+double a1 = 1000; //for xd anti gia 10000
+double a2 = 0.001; //anti gia 0.0001
 double t0 =0 , t_free =200; //anti gia 200
 double z_free = 1;
 double ts_free = 0.1*t_free;
 double wn_free = 6/ts_free;
-double z_contact = z_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
-double wn_contact = wn_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
+double z_contact;
+double wn_contact;
 double thetaE_in=30*(M_PI/180);
 
 double v;
@@ -185,7 +185,7 @@ double sin_theta = 0, sdotin_theta = 0, sdotdotin_theta = 0;
 double xE_contact; // = x_target_in - l0;
 double yE_contact; // = y_target_in;
 double thetaE_contact; // = theta_target_in;
-double sfin_x = 1, sdotfin_x = v/(xE_contact-xE_in), sdotdotfin_x = 0;
+double sfin_x = 1, sdotfin_x, sdotdotfin_x = 0;
 double sfin_y = 1, sdotfin_y = 0, sdotdotfin_y = 0;
 double sfin_theta = 1, sdotfin_theta = 0, sdotdotfin_theta = 0;
 

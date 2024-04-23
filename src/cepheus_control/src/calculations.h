@@ -107,10 +107,9 @@ void initialiseParameters(){//initialise constant parameters
     je << 0, 0, 0, 0, 0, 0,
           0, 0, 0, 0, 0, 0,
           0, 0, 0, 0, 0, 0;
-    
-    ke_star << 10000, 0, 0,
-                0, 10000, 0,
-                0, 0, 10000;
+
+    z_contact = z_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
+    wn_contact = wn_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
     
     kd_e << 100, 0, 0,
             0, 100, 0,
@@ -129,6 +128,13 @@ void initialiseParameters(){//initialise constant parameters
     fdes << 0.1, 0, 0;
 
     v =  (fdes(0)*z_contact)/(md_e(0,0)*wn_contact); 
+    
+    xd << 0, 0, 0;
+    xfd << 0, 0, 0;
+    xcd << 0, 0, 0;
+
+    v =  (fdes(0)*z_contact)/(md_e(0,0)*wn_contact); 
+    sdotfin_x = v/(xE_contact-xE_in);
 
 
 
@@ -138,9 +144,78 @@ void initialiseParameters(){//initialise constant parameters
     b1_y <<sin_y, sdotin_y, sdotdotin_y, sfin_y, sdotfin_y, sdotdotfin_y;
     b1_theta << sin_theta, sdotin_theta, sdotdotin_theta, sfin_theta, sdotfin_theta, sdotdotfin_theta;
 
-        
+    /*Ta efera apo desired trajectory, afou ypologizontai mono mia fora*/
+    // a_matrix << 1, t0, pow(t0,2), pow(t0,3), pow(t0,4), pow(t0,5),
+    //             0, 1, 2*t0, 3*pow(t0,2), 4*pow(t0,3), 5*pow(t0,4),
+    //             0, 0, 2, 6*t0, 12*pow(t0,2), 20*pow(t0,3),
+    //             1, t_free, pow(t_free,2), pow(t_free,3), pow(t_free,4), pow(t_free,5),
+    //             0, 1, 2*t_free, 3*pow(t_free,2), 4*pow(t_free,3), 5*pow(t_free,4),
+    //             0, 0, 2, 6*t_free, 12*pow(t_free,2), 20*pow(t_free,3) ;
 
+    a_matrix(0,0) = 1;
+    a_matrix(0,1) = t0;
+    a_matrix(0,2) = pow(t0,2);
+    a_matrix(0,3) = pow(t0,3);
+    a_matrix(0,4) = pow(t0,4);
+    a_matrix(0,5) = pow(t0,5);
+    ///////
+    a_matrix(1,0) = 0;
+    a_matrix(1,1) = 1;
+    a_matrix(1,2) = 2*t0;
+    a_matrix(1,3) = 3*pow(t0,2);
+    a_matrix(1,4) = 4*pow(t0,3);
+    a_matrix(1,5) = 5*pow(t0,4);
+    ///////
+    a_matrix(2,0) = 0;
+    a_matrix(2,1) = 0;
+    a_matrix(2,2) = 2;
+    a_matrix(2,3) = 6*t0;
+    a_matrix(2,4) = 12*pow(t0,2);
+    a_matrix(2,5) = 20*pow(t0,3);
+    //////
+    a_matrix(3,0) = 1;
+    a_matrix(3,1) = t_free;
+    a_matrix(3,2) = pow(t_free,2);
+    a_matrix(3,3) = pow(t_free,3);
+    a_matrix(3,4) = pow(t_free,4);
+    a_matrix(3,5) = pow(t_free,5);
+    //////
+    a_matrix(4,0) = 0;
+    a_matrix(4,1) = 1;
+    a_matrix(4,2) = 2*t_free;
+    a_matrix(4,3) = 3*pow(t_free,2);
+    a_matrix(4,4) = 4*pow(t_free,3);
+    a_matrix(4,5) = 5*pow(t_free,4);
+    ////////
+    a_matrix(5,0) = 0;
+    a_matrix(5,1) = 0;
+    a_matrix(5,2) = 2;
+    a_matrix(5,3) = 6*t_free;
+    a_matrix(5,4) = 12*pow(t_free,2);
+    a_matrix(5,5) = 20*pow(t_free,3);
 
+    a_x = a_matrix.inverse()*b1_x; //computeInverseAndDetWithCheck()
+    a_y = a_matrix.inverse()*b1_y;
+    a_theta = a_matrix.inverse()*b1_theta;
+    a0x = a_x(0);
+    a1x = a_x(1);
+    a2x = a_x(2);
+    a3x = a_x(3);
+    a4x = a_x(4);
+    a5x = a_x(5);
+    a0y = a_y(0);
+    a1y = a_y(1);
+    a2y = a_y(2);
+    a3y = a_y(3);
+    a4y = a_y(4);
+    a5y = a_y(5);
+    a0t = a_theta(0);
+    a1t = a_theta(1);
+    a2t = a_theta(2);
+    a3t = a_theta(3);
+    a4t = a_theta(4);
+    a5t = a_theta(5);
+    /*telos prosthikis apo desired trajectory*/
 }
 
 void calculateStep(){  //calculate stuff in each iteration
@@ -497,85 +572,12 @@ void JointControlUpdateStep(){
 } 
 
 void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c++ stous pinakes
-    
-
-     v =  (fdes(0)*z_contact)/(md_e(0,0)*wn_contact); 
-    // a_matrix << 1, t0, pow(t0,2), pow(t0,3), pow(t0,4), pow(t0,5),
-    //             0, 1, 2*t0, 3*pow(t0,2), 4*pow(t0,3), 5*pow(t0,4),
-    //             0, 0, 2, 6*t0, 12*pow(t0,2), 20*pow(t0,3),
-    //             1, t_free, pow(t_free,2), pow(t_free,3), pow(t_free,4), pow(t_free,5),
-    //             0, 1, 2*t_free, 3*pow(t_free,2), 4*pow(t_free,3), 5*pow(t_free,4),
-    //             0, 0, 2, 6*t_free, 12*pow(t_free,2), 20*pow(t_free,3) ;
-
-    a_matrix(0,0) = 1;
-    a_matrix(0,1) = t0;
-    a_matrix(0,2) = pow(t0,2);
-    a_matrix(0,3) = pow(t0,3);
-    a_matrix(0,4) = pow(t0,4);
-    a_matrix(0,5) = pow(t0,5);
-    ///////
-    a_matrix(1,0) = 0;
-    a_matrix(1,1) = 1;
-    a_matrix(1,2) = 2*t0;
-    a_matrix(1,3) = 3*pow(t0,2);
-    a_matrix(1,4) = 4*pow(t0,3);
-    a_matrix(1,5) = 5*pow(t0,4);
-    ///////
-    a_matrix(2,0) = 0;
-    a_matrix(2,1) = 0;
-    a_matrix(2,2) = 2;
-    a_matrix(2,3) = 6*t0;
-    a_matrix(2,4) = 12*pow(t0,2);
-    a_matrix(2,5) = 20*pow(t0,3);
-    //////
-    a_matrix(3,0) = 1;
-    a_matrix(3,1) = t_free;
-    a_matrix(3,2) = pow(t_free,2);
-    a_matrix(3,3) = pow(t_free,3);
-    a_matrix(3,4) = pow(t_free,4);
-    a_matrix(3,5) = pow(t_free,5);
-    //////
-    a_matrix(4,0) = 0;
-    a_matrix(4,1) = 1;
-    a_matrix(4,2) = 2*t_free;
-    a_matrix(4,3) = 3*pow(t_free,2);
-    a_matrix(4,4) = 4*pow(t_free,3);
-    a_matrix(4,5) = 5*pow(t_free,4);
-    ////////
-    a_matrix(5,0) = 0;
-    a_matrix(5,1) = 0;
-    a_matrix(5,2) = 2;
-    a_matrix(5,3) = 6*t_free;
-    a_matrix(5,4) = 12*pow(t_free,2);
-    a_matrix(5,5) = 20*pow(t_free,3);
 
 
 
 
     
 
-    //kanonika edo thelei ena if t<=t_free (??)
-    a_x = a_matrix.inverse()*b1_x;
-    a_y = a_matrix.inverse()*b1_y;
-    a_theta = a_matrix.inverse()*b1_theta;
-    a0x = a_x(0);
-    a1x = a_x(1);
-    a2x = a_x(2);
-    a3x = a_x(3);
-    a4x = a_x(4);
-    a5x = a_x(5);
-    a0y = a_y(0);
-    a1y = a_y(1);
-    a2y = a_y(2);
-    a3y = a_y(3);
-    a4y = a_y(4);
-    a5y = a_y(5);
-    a0t = a_theta(0);
-    a1t = a_theta(1);
-    a2t = a_theta(2);
-    a3t = a_theta(3);
-    a4t = a_theta(4);
-    a5t = a_theta(5);
     s_x = a5x*pow(t,5) + a4x*pow(t,4) + a3x*pow(t,3) + a2x*pow(t,2) + a1x*t +a0x;
     s_y = a5y*pow(t,5) + a4y*pow(t,4) + a3y*pow(t,3) + a2y*pow(t,2) + a1y*t +a0y;
     s_theta = a5t*pow(t,5) + a4t*pow(t,4) + a3t*pow(t,3) + a2t*pow(t,2) + a1t*t +a0t;
@@ -602,16 +604,17 @@ void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c+
     thetafEddotdot=sdotdot_theta*(thetaE_contact-thetaE_in);
     
     /*contact phase trajectory*/
-    xcEd=xt+xE_contact-xt_in; //anti gia x_target=xt
+    //xcEd=xt+xE_contact-xt_in; //anti gia x_target=xt
+    xcEd = xt-l0;
     xcEddot=xtdot;
     xcEddotdot=fext(0)/mt;
     /////
     ycEd=yE_contact;
-    ycEddot=0;
+    ycEddot=ytdot;//anti gia 0
     ycEddotdot=0;
     /////
     thetacEd=thetaE_contact;
-    thetacEddot=0;
+    thetacEddot=thetatdot; //anti gia 0
     thetacEddotdot=0; 
 
     
@@ -635,10 +638,31 @@ void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c+
     xcddotdot(1) = ycEddotdot;
     xcddotdot(2) = thetacEddotdot;
 
-    xd = xfd*((abs(1-fext.squaredNorm()/a1))/(1+a1*fext.squaredNorm())) + xcd*fext.squaredNorm()/(fext.squaredNorm()+a2);
-    xddot = xfddot*((abs(1-fext.squaredNorm()/a1))/(1+a1*fext.squaredNorm())) + xcddot*fext.squaredNorm()/(fext.squaredNorm()+a2);
-    xddotdot = xfddotdot*((abs(1-fext.squaredNorm()/a1))/(1+a1*fext.squaredNorm())) + xcddotdot*fext.squaredNorm()/(fext.squaredNorm()+a2);
-    
+    /*!!!DIAGNOSTICS!!!*/
+    std::cout<<"current duration time is: "<<t<<std::endl;
+    std::cout<<"xfd(0) is: "<<xfd(0)<<" and xcd(0) is: "<<xcd(0)<<std::endl;
+    std::cout<<"s_x is: "<<s_x<<std::endl;
+    //std::cout<<"s_y is: "<<s_y<<std::endl;
+    //std::cout<<"s_theta is: "<<s_theta<<std::endl;
+    std::cout<<"a5x is: "<<a5x<<" a4x is: "<<a4x<<" a3x is: "<<a3x<<" a2x is: "<<a2x<<" a1x is: "<<a1x<<" a0x is: "<<a0x<<std::endl;
+    std::cout<<"a_matrix is: "<<a_matrix<<std::endl;
+    std::cout<<"b1_x is: "<<b1_x<<std::endl;
+    std::cout<<"a_matrix inverse is: "<<a_matrix.inverse()<<std::endl;
+
+
+
+
+    xd = xfd*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcd*abs(fext(0))/(abs(fext(0))+a2);
+    xddot = xfddot*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcddot*abs(fext(0))/(abs(fext(0))+a2);
+    xddotdot = xfddotdot*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcddotdot*abs(fext(0))/(abs(fext(0))+a2);
+
+//     xd(1) = xfd(1)*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcd(1)*abs(fext(0))/(abs(fext(0))+a2);
+//     xddot(1) = xfddot(1)*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcddot(1)*abs(fext(0))/(abs(fext(0))+a2);
+//     xddotdot(1) = xfddotdot(1)*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcddotdot(1)*abs(fext(0))/(abs(fext(0))+a2);
+
+//     xd(2) = xfd(2)*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcd(2)*abs(fext(0))/(abs(fext(0))+a2);
+//     xddot(2) = xfddot(2)*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcddot(2)*abs(fext(0))/(abs(fext(0))+a2);
+//     xddotdot(2) = xfddotdot(2)*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xcddotdot(2)*abs(fext(0))/(abs(fext(0))+a2);
 
 
 }
@@ -655,7 +679,7 @@ void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c+
 //     xdc(0) = xt;
 //     xdc(1) = yt;
 //     xdc(2) = thetat;
-//     xd = xdf*((abs(1-fext.squaredNorm()/a1))/(1+a1*fext.squaredNorm())) + xdc*fext.squaredNorm()/(fext.squaredNorm()+a2);
+//     xd = xdf*((abs(1-abs(fext(0))/a1))/(1+a1*abs(fext(0)))) + xdc*abs(fext(0))/(abs(fext(0))+a2);
 // }
 
 /////////////// CALCULATION FUNCTIONS DEFINITION END////////////////////////
