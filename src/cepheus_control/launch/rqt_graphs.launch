@@ -1,0 +1,12 @@
+<launch>
+    <!-- Launch RQt -->
+    <node pkg="rqt_plot" type="rqt_plot" name="plot1_base_force" args="/cepheus/force_base_topic/force/x /cepheus/force_base_topic/force/y">
+    </node>
+    <node pkg="rqt_plot" type="rqt_plot" name="plot2_fext" args=" /cepheus/ft_sensor_topic/wrench/force/x">
+    </node>
+    <node pkg="rqt_plot" type="rqt_plot" name="plot3_errors" args=" /cepheus/error_theta/data /cepheus/error_x/data /cepheus/error_y/data">
+    </node>
+    <node pkg="rqt_plot" type="rqt_plot" name="plot4_torques" args=" /cepheus/left_shoulder_effort_controller/command/data /cepheus/left_elbow_effort_controller/command/data /cepheus/left_wrist_effort_controller/command/data">
+    </node>
+    <!-- Add more plot nodes for additional plots -->
+</launch>
