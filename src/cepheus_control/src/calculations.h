@@ -77,8 +77,8 @@ void initialiseParameters(){//initialise constant parameters
     xch_c << 0, 0, 0;
     // xdf << 0, 0, 0;
     // xdc << 0, 0, 0;
-    xee << 0, 0, 0;
-    xeedot << 0, 0, 0;
+    // xee << 0, 0, 0;
+    // xeedot << 0, 0, 0;
     e << 0, 0, 0;
     edot << 0, 0, 0;
 
@@ -574,10 +574,6 @@ void JointControlUpdateStep(){
 void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c++ stous pinakes
 
 
-
-
-    
-
     s_x = a5x*pow(t,5) + a4x*pow(t,4) + a3x*pow(t,3) + a2x*pow(t,2) + a1x*t +a0x;
     s_y = a5y*pow(t,5) + a4y*pow(t,4) + a3y*pow(t,3) + a2y*pow(t,2) + a1y*t +a0y;
     s_theta = a5t*pow(t,5) + a4t*pow(t,4) + a3t*pow(t,3) + a2t*pow(t,2) + a1t*t +a0t;
@@ -640,7 +636,7 @@ void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c+
 
     /*!!!DIAGNOSTICS!!!*/
     std::cout<<"current duration time is: "<<t<<std::endl;
-    std::cout<<"xfd(0) is: "<<xfd(0)<<" and xcd(0) is: "<<xcd(0)<<std::endl;
+    // std::cout<<"xfd(0) is: "<<xfd(0)<<" and xcd(0) is: "<<xcd(0)<<std::endl;
     //std::cout<<"s_x is: "<<s_x<<std::endl;
     //std::cout<<"s_y is: "<<s_y<<std::endl;
     //std::cout<<"s_theta is: "<<s_theta<<std::endl;

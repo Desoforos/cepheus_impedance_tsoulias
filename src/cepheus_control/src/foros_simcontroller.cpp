@@ -206,33 +206,45 @@ int main(int argc, char **argv) {
             xd_x_pub.publish(msg_xd_x);
             xd_y_pub.publish(msg_xd_y);
 
+            std::cout<<"//////////////////////////"<<std::endl;
             //std::cout<<"current duration time is: "<<dur_time<<std::endl;
-
+            std::cout<<"theta0 is: "<<theta0<<" rad"<<std::endl;
+            std::cout<<"q1 is: "<<q1<<" rad"<<std::endl;
+            std::cout<<"q2 is: "<<q2<<" rad"<<std::endl;
+            std::cout<<"q3 is: "<<q3<<" rad"<<std::endl;
             std::cout<<"fext_x is: "<<fext(0)<<" N "<<std::endl;
             std::cout<<"fext_y is: "<<fext(1)<<" N "<<std::endl;
+            std::cout<<"xfd_x is: "<<xfd(0)<<" and xfd_y is: "<<xfd(1)<<std::endl;
+            std::cout<<"xcd_x is: "<<xcd(0)<<" and xcd_y is: "<<xcd(1)<<std::endl;
             std::cout<<"xd_x is: "<< xd(0) <<std::endl;
             std::cout<<"xd_y is: "<< xd(1) <<std::endl;
             std::cout<<"xd_theta is: "<< xd(2) <<std::endl;
+            std::cout<<"fact_x is: "<<fact(0)<<" N " <<std::endl;
+            std::cout<<"fact_y is: "<<fact(1)<<" N " <<std::endl;
+            std::cout<<"fact_t is: "<<fact(2)<<" Nm " <<std::endl;
+            std::cout<<"je.T is:"<<je.transpose()<<std::endl;
             std::cout<<"fx is: "<<qact(0)<<" N "<<std::endl;
             std::cout<<"fy is: "<<qact(1)<<" N "<<std::endl;
             std::cout<<"RW torque is: "<<qact(2)<<" Nm "<<std::endl;
+            std::cout<<"q1 torque is: "<<qact(3) <<" Nm "<<std::endl;
+            std::cout<<"q2 torque is: "<<qact(4) <<" Nm "<<std::endl;
+            std::cout<<"q3 torque is: "<<qact(5) <<" Nm "<<std::endl;
 
+            std::cout<<"xee is: "<<xee<<std::endl;
 
-
-
+            std::cout<<" "<<std::endl;
 
             //clear msgs after publish
-            // msg_RW.data = 0.0;
-            // msg_LS.data = 0.0;
-            // msg_LE.data = 0.0;
-            // msg_LW.data = 0.0;
-            // base_wrench.force.x = 0.0;
-            // base_wrench.force.y = 0.0;
-            // base_wrench.force.z = 0.0;
-            // base_wrench.torque.x = 0.0;
-            // base_wrench.torque.y = 0.0;
-            // base_wrench.torque.z = 0.0;
-            
+            msg_RW.data = 0.0;
+            msg_LS.data = 0.0;
+            msg_LE.data = 0.0;
+            msg_LW.data = 0.0;
+            base_wrench.force.x = 0.0;
+            base_wrench.force.y = 0.0;
+            base_wrench.force.z = 0.0;
+            base_wrench.torque.x = 0.0;
+            base_wrench.torque.y = 0.0;
+            base_wrench.torque.z = 0.0;         
 
         }
 		if(reachedTarget){ //na ftiakso to reachedGoal kalytera gia na teleionei to peirama, na ftiakso xrono

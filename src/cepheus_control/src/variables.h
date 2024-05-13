@@ -117,8 +117,8 @@ Eigen::VectorXd xfddotdot(3); //xEddotdot, yEddotdot, thetaEddotdot
 Eigen::VectorXd xcd(3); //the  DESIRED TRAJECTORY xEd,yEd,thetaEd
 Eigen::VectorXd xcddot(3); //xEddot, yEddot, thetaEddot
 Eigen::VectorXd xcddotdot(3); //xEddotdot, yEddotdot, thetaEddotdot
-Eigen::VectorXd xee(3); //(0,0,0); //the actual trajecotry (x,y,theta)
-Eigen::VectorXd xeedot(3); //(0,0,0); //the actual trajecotry (x,y,theta)
+Eigen::VectorXd xee = Eigen::VectorXd::Zero(3); //(0,0,0) //the actual trajecotry (x,y,theta)
+Eigen::VectorXd xeedot = Eigen::VectorXd::Zero(3);  //(0,0,0)//the actual trajecotry (x,y,theta)
 Eigen::VectorXd c(6);
 Eigen::VectorXd fact(3);
 Eigen::VectorXd z(6);
