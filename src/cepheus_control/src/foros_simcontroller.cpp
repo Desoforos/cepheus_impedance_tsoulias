@@ -172,6 +172,9 @@ int main(int argc, char **argv) {
             }
             curr_time = ros::Time::now();
 		    dur_time = curr_time.toSec() - t_beg.toSec();
+            // if(dur_time<200){
+            //     desiredTrajectory(dur_time);
+            // } //mallon to xreiazetai tha to ksanavalo
             desiredTrajectory(dur_time);
             calculateStep();
             //ImpedanceControlUpdateStep();
@@ -179,8 +182,9 @@ int main(int argc, char **argv) {
             /*UPDATE THE ROS MESSAGES*/
             // msg_TX.data = qact(0);
             // msg_TY.data = qact(1); 
-            base_wrench.force.x = qact(0);
-            base_wrench.force.y = qact(1);
+            base_wrench.force.x = fact(0);//qact(0);
+            base_wrench.force.y = fact(1);//qact(1);
+            base_wrench.torque.z = fact(2);
             msg_RW.data = qact(2);
 			msg_LS.data = qact(3);
 			msg_LE.data = qact(4);
@@ -196,43 +200,17 @@ int main(int argc, char **argv) {
             // thruster_y_pub.publish(msg_TY); den xreiazontai pia exo to base force
 
             base_force_pub.publish(base_wrench);
-            RW_torque_pub.publish(msg_RW);
-            LS_torque_pub.publish(msg_LS);
-            LE_torque_pub.publish(msg_LE);
-            LW_torque_pub.publish(msg_LW);
+            // RW_torque_pub.publish(msg_RW);
+            // LS_torque_pub.publish(msg_LS);
+            // LE_torque_pub.publish(msg_LE);
+            // LW_torque_pub.publish(msg_LW);
             error_x_pub.publish(msg_ex);
             error_y_pub.publish(msg_ey);
             error_theta_pub.publish(msg_etheta);
             xd_x_pub.publish(msg_xd_x);
             xd_y_pub.publish(msg_xd_y);
 
-            std::cout<<"//////////////////////////"<<std::endl;
-            //std::cout<<"current duration time is: "<<dur_time<<std::endl;
-            std::cout<<"theta0 is: "<<theta0<<" rad"<<std::endl;
-            std::cout<<"q1 is: "<<q1<<" rad"<<std::endl;
-            std::cout<<"q2 is: "<<q2<<" rad"<<std::endl;
-            std::cout<<"q3 is: "<<q3<<" rad"<<std::endl;
-            std::cout<<"fext_x is: "<<fext(0)<<" N "<<std::endl;
-            std::cout<<"fext_y is: "<<fext(1)<<" N "<<std::endl;
-            std::cout<<"xfd_x is: "<<xfd(0)<<" and xfd_y is: "<<xfd(1)<<std::endl;
-            std::cout<<"xcd_x is: "<<xcd(0)<<" and xcd_y is: "<<xcd(1)<<std::endl;
-            std::cout<<"xd_x is: "<< xd(0) <<std::endl;
-            std::cout<<"xd_y is: "<< xd(1) <<std::endl;
-            std::cout<<"xd_theta is: "<< xd(2) <<std::endl;
-            std::cout<<"fact_x is: "<<fact(0)<<" N " <<std::endl;
-            std::cout<<"fact_y is: "<<fact(1)<<" N " <<std::endl;
-            std::cout<<"fact_t is: "<<fact(2)<<" Nm " <<std::endl;
-            std::cout<<"je.T is:"<<je.transpose()<<std::endl;
-            std::cout<<"fx is: "<<qact(0)<<" N "<<std::endl;
-            std::cout<<"fy is: "<<qact(1)<<" N "<<std::endl;
-            std::cout<<"RW torque is: "<<qact(2)<<" Nm "<<std::endl;
-            std::cout<<"q1 torque is: "<<qact(3) <<" Nm "<<std::endl;
-            std::cout<<"q2 torque is: "<<qact(4) <<" Nm "<<std::endl;
-            std::cout<<"q3 torque is: "<<qact(5) <<" Nm "<<std::endl;
 
-            std::cout<<"xee is: "<<xee<<std::endl;
-
-            std::cout<<" "<<std::endl;
 
             //clear msgs after publish
             msg_RW.data = 0.0;
@@ -244,7 +222,9 @@ int main(int argc, char **argv) {
             base_wrench.force.z = 0.0;
             base_wrench.torque.x = 0.0;
             base_wrench.torque.y = 0.0;
-            base_wrench.torque.z = 0.0;         
+            base_wrench.torque.z = 0.0;      
+
+            diagnostics();   
 
         }
 		if(reachedTarget){ //na ftiakso to reachedGoal kalytera gia na teleionei to peirama, na ftiakso xrono

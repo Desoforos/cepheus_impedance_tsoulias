@@ -33,7 +33,7 @@
 			<origin
 				xyz="0.0 0.0 0.0"
 				rpy="0.0 0.0 0.0" />
-			<mass value="0.01" />
+			<    value="0.01" />
 			<inertia
 				ixx="1e-2"
 				ixy="0.0"
@@ -391,7 +391,7 @@
 			<!-- <alwaysOn>true</alwaysOn> -->
 			<!-- <update>100</update> -->
 			<!-- <updateRate>0</updateRate> anti gia 100 -->
-			<bodyName>cepheus_base</bodyName>
+			<bodyName>left_grip</bodyName>
 			<topicName>force_base_topic</topicName>
 			<force_reference_frame>world</force_reference_frame>
 		</plugin>

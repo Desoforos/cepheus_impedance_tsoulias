@@ -14,7 +14,7 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 	yc0dot = msg->twist[3].linear.y;
 	xtdot = msg->twist[9].linear.x;
 	ytdot = msg->twist[9].linear.y;
-	thetatdot = msg->twist[7].angular.z;
+	thetatdot = msg->twist[9].angular.z;
 	tf::Quaternion q( //for angle of base
         msg->pose[3].orientation.x,
         msg->pose[3].orientation.y,
@@ -66,8 +66,8 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 		xE_in = ee_x;
 		yE_in = ee_y;
 		thetaE_in = thetach; //ousiastika to egrapsa 2 fores, useless
+		firstTime = false;
 	}
-	firstTime = false;
 }
 
 /* useless
@@ -132,9 +132,12 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     force_x = msg->wrench.force.x;
     force_y = msg->wrench.force.y;
 	torque_z = msg->wrench.torque.z;
-	fext(0) = force_x;
-	fext(1) = force_y;
-	fext(2) = torque_z;
+	// fext(0) = force_x;
+	// fext(1) = force_y;
+	// fext(2) = torque_z; //na ta bgalo apo sxolio
+	fext(0) =0;
+	fext(1) = 0;
+	fext(2) =0; //for testing
     // if(force_y>10){
     //     ROS_INFO("[foros_simcontroller]: force_y detected: %f N \n",force_y);
     // } 

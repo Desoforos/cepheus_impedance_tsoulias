@@ -24,7 +24,7 @@ void inverseKinematics(){
 */
 
 void initialiseParameters(){//initialise constant parameters
-    // l0 = 0.2; 
+     l0 = 0.2; 
     // m0 = 13.3; // OXIapo pinaka 5.1 impedance thesis(not anymore 400), tora apo peleq
     // r0x = 1;
     // r0y = 1;
@@ -605,11 +605,11 @@ void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c+
     xcEddot=xtdot;
     xcEddotdot=fext(0)/mt;
     /////
-    ycEd=yE_contact;
+    ycEd= yt;// anti gia isos yE_contact;
     ycEddot=ytdot;//anti gia 0
     ycEddotdot=0;
     /////
-    thetacEd=thetaE_contact;
+    thetacEd=thetat; //isos anti gia thetaE_contact;
     thetacEddot=thetatdot; //anti gia 0
     thetacEddotdot=0; 
 
@@ -685,3 +685,42 @@ void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c+
 /////////////// CALCULATION FUNCTIONS DEFINITION END////////////////////////
 
 
+void diagnostics(){
+    std::cout<<"//////////////////////////"<<std::endl;
+    ////////////START OF DIAGNOSTICS HERE/////////////////////
+    //std::cout<<"current duration time is: "<<dur_time<<std::endl;
+    std::cout<<"theta0 is: "<<theta0<<" rad"<<std::endl;
+    // std::cout<<"q1 is: "<<q1<<" rad"<<std::endl;
+    // std::cout<<"q2 is: "<<q2<<" rad"<<std::endl;
+    // std::cout<<"q3 is: "<<q3<<" rad"<<std::endl;
+    // std::cout<<"fext_x is: "<<fext(0)<<" N "<<std::endl;
+    // std::cout<<"fext_y is: "<<fext(1)<<" N "<<std::endl;
+    // std::cout<<"xfd_x is: "<<xfd(0)<<" and xfd_y is: "<<xfd(1)<<std::endl;
+    // std::cout<<"xcd_x is: "<<xcd(0)<<" and xcd_y is: "<<xcd(1)<<std::endl;
+    // std::cout<<"xd_x is: "<< xd(0) <<std::endl;
+    // std::cout<<"xd_y is: "<< xd(1) <<std::endl;
+    // std::cout<<"xd_theta is: "<< xd(2) <<std::endl;
+    // std::cout<<"fact_x is: "<<fact(0)<<" N " <<std::endl;
+    // std::cout<<"fact_y is: "<<fact(1)<<" N " <<std::endl;
+    // std::cout<<"fact_t is: "<<fact(2)<<" Nm " <<std::endl;
+    // std::cout<<"je.T is:"<<je.transpose()<<std::endl;
+    // std::cout<<"fx is: "<<qact(0)<<" N "<<std::endl;
+    // std::cout<<"fy is: "<<qact(1)<<" N "<<std::endl;
+    // std::cout<<"RW torque is: "<<qact(2)<<" Nm "<<std::endl;
+    // std::cout<<"q1 torque is: "<<qact(3) <<" Nm "<<std::endl;
+    // std::cout<<"q2 torque is: "<<qact(4) <<" Nm "<<std::endl;
+    // std::cout<<"q3 torque is: "<<qact(5) <<" Nm "<<std::endl;
+    // std::cout<<"ee_x is:  "<<ee_x <<" m  "<<std::endl;
+    // std::cout<<"ee_y is:  "<<ee_y <<" m  "<<std::endl;
+    // std::cout<<"xee is: "<<xee<<std::endl;
+    std::cout<<"ee x is: "<<xee(0)<<" m"<<std::endl;
+    std::cout<<"ee y is: "<<xee(1)<<" m"<<std::endl;
+    std::cout<<"ee theta is: "<<xee(2)<<" rad"<<std::endl;
+    std::cout<<"target x is: "<<xt<<" m"<<std::endl;
+    std::cout<<"target y is: "<<yt<<" m"<<std::endl;
+    std::cout<<"target theta is: "<<thetat<<" rad"<<std::endl;
+
+    ////////////END OF DIAGNOSTICS HERE/////////////////
+
+    std::cout<<" "<<std::endl;
+}
