@@ -184,8 +184,8 @@ int main(int argc, char **argv) {
             // msg_TY.data = qact(1); 
             base_wrench.force.x = qact(0);//qact(0);
             base_wrench.force.y = qact(1);//qact(1);
-            base_wrench.torque.z = qact(2);
-            msg_RW.data = qact(2);
+            // base_wrench.torque.z = qact(2);
+            msg_RW.data = qact(2); //to bazo anapoda bas kai
 			msg_LS.data = qact(3);
 			msg_LE.data = qact(4);
 			msg_LW.data = qact(5);

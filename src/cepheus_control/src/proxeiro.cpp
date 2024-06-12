@@ -1,70 +1,72 @@
-#include <ros/ros.h>
+#include "includes.h"
 #include <controller_manager_msgs/SwitchController.h>
-#include <sensor_msgs/JointState.h>
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
+
+    /* ros init */
     ros::init(argc, argv, "testsetter_node");
     ros::NodeHandle nh;
+    ros::Time curr_time, t_beg;
+    // ros::Duration dur_time; //duration of movement
+    double dur_time;
 
-    // Publisher for joint states
-    ros::Publisher joint_state_pub = nh.advertise<sensor_msgs::JointState>("/joint_states", 10);
+    /* Create publishers */
+    ros::Publisher LS_position_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_shoulder_position_controller/command", 1);
+    ros::Publisher LE_position_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_elbow_position_controller/command", 1);
+    ros::Publisher LW_position_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_wrist_position_controller/command", 1);
 
-    // Set initial joint positions
-    sensor_msgs::JointState joint_state;
-    joint_state.name = {"joint1", "joint2", "joint3"};
-    joint_state.position = {M_PI / 4, M_PI / 4, M_PI / 4};  // Replace with desired initial positions
+    /* messages to publish */
+    std_msgs::Float64 msg_LS;
+    std_msgs::Float64 msg_LE;
+    std_msgs::Float64 msg_LW;
 
-    ros::Rate rate(10);
-    for (int i = 0; i < 10; ++i) {
-        joint_state.header.stamp = ros::Time::now();
-        joint_state_pub.publish(joint_state);
-        rate.sleep();
-    }
+    double q1,q2,q3;
 
-    // Create a service client for the /controller_manager/switch_controller service
-    ros::ServiceClient switch_client = nh.serviceClient<controller_manager_msgs::SwitchController>("/controller_manager/switch_controller");
+    ROS_INFO("[testsetter]: Warning! Do not proceed before running the Gazebo. \n");
 
-    // Ensure the service is available
-    switch_client.waitForExistence();
+    std::cout <<"Give me initial q1(shoulder) (deg):" <<std::endl;
+    std::cin >> q1;
+    std::cout <<"Give me initial q2(elbow) (deg):" <<std::endl;
+    std::cin >> q2;
+    std::cout <<"Give me initial q3(wrist) (deg):" <<std::endl;
+    std::cin >> q3;
 
-    // Prepare the service request to switch to position controllers
-    controller_manager_msgs::SwitchController switch_srv;
-    switch_srv.request.start_controllers = {"joint1_position_controller", "joint2_position_controller", "joint3_position_controller"};
-    switch_srv.request.stop_controllers = {"joint1_effort_controller", "joint2_effort_controller", "joint3_effort_controller"};
-    switch_srv.request.strictness = controller_manager_msgs::SwitchController::Request::BEST_EFFORT;
+    q1 = q1*M_PI/180; //from deg to rad
+    q2 = q2*M_PI/180; //from deg to rad
+    q3 = q3*M_PI/180; //from deg to rad
 
-    // Call the service to switch to position controllers
-    if (switch_client.call(switch_srv)) {
-        if (switch_srv.response.ok) {
-            ROS_INFO("Switched to position controllers");
-        } else {
-            ROS_ERROR("Failed to switch to position controllers: %s", switch_srv.response.ok ? "Success" : "Failure");
-        }
-    } else {
-        ROS_ERROR("Service call to switch to position controllers failed");
-        return 1;
-    }
+    msg_LS.data = q1;
+    msg_LE.data = q2;
+    msg_LW.data = q3;
 
-    // Wait a bit to ensure the positions are set
+    LS_position_pub.publish(msg_LS);
+    LE_position_pub.publish(msg_LE);
+    LW_position_pub.publish(msg_LW);
+
+    ros::spinOnce();
+
+    ROS_INFO("[testsetter]: Initial pose of Cepheus established. \n");
+    
     ros::Duration(5.0).sleep();
 
-    // Prepare the service request to switch to effort controllers
-    switch_srv.request.start_controllers = {"joint1_effort_controller", "joint2_effort_controller", "joint3_effort_controller"};
-    switch_srv.request.stop_controllers = {"joint1_position_controller", "joint2_position_controller", "joint3_position_controller"};
+     // Switch controllers
+    ros::ServiceClient switch_client = nh.serviceClient<controller_manager_msgs::SwitchController>("/controller_manager/switch_controller");
+    // Switch to effort controllers
+    controller_manager_msgs::SwitchController switch_srv;
+    switch_srv.request.start_controllers = {"left_shoulder_effort_controller", "left_elbow_effort_controller", "left_wrist_effort_controller"};
+    switch_srv.request.stop_controllers = {"left_shoulder_position_controller", "left_elbow_position_controller", "left_wrist_position_controller"};
+    switch_srv.request.strictness = controller_manager_msgs::SwitchController::Request::STRICT;
+    
+    
 
-    // Call the service to switch to effort controllers
     if (switch_client.call(switch_srv)) {
-        if (switch_srv.response.ok) {
-            ROS_INFO("Switched to effort controllers");
-        } else {
-            ROS_ERROR("Failed to switch to effort controllers: %s", switch_srv.response.ok ? "Success" : "Failure");
-        }
+        ROS_INFO("Switched to effort controllers");
     } else {
-        ROS_ERROR("Service call to switch to effort controllers failed");
+        ROS_ERROR("Failed to switch to effort controllers");
         return 1;
     }
 
     ros::shutdown();
+
     return 0;
 }
-

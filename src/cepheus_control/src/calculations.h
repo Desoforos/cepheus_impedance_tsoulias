@@ -111,9 +111,9 @@ void initialiseParameters(){//initialise constant parameters
     z_contact = z_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
     wn_contact = wn_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
     
-    kd_e << 100, 0, 0,
-            0, 100, 0,
-            0, 0, 100;
+    kd_e << 1000, 0, 0,
+            0, 1000, 0,
+            0, 0, 1000;
 
     kd_b << 100, 0, 0,
             0, 100, 0,

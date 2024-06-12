@@ -1,14 +1,61 @@
-#include "includes.h"
+#include <ros/ros.h>
 #include <controller_manager_msgs/SwitchController.h>
+#include <controller_manager_msgs/LoadController.h>
+#include <controller_manager_msgs/UnloadController.h>
+#include "includes.h"
 
-int main(int argc, char **argv) {
+bool switchControllers(ros::NodeHandle& nh, 
+                       const std::vector<std::string>& stop_controllers, 
+                       const std::vector<std::string>& start_controllers) {
+    ros::ServiceClient switch_client = nh.serviceClient<controller_manager_msgs::SwitchController>("/cepheus/controller_manager/switch_controller");
 
-    /* ros init */
+    controller_manager_msgs::SwitchController switch_srv;
+    switch_srv.request.stop_controllers = stop_controllers;
+    switch_srv.request.start_controllers = start_controllers;
+    switch_srv.request.strictness = controller_manager_msgs::SwitchController::Request::STRICT;
+
+    if (switch_client.call(switch_srv)) {
+        return switch_srv.response.ok;
+    } else {
+        ROS_ERROR("Failed to call service switch_controller");
+        return false;
+    }
+}
+
+bool loadController(ros::NodeHandle& nh, const std::string& controller_name) {
+    ros::ServiceClient load_client = nh.serviceClient<controller_manager_msgs::LoadController>("/cepheus/controller_manager/load_controller");
+
+    controller_manager_msgs::LoadController load_srv;
+    load_srv.request.name = controller_name;
+
+    if (load_client.call(load_srv)) {
+        return load_srv.response.ok;
+    } else {
+        ROS_ERROR("Failed to call service load_controller");
+        return false;
+    }
+}
+
+bool unloadController(ros::NodeHandle& nh, const std::string& controller_name) {
+    ros::ServiceClient unload_client = nh.serviceClient<controller_manager_msgs::UnloadController>("/cepheus/controller_manager/unload_controller");
+
+    controller_manager_msgs::UnloadController unload_srv;
+    unload_srv.request.name = controller_name;
+
+    if (unload_client.call(unload_srv)) {
+        return unload_srv.response.ok;
+    } else {
+        ROS_ERROR("Failed to call service unload_controller");
+        return false;
+    }
+}
+
+int main(int argc, char** argv) {
     ros::init(argc, argv, "testsetter_node");
     ros::NodeHandle nh;
-    ros::Time curr_time, t_beg;
-    // ros::Duration dur_time; //duration of movement
-    double dur_time;
+
+    std::vector<std::string> controllersA = {"left_shoulder_position_controller", "left_elbow_position_controller", "left_wrist_position_controller"};
+    std::vector<std::string> controllersB = {"left_shoulder_effort_controller", "left_elbow_effort_controller", "left_wrist_effort_controller"};
 
     /* Create publishers */
     ros::Publisher LS_position_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_shoulder_position_controller/command", 1);
@@ -47,26 +94,39 @@ int main(int argc, char **argv) {
 
     ROS_INFO("[testsetter]: Initial pose of Cepheus established. \n");
     
-    ros::Duration(5.0).sleep();
+    ros::Duration(3.0).sleep();
+    //////////////////////////CONTROLLER SWITCHING////////////////////////////////
 
-     // Switch controllers
-    ros::ServiceClient switch_client = nh.serviceClient<controller_manager_msgs::SwitchController>("/controller_manager/switch_controller");
-    // Switch to effort controllers
-    controller_manager_msgs::SwitchController switch_srv;
-    switch_srv.request.start_controllers = {"left_shoulder_effort_controller", "left_elbow_effort_controller", "left_wrist_effort_controller"};
-    switch_srv.request.stop_controllers = {"left_shoulder_position_controller", "left_elbow_position_controller", "left_wrist_position_controller"};
-    switch_srv.request.strictness = controller_manager_msgs::SwitchController::Request::STRICT;
-    
-    
-
-    if (switch_client.call(switch_srv)) {
-        ROS_INFO("Switched to effort controllers");
-    } else {
-        ROS_ERROR("Failed to switch to effort controllers");
+    // Step 1: Stop controllers A1, A2, A3
+    if (!switchControllers(nh, controllersA, {})) {
+        ROS_ERROR("Failed to stop controllers A1, A2, A3");
         return 1;
     }
 
-    ros::shutdown();
+    // Step 2: Unload controllers A1, A2, A3
+    for (const auto& controller : controllersA) {
+        if (!unloadController(nh, controller)) {
+            ROS_ERROR("Failed to unload controller %s", controller.c_str());
+            return 1;
+        }
+    }
 
+    // Step 3: Load controllers B1, B2, B3
+    for (const auto& controller : controllersB) {
+        if (!loadController(nh, controller)) {
+            ROS_ERROR("Failed to load controller %s", controller.c_str());
+            return 1;
+        }
+    }
+
+    // Step 4: Start controllers B1, B2, B3
+    if (!switchControllers(nh, {}, controllersB)) {
+        ROS_ERROR("Failed to start controllers B1, B2, B3");
+        return 1;
+    }
+
+    ROS_INFO("Successfully switched from position controllers to effort controllers.");
+
+    ros::spinOnce();
     return 0;
 }

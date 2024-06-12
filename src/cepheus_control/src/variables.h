@@ -172,7 +172,7 @@ double ts_free = 0.1*t_free;
 double wn_free = 6/ts_free;
 double z_contact;
 double wn_contact;
-double thetaE_in=30*(M_PI/180);
+double thetaE_in; //=30*(M_PI/180);
 
 double v;
 double x_target_in, y_target_in , theta_target_in;
