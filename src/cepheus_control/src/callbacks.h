@@ -6,15 +6,15 @@
 void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update the current position of ee and ring
     ee_x = msg->pose[6].position.x;//left grip pose[6]
     ee_y = msg->pose[6].position.y;
-    xt= msg->pose[9].position.x; //ringx
-    yt = msg->pose[9].position.y; //ringy
+    xt= msg->pose[8].position.x; //ringx
+    yt = msg->pose[8].position.y; //ringy
 	xc0 = msg->pose[3].position.x; //pose of base
 	yc0 = msg->pose[3].position.y;
 	xc0dot = msg->twist[3].linear.x; //velocity of base 
 	yc0dot = msg->twist[3].linear.y;
-	xtdot = msg->twist[9].linear.x;
-	ytdot = msg->twist[9].linear.y;
-	thetatdot = msg->twist[9].angular.z;
+	xtdot = msg->twist[8].linear.x;
+	ytdot = msg->twist[8].linear.y;
+	thetatdot = msg->twist[8].angular.z;
 	tf::Quaternion q( //for angle of base
         msg->pose[3].orientation.x,
         msg->pose[3].orientation.y,
@@ -27,10 +27,10 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 	theta0dot = msg->twist[3].angular.z; //angledot of base
 	//////kai gia stoxo
 	tf::Quaternion qring(
-        msg->pose[9].orientation.x,
-        msg->pose[9].orientation.y,
-        msg->pose[9].orientation.z,
-        msg->pose[9].orientation.w);
+        msg->pose[8].orientation.x,
+        msg->pose[8].orientation.y,
+        msg->pose[8].orientation.z,
+        msg->pose[8].orientation.w);
     tf::Matrix3x3 mring(qring);
     double rollring, pitchring, yawring;
     mring.getRPY(rollring, pitchring, yawring);
@@ -135,9 +135,9 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
 	// fext(0) = force_x;
 	// fext(1) = force_y;
 	// fext(2) = torque_z; //na ta bgalo apo sxolio
-	fext(0) =0;
-	fext(1) = 0;
-	fext(2) =0; //for testing
+	// fext(0) =0;
+	// fext(1) = 0;
+	// fext(2) =0; //for testing
     // if(force_y>10){
     //     ROS_INFO("[foros_simcontroller]: force_y detected: %f N \n",force_y);
     // } 

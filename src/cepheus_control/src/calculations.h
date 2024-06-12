@@ -595,7 +595,7 @@ void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c+
     yfEddot=sdot_y*(yE_contact-yE_in);
     yfEddotdot=sdotdot_y*(yE_contact-yE_in);
     /////
-    thetafEd=thetaE_in+s_theta*(thetaE_contact-thetaE_in);
+    thetafEd=thetaE_in+ s_theta*(thetaE_contact-thetaE_in); //+M_PI ??
     thetafEddot=sdot_theta*(thetaE_contact-thetaE_in);
     thetafEddotdot=sdotdot_theta*(thetaE_contact-thetaE_in);
     
@@ -689,7 +689,7 @@ void diagnostics(){
     std::cout<<"//////////////////////////"<<std::endl;
     ////////////START OF DIAGNOSTICS HERE/////////////////////
     //std::cout<<"current duration time is: "<<dur_time<<std::endl;
-    std::cout<<"theta0 is: "<<theta0<<" rad"<<std::endl;
+    //std::cout<<"theta0 is: "<<theta0<<" rad"<<std::endl;
     // std::cout<<"q1 is: "<<q1<<" rad"<<std::endl;
     // std::cout<<"q2 is: "<<q2<<" rad"<<std::endl;
     // std::cout<<"q3 is: "<<q3<<" rad"<<std::endl;
@@ -704,21 +704,36 @@ void diagnostics(){
     // std::cout<<"fact_y is: "<<fact(1)<<" N " <<std::endl;
     // std::cout<<"fact_t is: "<<fact(2)<<" Nm " <<std::endl;
     // std::cout<<"je.T is:"<<je.transpose()<<std::endl;
-    // std::cout<<"fx is: "<<qact(0)<<" N "<<std::endl;
-    // std::cout<<"fy is: "<<qact(1)<<" N "<<std::endl;
-    // std::cout<<"RW torque is: "<<qact(2)<<" Nm "<<std::endl;
+
+   
     // std::cout<<"q1 torque is: "<<qact(3) <<" Nm "<<std::endl;
     // std::cout<<"q2 torque is: "<<qact(4) <<" Nm "<<std::endl;
     // std::cout<<"q3 torque is: "<<qact(5) <<" Nm "<<std::endl;
     // std::cout<<"ee_x is:  "<<ee_x <<" m  "<<std::endl;
     // std::cout<<"ee_y is:  "<<ee_y <<" m  "<<std::endl;
     // std::cout<<"xee is: "<<xee<<std::endl;
-    std::cout<<"ee x is: "<<xee(0)<<" m"<<std::endl;
-    std::cout<<"ee y is: "<<xee(1)<<" m"<<std::endl;
-    std::cout<<"ee theta is: "<<xee(2)<<" rad"<<std::endl;
-    std::cout<<"target x is: "<<xt<<" m"<<std::endl;
-    std::cout<<"target y is: "<<yt<<" m"<<std::endl;
-    std::cout<<"target theta is: "<<thetat<<" rad"<<std::endl;
+    // std::cout<<"ee x is: "<<xee(0)<<" m"<<std::endl;
+    // std::cout<<"ee y is: "<<xee(1)<<" m"<<std::endl;
+    // std::cout<<"ee theta is: "<<xee(2)<<" rad"<<std::endl;
+    // std::cout<<"target x is: "<<xt<<" m"<<std::endl;
+    // std::cout<<"target y is: "<<yt<<" m"<<std::endl;
+    // std::cout<<"target theta is: "<<thetat<<" rad"<<std::endl;
+
+    std::cout<<"fext x is: "<<fext(0)<<" N"<<std::endl;
+    std::cout<<"error x is: "<<e(0)<<" m "<<std::endl;
+    std::cout<<"error y is: "<<e(1)<<" m "<<std::endl;
+    std::cout<<"error theta is: "<<e(2)<<" rad "<<std::endl;
+    std::cout<<"fx is: "<<qact(0)<<" N "<<std::endl;
+    std::cout<<"fy is: "<<qact(1)<<" N "<<std::endl;
+    std::cout<<"RW torque is: "<<qact(2)<<" Nm "<<std::endl;
+    std::cout<<"t1 (shoulder torque) is: "<<qact(3)<<" Nm "<<std::endl;
+    std::cout<<"t2 (elbow torque) is: "<<qact(4)<<" Nm "<<std::endl;
+    std::cout<<"t3 (wrist torque) is: "<<qact(5)<<" Nm "<<std::endl;
+
+    // std::cout<<"fact x is: "<<fact(0)<<" N"<<std::endl;
+    // std::cout<<"fact y is: "<<fact(1)<<" N"<<std::endl;
+    // std::cout<<"nact  is: "<<fact(2)<<" Nm"<<std::endl;
+
 
     ////////////END OF DIAGNOSTICS HERE/////////////////
 

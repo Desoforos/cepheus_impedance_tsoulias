@@ -30,3 +30,18 @@
     joint: left_wrist_joint
     pid: {p: 10.0, i: 0.1, d: 1.0}
     # pid: {p: 1.0, i: 0.1, d: 1.0}
+# Position Controllers-----------
+  left_shoulder_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: left_shoulder_joint
+    pid: {p: 10.0, i: 0.1, d: 1.0}
+    # pid: {p: 1.0, i: 0.1, d: 1.0}
+  left_elbow_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: left_elbow_joint
+    pid: {p: 10.0, i: 0.1, d: 1.0}
+  left_wrist_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: left_wrist_joint
+    pid: {p: 10.0, i: 0.1, d: 1.0}
+    # pid: {p: 1.0, i: 0.1, d: 1.0}

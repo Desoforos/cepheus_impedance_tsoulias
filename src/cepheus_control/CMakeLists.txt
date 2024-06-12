@@ -145,6 +145,7 @@ add_executable(cepheus_controller_node src/cepheus_controller.cpp)
 add_executable(foros_simcontroller_node src/foros_simcontroller.cpp) #nikiforos new
 # add_executable(eross_control_node src/eross_control.cpp) #nikiforos, took from eros
 add_executable(foros_user_node src/foros_user.cpp)
+add_executable(testsetter_node src/testsetter.cpp)
 
 
 ## Rename C++ executable without prefix
@@ -161,6 +162,8 @@ add_executable(foros_user_node src/foros_user.cpp)
 target_link_libraries(foros_user_node ${catkin_LIBRARIES} cartesian_impedance_controller cartesian_impedance_controller_ros)
 target_link_libraries(cepheus_controller_node ${catkin_LIBRARIES} cartesian_impedance_controller cartesian_impedance_controller_ros)
 target_link_libraries(foros_simcontroller_node ${catkin_LIBRARIES} cartesian_impedance_controller cartesian_impedance_controller_ros) #nikiforos
+target_link_libraries(testsetter_node ${catkin_LIBRARIES} cartesian_impedance_controller cartesian_impedance_controller_ros) #nikiforos
+
 # target_link_libraries(eross_control_node ${catkin_LIBRARIES} cartesian_impedance_controller cartesian_impedance_controller_ros) #nikiforos, took from eros
 #############
 ## Install ##
