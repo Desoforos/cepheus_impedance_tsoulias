@@ -1,0 +1,191 @@
+clear all
+clc
+% 
+global t0 t_free v xE_in yE_in thetaE_in xE_fin yE_fin thetaE_fin...
+   xb_in yb_in thetab_in xb_fin yb_fin thetab_fin mt xt_in yt_in thetat_in...
+   M mb m1 m2 m3 r0x r0y q01 r1 r2 r3 l1 l2 l3 I0z I1z I2z I3z l0 lt S01 S02...
+   Md Bd Kd Fdes It ke A0 w q1_in q2_in q3_in parameters
+% 
+mb=53;
+m1=0.2314;
+m2=0.1;%!!
+m3=4.6*10^(-2);%!!
+
+mt=1;
+%
+M=mb+m1+m2+m3;
+% 
+l1=0.185;
+l2=0.143;
+l3=0.0411;
+lt=0.03;
+% 
+r0x=0.1425;
+r0y=-0.08225;
+q01=-30*pi/180;
+r1=0.185;
+r2=0.143;
+r3=0.0261;
+%
+S01=0.5;%2
+S02=0.2;%2.5
+%
+% 
+% l0=0.015;
+l0=0;
+% 
+% xE_in=0.1;
+% yE_in=0.1;
+% thetaE_in=60*(pi/180);
+% xE_contact=2.5;
+% yE_contact=2.5;
+% thetaE_contact=0;
+% XE_in=[xE_in;yE_in;thetaE_in];
+% XE_contact=[xE_contact;yE_contact;thetaE_contact];
+% x_target_in=xE_contact+l0;
+% y_target_in=2.5;
+% theta_target_in=0;
+% X_target_in=[x_target_in;y_target_in;theta_target_in];
+%
+%
+xE_in=0.72;
+yE_in=-0.25143;
+thetaE_in=0.7854;
+%
+xb_in=0;
+yb_in=0;
+thetab_in=0*(pi/180)+q01;%30
+%
+xt_in=1;
+yt_in=0.8;%20
+thetat_in=0*(pi/180);
+%
+xE_fin=xt_in-0.015;
+yE_fin=yt_in;
+thetaE_fin=thetat_in;
+%
+xb_fin=xE_fin-S01;
+yb_fin=yE_fin-S02;
+thetab_fin=thetat_in;
+%
+a=sqrt(r0x^2+r0y^2);
+b=l1+r1;
+c=l2+r2;
+d=l3+r3;
+% 
+cos_q2=(((xE_in-xb_in-a*cos(thetab_in)-d*cos(thetaE_in))^2)+...
+    ((yE_in-yb_in-a*sin(thetab_in)-d*sin(thetaE_in))^2)-(b^2)-(c^2))/(2*b*c);
+sin_q2=sqrt(1-(cos_q2)^2);
+% 
+A=c*sin_q2;
+B=b+c*cos_q2;
+% 
+sin_th0_q1=-((A*(xE_in-xb_in-a*cos(thetab_in)-d*cos(thetaE_in))-...
+    B*(yE_in-yb_in-a*sin(thetab_in)-d*sin(thetaE_in)))/((b^2)+(c^2)+2*b*c*cos_q2));
+cos_th0_q1=(A*(yE_in-yb_in-a*sin(thetab_in)-d*sin(thetaE_in))+...
+    B*(xE_in-xb_in-a*cos(thetab_in)-d*cos(thetaE_in)))/((b^2)+(c^2)+2*b*c*cos_q2);
+% 
+q2_in=atan2(sin_q2,cos_q2);
+q1_in=atan2(sin_th0_q1,cos_th0_q1)-thetab_in;
+q3_in=thetaE_in-thetab_in-q1_in-q2_in;
+%
+% q1_deg=q1_in*(180/pi)
+% q2_deg=q2_in*(180/pi)
+% q3_deg=q3_in*(180/pi)
+%
+% I0z=(1/2)*mb*(r0x^2+r0y^2);
+% I1z=(1/12)*m1*((l1+r1)^2);
+% I2z=(1/12)*m2*((l2+r2)^2);
+% I3z=(1/12)*m3*((l3+r3)^2);
+% It=(1/6)*mt*(lt^2);
+I0z=2.1837;
+I1z=6.81*10^(-3);
+I2z=1.487*10^(-5);
+I3z=1.2287*10^(-5);
+It=1; 
+% 
+%
+% A0 = 100;
+% w = 10;
+A0 = 0;
+w = 2;
+%
+ke = 100;
+Ke_star = ke*eye(3);
+Be = 1*eye(3);
+Ke = Ke_star;
+
+
+% Kd_e=[100 0 0;0 100 0;0 0 100];
+% Kd_b=[100 0 0;0 100 0;0 0 100];
+% % Kd_e=[10 0 0;0 10 0;0 0 10];
+% % Kd_b=[10 0 0;0 10 0;0 0 10];
+% Ktot=Ke+Kd_e;
+% Fdes=[100;0;0];
+% % 
+t0=0;
+t_free=200;
+% % 
+% z_free=1;
+% ts_free=0.1*t_free;
+% % 
+% if z_free==1
+%     wn_free=6/ts_free;
+% else
+%     wn_free=4/(z_free*ts_free);
+% end
+% %
+% Md_e=[Kd_e(1,1)/(wn_free^2) 0 0;0 Kd_e(2,2)/(wn_free^2) 0;0 0 Kd_e(3,3)/(wn_free^2)];
+% Bd_e=2*z_free*wn_free*Md_e-Be;
+% %
+% Md_b=[Kd_b(1,1)/(wn_free^2) 0 0;0 Kd_b(2,2)/(wn_free^2) 0;0 0 Kd_b(3,3)/(wn_free^2)];
+% Bd_b=2*z_free*wn_free*Md_b;
+% %
+% Kd=[Kd_e zeros(3,3);zeros(3,3) Kd_b];
+% %
+% Md=[Md_e zeros(3,3);zeros(3,3) Md_b];
+% %
+% Bd=[Bd_e zeros(3,3);zeros(3,3) Bd_b];
+% % 
+% z_cont=z_free*sqrt(Kd(1,1)/(Kd(1,1)+Ke_star(1,1)));
+% %
+% wn_cont=wn_free*sqrt((Kd(1,1)+Ke_star(1,1))/Kd(1,1));
+
+% response characteristics in the contact-space phase
+z_cont = 1;
+% 
+ts_cont = 2;
+wn_cont = 6/ts_cont;
+% 
+% controler gains
+Md_min_1 = Ke_star/(wn_cont^2);
+Md_min_2 = Be/2*z_cont*wn_cont;
+Fd = 100;
+Fdes=[Fd;0;0];
+
+Md_e = 30000*eye(3);
+Md_b = 30000*eye(3);
+
+Md = [Md_e zeros(3,3);zeros(3,3) Md_b];
+
+Bd_e = (2*z_cont*wn_cont*Md_e)-Be; % theoretical gains
+Bd_b = (2*z_cont*wn_cont*Md_b); % theoretical gains
+
+Bd = [Bd_e zeros(3,3);zeros(3,3) Bd_b];
+
+Kd_e = ((wn_cont^2)*Md_e)-Ke_star; % theoretical gains
+Kd_b = ((wn_cont^2)*Md_b); % theoretical gains
+
+Kd = [Kd_e zeros(3,3);zeros(3,3) Kd_b];
+
+% z_free = z_cont*sqrt((Kd+ke_hat)/Kd)-(be_hat*sqrt(Kd+ke_hat))/(2*wn_cont*sqrt(Kd)*Md);
+% wn_free = wn_cont*sqrt(Kd/(Kd+ke_hat));
+% 
+v = 0.01*(Fdes(1,1)*z_cont)/(Md_e(1,1)*wn_cont);
+%
+thetab_in = 0*(pi/180);%30
+
+parameters =[mb;m1;m2;m3;mt;M;I0z;I1z;I2z;I3z;It;r0x;r0y;r1;r2;r3;l1;l2;l3;lt;S01;S02;
+           t0;t_free;xE_in;yE_in;thetaE_in;xb_in;yb_in;thetab_in;xt_in;yt_in;thetat_in;
+           xE_fin;yE_fin;thetaE_fin;xb_fin;yb_fin;thetab_fin;ke;v;A0;w;l0;q01];
+           

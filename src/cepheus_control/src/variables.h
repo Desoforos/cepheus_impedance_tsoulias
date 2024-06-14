@@ -78,7 +78,7 @@ double imp_error[2];
 
 
 /*Kinematics variables From alex thesis*/
-double r0,m0,l0; //l0 diko moy, h aktina tou khfea
+double r0,m0,l0; //l0 diko moy, to mhkos tou elathriou
 double r1,m1,l1;
 double r2,m2,l2;
 double r3,m3,l3;
@@ -91,6 +91,7 @@ double i1zz, i2zz, i3zz, itzz;
 
 
 /*Needed for calculations*/
+double a, b, c, d;
 double a0x,a1x,a2x,a3x,a4x,a5x; //for s_x
 double a0y,a1y,a2y,a3y,a4y,a5y; //for s_y
 double a0t,a1t,a2t,a3t,a4t,a5t; //for s_theta
@@ -121,8 +122,9 @@ Eigen::VectorXd xee = Eigen::VectorXd::Zero(3); //(0,0,0) //the actual trajecotr
 Eigen::VectorXd xeedot = Eigen::VectorXd::Zero(3);  //(0,0,0)//the actual trajecotry (x,y,theta)
 Eigen::VectorXd c(6);
 Eigen::VectorXd fact(3);
-Eigen::VectorXd z(6);
-Eigen::VectorXd zdot(6);
+Eigen::VectorXd z(6); //real
+Eigen::VectorXd zdot(6); //real
+Eigen::VectorXd zddotdot(6);//prosoxh einai desired!
 Eigen::MatrixXd w(3,3);
 Eigen::MatrixXd jacobian(3,6);
 Eigen::MatrixXd jacobiandot(3,6);
@@ -131,10 +133,10 @@ Eigen::MatrixXd i6 = Eigen::MatrixXd::Identity(6,6);
 Eigen::MatrixXd i3 = Eigen::MatrixXd::Identity(3,3);
 Eigen::MatrixXd z6 = Eigen::MatrixXd::Zero(6,6);
 Eigen::MatrixXd z3 = Eigen::MatrixXd::Zero(3,3);
-Eigen::VectorXd e(3); //error for x,y,theta
-Eigen::VectorXd edot(3);
-Eigen::VectorXd edotdot(3);
-Eigen::MatrixXd kd = 100*Eigen::MatrixXd::Identity(6,6); //esvhsa to (6,6)
+Eigen::VectorXd e(6); //error for x,y,theta
+Eigen::VectorXd edot(6);
+Eigen::VectorXd edotdot(6);
+Eigen::MatrixXd kd(6,6);// = 100*Eigen::MatrixXd::Identity(6,6); //esvhsa to (6,6)
 Eigen::VectorXd a_x(6);
 Eigen::VectorXd a_y(6);
 Eigen::VectorXd a_theta(6);
@@ -143,8 +145,8 @@ Eigen::VectorXd b1_y(6);
 Eigen::VectorXd b1_theta(6);
 Eigen::MatrixXd a_matrix = Eigen::MatrixXd::Identity(6,6);
 Eigen::VectorXd fdes(3); //(0.1,0,0);
-Eigen::VectorXd fdes_star(3);
-Eigen::MatrixXd ke_star=10000*Eigen::MatrixXd::Identity(3,3);
+// Eigen::VectorXd fdes_star(3);
+Eigen::MatrixXd ke_star=100*Eigen::MatrixXd::Identity(3,3);
 Eigen::MatrixXd kd_e(3,3);
 Eigen::MatrixXd kd_b(3,3);
 Eigen::MatrixXd md(6,6);
@@ -226,10 +228,31 @@ double frequency = (float)1/DT;
 //double qd[3];
 //double qd_dot[3];
 
+// /////////////EXTRA KOSTAS PARAMETERS////////////////////
+double w = 2;
+double z_cont =1 , ts_cont = 2, wn_cont = 6/ts_cont;
+double q01 = 27.88931 * M_PI/180;
+double lt;
+double s01 = 0.5, s02 = 0.2;
+double i0zz;
+/*Chaser's variables*/
+double xbd,xbddot,xbddotdot;
+double ybd, ybddot, ybddotdot;
+double thetabd, thetabddot, thetabddotdot;
+Eigen::VectorXd xd_b(3); //for base
+Eigen::VectorXd xd_bdot(3); 
+Eigen::VectorXd xd_bdotdot(3); 
+Eigen::VectorXd fdes_ee(3); 
+Eigen::VectorXd fdes_b = Eigen::VectorXd::Zero(3);
+Eigen::VectorXd fdes_star(6); 
+Eigen::VectorXd fext_star(6); 
+Eigen::VectorXd qext(6); 
 
 
 
 
+
+ 
 /////////////// GLOBAL VARIABLES DECLARATION END////////////////////////
 
 #endif

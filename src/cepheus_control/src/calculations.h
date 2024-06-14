@@ -24,7 +24,7 @@ void inverseKinematics(){
 */
 
 void initialiseParameters(){//initialise constant parameters
-     l0 = 0.2; 
+    // l0 = 0.01; 
     // m0 = 13.3; // OXIapo pinaka 5.1 impedance thesis(not anymore 400), tora apo peleq
     // r0x = 1;
     // r0y = 1;
@@ -48,27 +48,60 @@ void initialiseParameters(){//initialise constant parameters
     // i1zz = 0.000346;
     // i2zz = 0.000346;
     // i3zz = 0.091927;
-    m0 = 13.3;
-    m1 = 0.083;
-    m2 = 0.187;
-    m3 = 0.03547;
-    ibzz = 0.160875;
-    i1zz = 0.000346;
-    i2zz = 0.000346;
-    i3zz = 0.091927;
-    r0 = 0.1954;
-    r1 = 0.062;
-    r2 = 0.062;
-    r3 = 0.06553; //apo prakseis monos mou
-    //l0???
-    l1 = 0.119;
-    l2 = 0.119;
-    l3 = 0.01947;
+    // m0 = 13.3; ta evala se sxolio gia na valo tous kosta
+    // m1 = 0.083;
+    // m2 = 0.187;
+    // m3 = 0.03547;
+    // ibzz = 0.160875;
+    // i1zz = 0.000346;
+    // i2zz = 0.000346;
+    // i3zz = 0.091927;
+    // r0 = 0.1954;
+    // r1 = 0.062;
+    // r2 = 0.062;
+    // r3 = 0.06553; //apo prakseis monos mou
+    // //l0???
+    // l1 = 0.119;
+    // l2 = 0.119;
+    // l3 = 0.01947;
+    // mt = 10;
 
-    mt = 10;
-    itzz = 0.067;
+    /* METAVLHTES APO PEIRAMA KOSTA */
+    m0=53;
+    m1=0.2314;
+    m2=0.1;
+    m3=4.6*10^(-2);
+    mt = 1;
 
-    M = m0 + m1 + m2 + m3; //1 apo to reaction wheel
+    M=m0+m1+m2+m3;
+
+    l1=0.185;
+    l2=0.143;
+    l3=0.0411;
+    lt=0.03; //what is this
+    r0x=0.1425;
+    r0y=-0.08225;
+    r1=0.185;
+    r2=0.143;
+    r3=0.0261;
+    l0 = 0;
+
+    a=sqrt(r0x^2+r0y^2);
+    b=l1+r1;
+    c=l2+r2;
+    d=l3+r3;
+
+    i0zz=2.1837;
+    i1zz=6.81*10^(-3);
+    i2zz=1.487*10^(-5);
+    i3zz=1.2287*10^(-5);
+    itzz=1;
+
+
+    
+    // itzz = 0.067;
+
+    // M = m0 + m1 + m2 + m3; //1 apo to reaction wheel
     // a = r0*m0/M;
     // b = (l1*m0 + (m0+m1)*r1)/M;
     // c = (l2*(m0 + m1) + (m0 + m1 + m2)*r2)/M;
@@ -111,23 +144,48 @@ void initialiseParameters(){//initialise constant parameters
     z_contact = z_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
     wn_contact = wn_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
     
-    kd_e << 1000, 0, 0,
-            0, 1000, 0,
-            0, 0, 1000;
+    // kd_e << 1000, 0, 0,
+    //         0, 1000, 0,
+    //         0, 0, 1000;
 
-    kd_b << 100, 0, 0,
-            0, 100, 0,
-            0, 0, 100;
+    // kd_b << 100, 0, 0,
+    //         0, 100, 0,
+    //         0, 0, 100;
 
-    md_e << kd_e(0,0)/(wn_free*wn_free), 0, 0,
-            0, kd_e(1,1)/(wn_free*wn_free), 0,
-            0, 0, kd_e(2,2)/(wn_free*wn_free);
+    // md_e << kd_e(0,0)/(wn_free*wn_free), 0, 0,
+    //         0, kd_e(1,1)/(wn_free*wn_free), 0,
+    //         0, 0, kd_e(2,2)/(wn_free*wn_free);
+
+    md_e = 30000*i3; //i3:identity(3,3)
+    md_b = 30000*i3;
+    md.topLeftCorner(3,3) = md_e;
+    md.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    md.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    md.bottomRightCorner(3,3) = md_b;
     
-    bd_e = 2*z_free*wn_free*md_e;
+    bd_e = 2*z_cont*wn_cont*md_e -i3; //anti gia Be ebala i3
 
-    fdes << 0.1, 0, 0;
+    bd_b = 2*z_cont*wn_cont*md_b -i3;
+    bd.topLeftCorner(3,3) = bd_e;
+    bd.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    bd.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    bd.bottomRightCorner(3,3) = bd_b;
 
-    v =  (fdes(0)*z_contact)/(md_e(0,0)*wn_contact); 
+    kd_e = wn_cont*wn_cont*md_e - ke_star;
+    kd_b = wn_cont*wn_cont*md_b; 
+    kd.topLeftCorner(3,3) = kd_e;
+    kd.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    kd.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    kd.bottomRightCorner(3,3) = kd_b;  
+
+    
+
+
+
+
+    fdes << 100, 0, 0;
+
+    v =  0.01*(fdes(0)*z_cont)/(md_e(0,0)*wn_cont); 
     
     xd << 0, 0, 0;
     xfd << 0, 0, 0;
@@ -455,20 +513,9 @@ void calculateStep(){  //calculate stuff in each iteration
     //         0, kd_b(1,1)/pow(wn_free,2), 0, 
     //         0, 0, kd_b(2,2)/pow(wn_free,2);
 
-    
-    // bd_b = 2*z_free*wn_free*md_b;
-    // bd.topLeftCorner(3,3) = bd_e;
-    // bd.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
-    // bd.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
-    // bd.bottomRightCorner(3,3) = bd_b;
-
     fdes_star = fdes*fext(0)/(fext(0)+0.01);
 
 
-    // md.topLeftCorner(3,3) = md_e;
-    // md.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
-    // md.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
-    // md.bottomRightCorner(3,3) = md_b;
 
     // rEddotdot(0) = xEddotdot;
     // rEddotdot(1) = yEddotdot;
@@ -481,15 +528,22 @@ void calculateStep(){  //calculate stuff in each iteration
     e(0) = xee(0) - xd(0);
     e(1) = xee(1) - xd(1);
     e(2) = xee(2) - xd(2);
+    e(3) = xc0 - xd_b(0); //base
+    e(4) = yc0 - xd_b(1);
+    e(5) = theta0 - xd_b(2);
+
 
     edot(0) = xeedot(0) - xddot(0);
     edot(1) = xeedot(1) - xddot(1);
     edot(2) = xeedot(2) - xddot(2);
+    edot(3) = xc0dot - xd_bdot(0);
+    edot(4) = yc0dot - xd_bdot(1);
+    edot(5) = theta0dot - xd_bdot(2);
 
 
     
 
-    fact = (Eigen::MatrixXd::Identity(3, 3) - w.inverse() * md_e.inverse()) * fext +
+    // fact = (Eigen::MatrixXd::Identity(3, 3) - w.inverse() * md_e.inverse()) * fext +
                         w.inverse() * (jacobian * h.inverse()*c - jacobiandot * zdot) +
                         w.inverse() * md_e.inverse() * (fdes_star - (bd_e * edot) - (kd_e * e)) +
                         w.inverse() * xddotdot; //(H.colPivHouseholderQr().solve(C))) TODO:xddotdot(desired troxia), jacobiandot CHECK,zdot CHECK
@@ -538,7 +592,31 @@ void calculateStep(){  //calculate stuff in each iteration
     je(2,4) = je35;
     je(2,5) = je36;
 
-    qact = je.transpose()*fact;
+    zdot(0) = xc0dot;
+    zdot(1) = yc0dot;
+    zdot(2) = theta0dot;
+    zdot(3) = q1dot;
+    zdot(4) = q2dot;
+    zdot(5) = q3dot;
+
+    zddotdot(0) = xddotdot(0); //desired of end effector
+    zddotdot(1) = xddotdot(1);
+    zddotdot(2) = xddotdot(2);
+    zddotdot(3) = xbddotdot(0); //desired of base 
+    zddotdot(4) = xbddotdot(1);
+    zddotdot(5) = xbddotdot(2);
+
+    fdes_ee = fdes*fext(0)/(fext(0)+0.000001);
+    //to fdes_b einai mhden eksorismou
+    fdes_star.head(3) = fdes_ee;
+    fdes_star.tail(3) = fdes_b;
+    
+    fext_star.head(3) = fext;
+    fext_star.tail(3) = Eigen::VectorXd::Zero(3);
+
+    qact=qext+c+(h*inv(J))*(zddotdot+inv(md)*(-fext_star+fdes_star-bd*edot-Kd*e)-Jdot*zdot);
+
+    // qact = je.transpose()*fact;
 
     // torq[0] = qact(3); //torque of q1
     // torq[1] = qact(4); // of q2
@@ -598,6 +676,8 @@ void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c+
     thetafEd=thetaE_in+ s_theta*(thetaE_contact-thetaE_in); //+M_PI ??
     thetafEddot=sdot_theta*(thetaE_contact-thetaE_in);
     thetafEddotdot=sdotdot_theta*(thetaE_contact-thetaE_in);
+    //////
+    
     
     /*contact phase trajectory*/
     //xcEd=xt+xE_contact-xt_in; //anti gia x_target=xt
@@ -609,7 +689,7 @@ void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c+
     ycEddot=ytdot;//anti gia 0
     ycEddotdot=0;
     /////
-    thetacEd=thetat; //isos anti gia thetaE_contact;
+    thetacEd=thetat - M_PI/2; //isos anti gia thetaE_contact;
     thetacEddot=thetatdot; //anti gia 0
     thetacEddotdot=0; 
 
@@ -662,6 +742,14 @@ void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c+
         xddot = xcddot;
         xddotdot = xcddotdot;
     }
+
+    xd_b(0) = xd(0)-s01; //x of base
+    xd_b(1) = xd(1) - s02; //y of base
+    xd_b(2) = xd(2); //theta of base
+    ////
+    xd_bdot = xddot;
+    ////
+    xd_bdotdot = xddotdot;
 
 
 

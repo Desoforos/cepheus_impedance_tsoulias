@@ -61,7 +61,7 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 		// y_target_in = yt;
 		xE_contact = xt;
 		yE_contact = yt;
-		thetaE_contact = thetat;
+		thetaE_contact = thetat - M_PI/2;
 		//theta_target_in = thetat;
 		xE_in = ee_x;
 		yE_in = ee_y;
