@@ -126,8 +126,8 @@ Eigen::VectorXd z(6); //real
 Eigen::VectorXd zdot(6); //real
 Eigen::VectorXd zddotdot(6);//prosoxh einai desired!
 Eigen::MatrixXd w(3,3);
-Eigen::MatrixXd jacobian(3,6);
-Eigen::MatrixXd jacobiandot(3,6);
+Eigen::MatrixXd jacobian(6,6); //anti gia 3x6 tora einai h jacobian gia 33 kai gia base
+Eigen::MatrixXd jacobiandot(6,6);
 Eigen::MatrixXd h(6,6); //imp.thesis sel 62 eksisosi 5-31
 Eigen::MatrixXd i6 = Eigen::MatrixXd::Identity(6,6);
 Eigen::MatrixXd i3 = Eigen::MatrixXd::Identity(3,3);
@@ -155,7 +155,8 @@ Eigen::MatrixXd md_b(3,3);
 Eigen::MatrixXd bd(6,6);
 Eigen::MatrixXd bd_e(3,3);
 Eigen::MatrixXd bd_b(3,3);
-Eigen::MatrixXd je(3,6); //second jacobian for the qact = je*Fact
+Eigen::MatrixXd je(3,6); //update: jacobian for ee
+Eigen::MatrixXd jedot(3,6); //update: jacobian for ee
 Eigen::VectorXd qact(6); //fx,fy,ns,t1,t2,t3
 Eigen::VectorXd rEddotdot(3);
 
@@ -219,6 +220,10 @@ double je11, je12, je13, je14, je15, je16;
 double je21, je22, je23, je24, je25, je26;
 double je31, je32, je33, je34, je35, je36;
 
+/*JE DOT coefficients*/
+double jedot11, jedot12, jedot13, jedot14, jedot15, jedot16;
+double jedot21, jedot22, jedot23, jedot24, jedot25, jedot26;
+double jedot31, jedot32, jedot33, jedot34, jedot35, jedot36;
 
 
 
@@ -247,6 +252,9 @@ Eigen::VectorXd fdes_b = Eigen::VectorXd::Zero(3);
 Eigen::VectorXd fdes_star(6); 
 Eigen::VectorXd fext_star(6); 
 Eigen::VectorXd qext(6); 
+Eigen::MatrixXd jb(3,6); //jacobian of base
+Eigen::MatrixXd jbdot(3,6); //jacobian of base
+
 
 
 
