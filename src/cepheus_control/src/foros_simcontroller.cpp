@@ -4,7 +4,7 @@ This will be the high level control node.
 It shall read the state of the robot (joint posistions,force applied) and calculate the output wrench needed.
 Then it shall publish it to the right topics:
 In simulation, it shall be the gazebo command/effort topics
-In real robot, it shall be the topics that the cepheus_interface reads.
+In the real robot, it shall be the topics that the cepheus_interface reads.
 */
 
 #include "variables.h"

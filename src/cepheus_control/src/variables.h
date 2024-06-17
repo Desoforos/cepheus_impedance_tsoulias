@@ -91,7 +91,7 @@ double i1zz, i2zz, i3zz, itzz;
 
 
 /*Needed for calculations*/
-double a, b, c, d;
+// double a, b, c, d; den nomizo na ta xreiazomaste
 double a0x,a1x,a2x,a3x,a4x,a5x; //for s_x
 double a0y,a1y,a2y,a3y,a4y,a5y; //for s_y
 double a0t,a1t,a2t,a3t,a4t,a5t; //for s_theta
@@ -234,14 +234,14 @@ double frequency = (float)1/DT;
 //double qd_dot[3];
 
 // /////////////EXTRA KOSTAS PARAMETERS////////////////////
-double w = 2;
+// double w = 2; mallon no need
 double z_cont =1 , ts_cont = 2, wn_cont = 6/ts_cont;
 double q01 = 27.88931 * M_PI/180;
 double lt;
 double s01 = 0.5, s02 = 0.2;
 double i0zz;
 /*Chaser's variables*/
-double xbd,xbddot,xbddotdot;
+double xbd,xbddot,xbddotdot; //mallon axrhsta
 double ybd, ybddot, ybddotdot;
 double thetabd, thetabddot, thetabddotdot;
 Eigen::VectorXd xd_b(3); //for base
