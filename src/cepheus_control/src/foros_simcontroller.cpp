@@ -165,11 +165,14 @@ int main(int argc, char **argv) {
             }
             if(!paramsinit){
                 ros::spinOnce();
+                ros::Duration(2).sleep();
+                ROS_INFO("[foros_simcontroller]: Initializing parameters... \n");
                 initialiseParameters();
                 paramsinit = true;
                 ROS_INFO("[foros_simcontroller]: Parameters have been initialized. \n");
-                continue;
+                //continue;
             }
+            ros::spinOnce();
             curr_time = ros::Time::now();
 		    dur_time = curr_time.toSec() - t_beg.toSec();
             // if(dur_time<200){
@@ -231,7 +234,7 @@ int main(int argc, char **argv) {
 			ROS_INFO("[foros_simcontroller]: target position achieved, stopped publishing. \n");
 			break;
 		}     
-        ros::spinOnce();
+        //ros::spinOnce();
         //ros::Duration(2).sleep(); 
         loop_rate.sleep();
 

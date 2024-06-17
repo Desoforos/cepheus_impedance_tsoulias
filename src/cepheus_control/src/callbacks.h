@@ -67,6 +67,7 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 		yE_in = ee_y;
 		thetaE_in = thetach; //ousiastika to egrapsa 2 fores, useless
 		firstTime = false;
+		ROS_INFO("[callbacks]: First positions have been recorded (xE_in etc). \n");
 	}
 }
 

@@ -144,14 +144,14 @@ Eigen::VectorXd b1_x(6);// = Eigen::VectorXd::Zero(6); mono afta sto calc.h
 Eigen::VectorXd b1_y(6);// = Eigen::VectorXd::Zero(6);
 Eigen::VectorXd b1_theta(6);// = Eigen::VectorXd::Zero(6);
 Eigen::MatrixXd a_matrix = Eigen::MatrixXd::Identity(6,6);
-Eigen::VectorXd fdes = Eigen::VectorXd::Zero(6); //(0.1,0,0);
+Eigen::VectorXd fdes ; //(0.1,0,0) arxikopoiheitai sthn initialise
 // Eigen::VectorXd fdes_star(3);
 Eigen::MatrixXd ke_star=100*Eigen::MatrixXd::Identity(3,3);
 Eigen::MatrixXd kd_e = Eigen::MatrixXd::Zero(3,3);
 Eigen::MatrixXd kd_b = Eigen::MatrixXd::Zero(3,3);
 Eigen::MatrixXd md = Eigen::MatrixXd::Zero(6,6);
-Eigen::MatrixXd md_e = Eigen::MatrixXd::Zero(3,3);
-Eigen::MatrixXd md_b = Eigen::MatrixXd::Zero(3,3);
+Eigen::MatrixXd md_e = 30000*Eigen::MatrixXd::Identity(3,3);
+Eigen::MatrixXd md_b = 30000*Eigen::MatrixXd::Identity(3,3);
 Eigen::MatrixXd bd = Eigen::MatrixXd::Zero(6,6);
 Eigen::MatrixXd bd_e = Eigen::MatrixXd::Zero(3,3);
 Eigen::MatrixXd bd_b = Eigen::MatrixXd::Zero(3,3);
