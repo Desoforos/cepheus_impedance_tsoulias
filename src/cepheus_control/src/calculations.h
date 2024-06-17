@@ -43,11 +43,11 @@ void initialiseParameters(){//initialise constant parameters
     // i1zz=(1/12)*m1*pow((l1+r1),2);
     // i2zz=(1/12)*m2*pow((l2+r2),2);
     // i3zz=(1/12)*m3*pow((l3+r3),2);
-    // itzz = 0.067; //itzz=(1/6)*mt*(lt^2);
-    // ibzz = 0.160875;
-    // i1zz = 0.000346;
-    // i2zz = 0.000346;
-    // i3zz = 0.091927;
+    itzz = 0.067; //itzz=(1/6)*mt*(lt^2);
+    ibzz = 0.160875;
+    i1zz = 0.000346;
+    i2zz = 0.000346;
+    i3zz = 0.091927;
     // m0 = 13.3; ta evala se sxolio gia na valo tous kosta
     // m1 = 0.083;
     // m2 = 0.187;
@@ -56,46 +56,44 @@ void initialiseParameters(){//initialise constant parameters
     // i1zz = 0.000346;
     // i2zz = 0.000346;
     // i3zz = 0.091927;
-    // r0 = 0.1954;
-    // r1 = 0.062;
-    // r2 = 0.062;
-    // r3 = 0.06553; //apo prakseis monos mou
-    // //l0???
-    // l1 = 0.119;
-    // l2 = 0.119;
-    // l3 = 0.01947;
-    // mt = 10;
+    r0 = 0.1954;
+    r1 = 0.062;
+    r2 = 0.062;
+    r3 = 0.06553; //apo prakseis monos mou
+    l0 = 0;
+    l1 = 0.119;
+    l2 = 0.119;
+    l3 = 0.01947;
+    mt = 10;
 
-    /* METAVLHTES APO PEIRAMA KOSTA */
-    m0=53;
-    m1=0.2314;
-    m2=0.1;
-    m3=4.6*pow(10,-2);
-    mt = 1;
+    /* METAVLHTES APO PEIRAMA KOSTA */ 
+    // m0=53;  //ta evala se sxolio pros to paron
+    // m1=0.2314;
+    // m2=0.1;
+    // m3=4.6*pow(10,-2);
+    // mt = 1;
 
-    M=m0+m1+m2+m3;
+    // M=m0+m1+m2+m3;
 
-    l1=0.185;
-    l2=0.143;
-    l3=0.0411;
-    lt=0.03; //what is this
+    // l1=0.185;
+    // l2=0.143;
+    // l3=0.0411;
+    // lt=0.03; //what is this
     r0x=0.1425;
     r0y=-0.08225;
-    r1=0.185;
-    r2=0.143;
-    r3=0.0261;
-    l0 = 0;
-
+    // r1=0.185;
+    // r2=0.143;
+    // r3=0.0261;
+    // l0 = 0;
     // a=sqrt(r0x*r0x+r0y*r0y);
     // b=l1+r1;
     // c=l2+r2;
     // d=l3+r3; //den nomizo na ta xreiazomaste
-
-    i0zz=2.1837;
-    i1zz=6.81*pow(10,-3);
-    i2zz=1.487*pow(10,-5);
-    i3zz=1.2287*pow(10,-5);
-    itzz=1;
+    // i0zz=2.1837;
+    // i1zz=6.81*pow(10,-3);
+    // i2zz=1.487*pow(10,-5);
+    // i3zz=1.2287*pow(10,-5);
+    // itzz=1;
 
 
     
@@ -107,13 +105,14 @@ void initialiseParameters(){//initialise constant parameters
     // c = (l2*(m0 + m1) + (m0 + m1 + m2)*r2)/M;
     //  d = r3 + l3*(m0 + m1 + m2)/M;
 
+  /*//ta arxikopoihsa sto variables.h
     xch_c << 0, 0, 0;
     // xdf << 0, 0, 0;
     // xdc << 0, 0, 0;
     // xee << 0, 0, 0;
     // xeedot << 0, 0, 0;
-    e << 0, 0, 0;
-    edot << 0, 0, 0;
+    e << 0, 0, 0, 0, 0, 0;
+    edot << 0, 0, 0, 0, 0, 0;
 
     fext    << 0, 0, 0;
     z       << 0, 0, 0, 0, 0, 0; //xc0,yx0,theta0,q1,q2,q3
@@ -140,6 +139,16 @@ void initialiseParameters(){//initialise constant parameters
     je << 0, 0, 0, 0, 0, 0,
           0, 0, 0, 0, 0, 0,
           0, 0, 0, 0, 0, 0;
+
+    jb << 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0;
+    
+    jbdot << 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0;
+    */ //ta arxikopoihsa sto variables.h
+
 
     z_contact = z_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
     wn_contact = wn_free*sqrt(kd(0,0)/(kd(0,0)+ke_star(0,0)));
@@ -191,9 +200,9 @@ void initialiseParameters(){//initialise constant parameters
 
     v =  0.01*(fdes(0)*z_cont)/(md_e(0,0)*wn_cont); 
     
-    xd << 0, 0, 0;
-    xfd << 0, 0, 0;
-    xcd << 0, 0, 0;
+    // xd << 0, 0, 0; //ta arxikopoihsa sto variables.h
+    // xfd << 0, 0, 0;
+    // xcd << 0, 0, 0;
 
     v =  (fdes(0)*z_contact)/(md_e(0,0)*wn_contact); 
     sdotfin_x = v/(xE_contact-xE_in);
@@ -201,7 +210,7 @@ void initialiseParameters(){//initialise constant parameters
 
 
     
-
+    //mono afta ta arxikopoio edo
     b1_x << sin_x, sdotin_x, sdotdotin_x, sfin_x, sdotfin_x, sdotdotfin_x;
     b1_y <<sin_y, sdotin_y, sdotdotin_y, sfin_y, sdotfin_y, sdotdotfin_y;
     b1_theta << sin_theta, sdotin_theta, sdotdotin_theta, sfin_theta, sdotfin_theta, sdotdotfin_theta;
@@ -386,11 +395,11 @@ void calculateStep(){  //calculate stuff in each iteration
 
     
         
-        c11 =    l3*m3*q3dot*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)+q2dot*(l2*m2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)+m3*(((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)))+q1dot*(l1*m1*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0)+m2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0))+m3*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)))+theta0dot*(m1*(l1*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))+m2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))+m3*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0))));
+    c11 =    l3*m3*q3dot*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)+q2dot*(l2*m2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)+m3*(((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)))+q1dot*(l1*m1*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0)+m2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0))+m3*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)))+theta0dot*(m1*(l1*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))+m2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))+m3*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0))));
 
-        c21 =    (-1)*l3*m3*q3dot*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)+q2dot*((-1)*l2*m2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0)+m3*((q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)))+q1dot*((-1)*l1*m1*(q1dot+theta0dot)*sin(q1+theta0)+m2*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0))+m3*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)))+theta0dot*(m1*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(-1)*l1*(q1dot+theta0dot)*sin(q1+theta0))+m2*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0))+m3*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)));
+    c21 =    (-1)*l3*m3*q3dot*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)+q2dot*((-1)*l2*m2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0)+m3*((q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)))+q1dot*((-1)*l1*m1*(q1dot+theta0dot)*sin(q1+theta0)+m2*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0))+m3*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)))+theta0dot*(m1*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(-1)*l1*(q1dot+theta0dot)*sin(q1+theta0))+m2*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0))+m3*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)));
 
-        c31 =    (-1)*xc0dot*(m1*(l1*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0)+( 
+    c31 =    (-1)*xc0dot*(m1*(l1*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0)+( 
     -1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))+m2*(((-1)* 
     q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*((-1)* 
     q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)+(-1)*theta0dot*( 

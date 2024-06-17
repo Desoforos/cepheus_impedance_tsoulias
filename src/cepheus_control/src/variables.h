@@ -108,57 +108,57 @@ double xcEddotdot, ycEddotdot, thetacEddotdot;
 Eigen::VectorXd xch_c(3);//xch_c <<0 , 0 , 0;
 // Eigen::VectorXd xdf(3); //xdf<<0 , 0 ,0 ;
 // Eigen::VectorXd xdc(3); // <<xt,yt,thetat;
-Eigen::VectorXd fext(3); // << (0,0,0); //fx,fy,n
-Eigen::VectorXd xd(3); //the  DESIRED TRAJECTORY xEd,yEd,thetaEd
-Eigen::VectorXd xddot(3); //xEddot, yEddot, thetaEddot
-Eigen::VectorXd xddotdot(3); //xEddotdot, yEddotdot, thetaEddotdot
-Eigen::VectorXd xfd(3); //the  DESIRED TRAJECTORY xEd,yEd,thetaEd
-Eigen::VectorXd xfddot(3); //xEddot, yEddot, thetaEddot
-Eigen::VectorXd xfddotdot(3); //xEddotdot, yEddotdot, thetaEddotdot
-Eigen::VectorXd xcd(3); //the  DESIRED TRAJECTORY xEd,yEd,thetaEd
-Eigen::VectorXd xcddot(3); //xEddot, yEddot, thetaEddot
-Eigen::VectorXd xcddotdot(3); //xEddotdot, yEddotdot, thetaEddotdot
+Eigen::VectorXd fext = Eigen::VectorXd::Zero(3); // << (0,0,0); //fx,fy,n
+Eigen::VectorXd xd = Eigen::VectorXd::Zero(3); //the  DESIRED TRAJECTORY xEd,yEd,thetaEd
+Eigen::VectorXd xddot = Eigen::VectorXd::Zero(3); //xEddot, yEddot, thetaEddot
+Eigen::VectorXd xddotdot = Eigen::VectorXd::Zero(3); //xEddotdot, yEddotdot, thetaEddotdot
+Eigen::VectorXd xfd = Eigen::VectorXd::Zero(3); //the  DESIRED TRAJECTORY xEd,yEd,thetaEd
+Eigen::VectorXd xfddot = Eigen::VectorXd::Zero(3); //xEddot, yEddot, thetaEddot
+Eigen::VectorXd xfddotdot = Eigen::VectorXd::Zero(3); //xEddotdot, yEddotdot, thetaEddotdot
+Eigen::VectorXd xcd = Eigen::VectorXd::Zero(3);//the  DESIRED TRAJECTORY xEd,yEd,thetaEd
+Eigen::VectorXd xcddot = Eigen::VectorXd::Zero(3); //xEddot, yEddot, thetaEddot
+Eigen::VectorXd xcddotdot = Eigen::VectorXd::Zero(3); //xEddotdot, yEddotdot, thetaEddotdot
 Eigen::VectorXd xee = Eigen::VectorXd::Zero(3); //(0,0,0) //the actual trajecotry (x,y,theta)
 Eigen::VectorXd xeedot = Eigen::VectorXd::Zero(3);  //(0,0,0)//the actual trajecotry (x,y,theta)
-Eigen::VectorXd c(6);
-Eigen::VectorXd fact(3);
-Eigen::VectorXd z(6); //real
-Eigen::VectorXd zdot(6); //real
-Eigen::VectorXd zddotdot(6);//prosoxh einai desired!
-Eigen::MatrixXd w(3,3);
-Eigen::MatrixXd jacobian(6,6); //anti gia 3x6 tora einai h jacobian gia 33 kai gia base
-Eigen::MatrixXd jacobiandot(6,6);
-Eigen::MatrixXd h(6,6); //imp.thesis sel 62 eksisosi 5-31
+Eigen::VectorXd c = Eigen::VectorXd::Zero(6) ;
+Eigen::VectorXd fact = Eigen::VectorXd::Zero(3);;
+Eigen::VectorXd z = Eigen::VectorXd::Zero(6); //real
+Eigen::VectorXd zdot = Eigen::VectorXd::Zero(6); //real
+Eigen::VectorXd zddotdot = Eigen::VectorXd::Zero(6);//prosoxh einai desired!
+Eigen::MatrixXd w = Eigen::MatrixXd::Zero(3,3);;
+Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(6,6); //anti gia 3x6 tora einai h jacobian gia 33 kai gia base
+Eigen::MatrixXd jacobiandot = Eigen::MatrixXd::Zero(6,6);
+Eigen::MatrixXd h = Eigen::MatrixXd::Zero(6,6); //imp.thesis sel 62 eksisosi 5-31
 Eigen::MatrixXd i6 = Eigen::MatrixXd::Identity(6,6);
 Eigen::MatrixXd i3 = Eigen::MatrixXd::Identity(3,3);
 Eigen::MatrixXd z6 = Eigen::MatrixXd::Zero(6,6);
 Eigen::MatrixXd z3 = Eigen::MatrixXd::Zero(3,3);
-Eigen::VectorXd e(6); //error for x,y,theta
-Eigen::VectorXd edot(6);
-Eigen::VectorXd edotdot(6);
-Eigen::MatrixXd kd(6,6);// = 100*Eigen::MatrixXd::Identity(6,6); //esvhsa to (6,6)
-Eigen::VectorXd a_x(6);
-Eigen::VectorXd a_y(6);
-Eigen::VectorXd a_theta(6);
-Eigen::VectorXd b1_x(6);
-Eigen::VectorXd b1_y(6);
-Eigen::VectorXd b1_theta(6);
+Eigen::VectorXd e = Eigen::VectorXd::Zero(6); //error for x,y,theta
+Eigen::VectorXd edot = Eigen::VectorXd::Zero(6); 
+Eigen::VectorXd edotdot = Eigen::VectorXd::Zero(6); 
+Eigen::MatrixXd kd = Eigen::MatrixXd::Zero(6,6);// = 100*Eigen::MatrixXd::Identity(6,6); //esvhsa to (6,6)
+Eigen::VectorXd a_x = Eigen::VectorXd::Zero(6);
+Eigen::VectorXd a_y = Eigen::VectorXd::Zero(6);
+Eigen::VectorXd a_theta = Eigen::VectorXd::Zero(6);
+Eigen::VectorXd b1_x(6);// = Eigen::VectorXd::Zero(6); mono afta sto calc.h
+Eigen::VectorXd b1_y(6);// = Eigen::VectorXd::Zero(6);
+Eigen::VectorXd b1_theta(6);// = Eigen::VectorXd::Zero(6);
 Eigen::MatrixXd a_matrix = Eigen::MatrixXd::Identity(6,6);
-Eigen::VectorXd fdes(3); //(0.1,0,0);
+Eigen::VectorXd fdes = Eigen::VectorXd::Zero(6); //(0.1,0,0);
 // Eigen::VectorXd fdes_star(3);
 Eigen::MatrixXd ke_star=100*Eigen::MatrixXd::Identity(3,3);
-Eigen::MatrixXd kd_e(3,3);
-Eigen::MatrixXd kd_b(3,3);
-Eigen::MatrixXd md(6,6);
-Eigen::MatrixXd md_e(3,3);
-Eigen::MatrixXd md_b(3,3);
-Eigen::MatrixXd bd(6,6);
-Eigen::MatrixXd bd_e(3,3);
-Eigen::MatrixXd bd_b(3,3);
-Eigen::MatrixXd je(3,6); //update: jacobian for ee
-Eigen::MatrixXd jedot(3,6); //update: jacobian for ee
-Eigen::VectorXd qact(6); //fx,fy,ns,t1,t2,t3
-Eigen::VectorXd rEddotdot(3);
+Eigen::MatrixXd kd_e = Eigen::MatrixXd::Zero(3,3);
+Eigen::MatrixXd kd_b = Eigen::MatrixXd::Zero(3,3);
+Eigen::MatrixXd md = Eigen::MatrixXd::Zero(6,6);
+Eigen::MatrixXd md_e = Eigen::MatrixXd::Zero(3,3);
+Eigen::MatrixXd md_b = Eigen::MatrixXd::Zero(3,3);
+Eigen::MatrixXd bd = Eigen::MatrixXd::Zero(6,6);
+Eigen::MatrixXd bd_e = Eigen::MatrixXd::Zero(3,3);
+Eigen::MatrixXd bd_b = Eigen::MatrixXd::Zero(3,3);
+Eigen::MatrixXd je = Eigen::MatrixXd::Zero(3,6); //update: jacobian for ee
+Eigen::MatrixXd jedot = Eigen::MatrixXd::Zero(3,6); //update: jacobian for ee
+Eigen::VectorXd qact =  Eigen::VectorXd::Zero(6);  //fx,fy,ns,t1,t2,t3
+Eigen::VectorXd rEddotdot =  Eigen::VectorXd::Zero(3); 
 
 
 
@@ -244,16 +244,16 @@ double i0zz;
 double xbd,xbddot,xbddotdot; //mallon axrhsta
 double ybd, ybddot, ybddotdot;
 double thetabd, thetabddot, thetabddotdot;
-Eigen::VectorXd xd_b(3); //for base
-Eigen::VectorXd xd_bdot(3); 
-Eigen::VectorXd xd_bdotdot(3); 
-Eigen::VectorXd fdes_ee(3); 
+Eigen::VectorXd xd_b = Eigen::VectorXd::Zero(3); //for base
+Eigen::VectorXd xd_bdot = Eigen::VectorXd::Zero(3); 
+Eigen::VectorXd xd_bdotdot = Eigen::VectorXd::Zero(3); 
+Eigen::VectorXd fdes_ee = Eigen::VectorXd::Zero(3); 
 Eigen::VectorXd fdes_b = Eigen::VectorXd::Zero(3);
-Eigen::VectorXd fdes_star(6); 
-Eigen::VectorXd fext_star(6); 
-Eigen::VectorXd qext(6); 
-Eigen::MatrixXd jb(3,6); //jacobian of base
-Eigen::MatrixXd jbdot(3,6); //jacobian of base
+Eigen::VectorXd fdes_star = Eigen::VectorXd::Zero(6); 
+Eigen::VectorXd fext_star = Eigen::VectorXd::Zero(6); 
+Eigen::VectorXd qext = Eigen::VectorXd::Zero(6); 
+Eigen::MatrixXd jb = Eigen::MatrixXd::Zero(3,6); //jacobian of base
+Eigen::MatrixXd jbdot = Eigen::MatrixXd::Zero(3,6); //jacobian of base
 
 
 
