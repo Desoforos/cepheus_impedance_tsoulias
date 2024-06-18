@@ -63,6 +63,7 @@ void initialiseParameters(){//initialise constant parameters
     mt = 10;
     r0x = 0.17271; //syntetagmenes tou shoulder joint se sxesh me vash, apo xacro ta phra
     r0y = 0.091404;
+    ROS_INFO("[initParams]: Double parameters have been set. \n");
 
     /* METAVLHTES APO PEIRAMA KOSTA */ 
     // m0=53;  //ta evala se sxolio pros to paron
@@ -165,48 +166,87 @@ void initialiseParameters(){//initialise constant parameters
 
     // md_e = 30000*i3; //i3:identity(3,3)
     // md_b = 30000*i3;
-    md.topLeftCorner(3,3) = md_e;
-    md.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
-    md.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
-    md.bottomRightCorner(3,3) = md_b;
+    // md.topLeftCorner(3,3) = md_e;
+    // md.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    // md.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    // md.bottomRightCorner(3,3) = md_b;
+    //anagastika me to xeri giati olo xalaei
+    c << 0, 0, 0, 0, 0, 0;
+    z << 0, 0, 0, 0, 0, 0;
+    zdot << 0, 0, 0, 0, 0, 0;
+    zddotdot << 0, 0, 0, 0, 0, 0;
+    e << 0, 0, 0, 0, 0, 0;
+    edot << 0, 0, 0, 0, 0, 0;
+    edotdot << 0, 0, 0, 0, 0, 0;
+    a_x << 0, 0, 0, 0, 0, 0;
+    a_y << 0, 0, 0, 0, 0, 0;
+    a_theta << 0, 0, 0, 0, 0, 0;
+    qact << 0, 0, 0, 0, 0, 0;
+
+    md << md_e(0,0) , md_e(0,1), md_e(0,2) , 0, 0, 0,
+          md_e(1,0), md_e(1,1), md_e(1,2) , 0, 0, 0,
+          md_e(2,0), md_e(2,1), md_e(2,2), 0, 0, 0,
+          0         , 0        , 0       ,md_b(0,0), md_b(0,1), md_b(0,2),
+          0         , 0        , 0       ,md_b(1,0), md_b(1,1), md_b(1,2),
+          0         , 0        , 0       ,md_b(2,0), md_b(2,1), md_b(2,2);
+    
+    ROS_INFO("[initParams]: Md has been set. \n");
     
     bd_e = 2*z_cont*wn_cont*md_e -i3; //anti gia Be ebala i3
 
     bd_b = 2*z_cont*wn_cont*md_b -i3;
-    bd.topLeftCorner(3,3) = bd_e;
-    bd.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
-    bd.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
-    bd.bottomRightCorner(3,3) = bd_b;
+    // bd.topLeftCorner(3,3) = bd_e;
+    // bd.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    // bd.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    // bd.bottomRightCorner(3,3) = bd_b;
+
+    bd << bd_e(0,0) , bd_e(0,1), bd_e(0,2) , 0, 0, 0,
+          bd_e(1,0), bd_e(1,1), bd_e(1,2) , 0, 0, 0,
+          bd_e(2,0), bd_e(2,1), bd_e(2,2), 0, 0, 0,
+          0         , 0        , 0       ,bd_b(0,0), bd_b(0,1), bd_b(0,2),
+          0         , 0        , 0       ,bd_b(1,0), bd_b(1,1), bd_b(1,2),
+          0         , 0        , 0       ,bd_b(2,0), bd_b(2,1), bd_b(2,2);
+
+    ROS_INFO("[initParams]: Bd has been set. \n");
 
     kd_e = wn_cont*wn_cont*md_e - ke_star;
     kd_b = wn_cont*wn_cont*md_b; 
-    kd.topLeftCorner(3,3) = kd_e;
-    kd.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
-    kd.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
-    kd.bottomRightCorner(3,3) = kd_b;  
+    // kd.topLeftCorner(3,3) = kd_e;
+    // kd.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    // kd.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
+    // kd.bottomRightCorner(3,3) = kd_b;
 
-    jb.leftCols(3) = Eigen::MatrixXd::Identity(3,3);
-    jb.rightCols(3) = Eigen::MatrixXd::Zero(3,3);
+    kd << kd_e(0,0) , kd_e(0,1), kd_e(0,2) , 0, 0, 0,
+          kd_e(1,0), kd_e(1,1), kd_e(1,2) , 0, 0, 0,
+          kd_e(2,0), kd_e(2,1), kd_e(2,2), 0, 0, 0,
+          0         , 0        , 0       ,kd_b(0,0), kd_b(0,1), kd_b(0,2),
+          0         , 0        , 0       ,kd_b(1,0), kd_b(1,1), kd_b(1,2),
+          0         , 0        , 0       ,kd_b(2,0), kd_b(2,1), kd_b(2,2); 
+
+    ROS_INFO("[initParams]: Kd has been set. \n"); 
+
+    // jb.leftCols(3) = Eigen::MatrixXd::Identity(3,3);
+    // jb.rightCols(3) = Eigen::MatrixXd::Zero(3,3);
+    jb << 1, 0, 0, 0, 0, 0,
+          0, 1, 0, 0, 0, 0,
+          0, 0, 1, 0, 0, 0;
+
     jbdot = Eigen::MatrixXd::Zero(3,6);
-
-    
-
-
 
 
     fdes << 100, 0, 0; //apo ta liga poy einai edo
 
+
     v =  0.01*(fdes(0)*z_cont)/(md_e(0,0)*wn_cont); 
+    ROS_INFO("[initParams]:v has been set. \n");
     
     // xd << 0, 0, 0; //ta arxikopoihsa sto variables.h
     // xfd << 0, 0, 0;
     // xcd << 0, 0, 0;
 
     // v =  (fdes(0)*z_contact)/(md_e(0,0)*wn_contact);  einai palio den to theloume
+
     sdotfin_x = v/(xE_contact-xE_in);
-
-
-
     
     //mono afta ta arxikopoio edo
     b1_x << sin_x, sdotin_x, sdotdotin_x, sfin_x, sdotfin_x, sdotdotfin_x;
@@ -1339,13 +1379,28 @@ void calculateStep(){  //calculate stuff in each iteration
     zddotdot(4) = xd_bdotdot(1);
     zddotdot(5) = xd_bdotdot(2);
 
-    fdes_ee = fdes*fext(0)/(fext(0)+0.000001);
+    fdes_ee = fdes*fext(0)/(fext(0)+0.00001);
     //to fdes_b einai mhden eksorismou
-    fdes_star.head(3) = fdes_ee;
-    fdes_star.tail(3) = fdes_b;
+    // fdes_star.head(3) = fdes_ee;
+    // fdes_star.tail(3) = fdes_b;
+    fdes_star(0) = fdes_ee(0);
+    fdes_star(1) = fdes_ee(1);
+    fdes_star(2) = fdes_ee(2);
+    fdes_star(3) = fdes_b(0);
+    fdes_star(4) = fdes_b(1);
+    fdes_star(5) = fdes_b(2);
+
+
     
-    fext_star.head(3) = fext;
-    fext_star.tail(3) = Eigen::VectorXd::Zero(3);
+    // fext_star.head(3) = fext;
+    // fext_star.tail(3) = Eigen::VectorXd::Zero(3);
+    fext_star(0) = fext(0);
+    fext_star(1) = fext(1);
+    fext_star(2) = fext(2);
+    fext_star(3) = 0;
+    fext_star(4) = 0;
+    fext_star(5) = 0;
+
 
     qext = je.transpose()*fext;
 

@@ -391,7 +391,7 @@
 			<!-- <alwaysOn>true</alwaysOn> -->
 			<!-- <update>100</update> -->
 			<!-- <updateRate>0</updateRate> anti gia 100 -->
-			<bodyName>left_grip</bodyName>
+			<bodyName>cepheus_base</bodyName>
 			<topicName>force_base_topic</topicName>
 			<force_reference_frame>world</force_reference_frame>
 		</plugin>

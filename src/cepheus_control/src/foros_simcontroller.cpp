@@ -165,12 +165,13 @@ int main(int argc, char **argv) {
             }
             if(!paramsinit){
                 ros::spinOnce();
-                ros::Duration(2).sleep();
+                // ros::Duration(2).sleep();
                 ROS_INFO("[foros_simcontroller]: Initializing parameters... \n");
                 initialiseParameters();
                 paramsinit = true;
                 ROS_INFO("[foros_simcontroller]: Parameters have been initialized. \n");
                 //continue;
+                ros::Duration(2).sleep();
             }
             ros::spinOnce();
             curr_time = ros::Time::now();
