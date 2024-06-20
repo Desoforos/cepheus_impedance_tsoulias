@@ -43,6 +43,7 @@ void initialiseParameters(){//initialise constant parameters
     // i1zz=(1/12)*m1*pow((l1+r1),2);
     // i2zz=(1/12)*m2*pow((l2+r2),2);
     // i3zz=(1/12)*m3*pow((l3+r3),2);
+    //DOKIMI ALLA DEN DOYLEPSE
     itzz = 0.067; //itzz=(1/6)*mt*(lt^2);
     ibzz = 0.160875;
     i1zz = 0.000346;
@@ -61,6 +62,7 @@ void initialiseParameters(){//initialise constant parameters
     l2 = 0.119;
     l3 = 0.01947;
     mt = 10;
+
     r0x = 0.17271; //syntetagmenes tou shoulder joint se sxesh me vash, apo xacro ta phra
     r0y = 0.091404;
     ROS_INFO("[initParams]: Double parameters have been set. \n");
@@ -194,7 +196,7 @@ void initialiseParameters(){//initialise constant parameters
     
     bd_e = 2*z_cont*wn_cont*md_e -i3; //anti gia Be ebala i3
 
-    bd_b = 2*z_cont*wn_cont*md_b -i3;
+    bd_b = 2*z_cont*wn_cont*md_b;
     // bd.topLeftCorner(3,3) = bd_e;
     // bd.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
     // bd.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
@@ -411,10 +413,190 @@ void calculateStep(){  //calculate stuff in each iteration
     je(2,4) = je35;
     je(2,5) = je36;
 
-    jacobian.topRows(3) = je;
-    jacobian.bottomRows(3) = jb;
-    jacobiandot.topRows(3) = jedot;
-    jacobiandot.bottomRows(3) = jbdot;
+    jedot11 = 0;
+    jedot12 = 0;
+    jedot13 = q3dot*((-1)*l3*cos(q1+q2+q3+theta0)+(-1)*r3*cos(q1+q2+q3+theta0))+ 
+              q2dot*((-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)* 
+              l3*cos(q1+q2+q3+theta0)+(-1)*r3*cos(q1+q2+q3+theta0))+q1dot*((-1)* 
+              l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+( 
+              -1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0)+(-1)*r3*cos( 
+              q1+q2+q3+theta0))+theta0dot*((-1)*r0x*cos(theta0)+(-1)*l1*cos(q1+theta0)+ 
+              (-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+ 
+              q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0)+(-1)*r3*cos(q1+q2+q3+theta0)+ 
+              r0y*sin(theta0));
+    jedot14 = q3dot*((-1)*l3*cos(q1+q2+q3+theta0)+(-1)*r3*cos(q1+q2+q3+theta0))+ 
+              q2dot*((-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)* 
+              l3*cos(q1+q2+q3+theta0)+(-1)*r3*cos(q1+q2+q3+theta0))+q1dot*((-1)* 
+              l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+( 
+              -1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0)+(-1)*r3*cos( 
+              q1+q2+q3+theta0))+theta0dot*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+ 
+              theta0)+(-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3* 
+              cos(q1+q2+q3+theta0)+(-1)*r3*cos(q1+q2+q3+theta0));
+    jedot15 = q3dot*((-1)*l3*cos(q1+q2+q3+theta0)+(-1)*r3*cos(q1+q2+q3+theta0))+ 
+              q1dot*((-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)* 
+              l3*cos(q1+q2+q3+theta0)+(-1)*r3*cos(q1+q2+q3+theta0))+q2dot*((-1)* 
+              l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+ 
+              q3+theta0)+(-1)*r3*cos(q1+q2+q3+theta0))+theta0dot*((-1)*l2*cos(q1+q2+ 
+              theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0)+(-1)* 
+              r3*cos(q1+q2+q3+theta0));
+    jedot16 = q1dot*((-1)*l3*cos(q1+q2+q3+theta0)+(-1)*r3*cos(q1+q2+q3+theta0))+ 
+              q2dot*((-1)*l3*cos(q1+q2+q3+theta0)+(-1)*r3*cos(q1+q2+q3+theta0))+ 
+              q3dot*((-1)*l3*cos(q1+q2+q3+theta0)+(-1)*r3*cos(q1+q2+q3+theta0))+ 
+              theta0dot*((-1)*l3*cos(q1+q2+q3+theta0)+(-1)*r3*cos(q1+q2+q3+theta0));
+    ////////
+    jedot21 = 0;
+    jedot22 = 0;
+    jedot23 = q3dot*((-1)*l3*sin(q1+q2+q3+theta0)+(-1)*r3*sin(q1+q2+q3+theta0))+ 
+              q2dot*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)* 
+              l3*sin(q1+q2+q3+theta0)+(-1)*r3*sin(q1+q2+q3+theta0))+q1dot*((-1)* 
+              l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+( 
+              -1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0)+(-1)*r3*sin( 
+              q1+q2+q3+theta0))+theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0)+( 
+              -1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+ 
+              theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0)+(-1)* 
+              r3*sin(q1+q2+q3+theta0));
+    jedot24 = q3dot*((-1)*l3*sin(q1+q2+q3+theta0)+(-1)*r3*sin(q1+q2+q3+theta0))+ 
+              q2dot*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)* 
+              l3*sin(q1+q2+q3+theta0)+(-1)*r3*sin(q1+q2+q3+theta0))+q1dot*((-1)* 
+              l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+( 
+              -1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0)+(-1)*r3*sin( 
+              q1+q2+q3+theta0))+theta0dot*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+ 
+              theta0)+(-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3* 
+              sin(q1+q2+q3+theta0)+(-1)*r3*sin(q1+q2+q3+theta0));
+    jedot25 = q3dot*((-1)*l3*sin(q1+q2+q3+theta0)+(-1)*r3*sin(q1+q2+q3+theta0))+ 
+              q1dot*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)* 
+              l3*sin(q1+q2+q3+theta0)+(-1)*r3*sin(q1+q2+q3+theta0))+q2dot*((-1)* 
+              l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+ 
+              q3+theta0)+(-1)*r3*sin(q1+q2+q3+theta0))+theta0dot*((-1)*l2*sin(q1+q2+ 
+              theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0)+(-1)* 
+              r3*sin(q1+q2+q3+theta0));
+    jedot26 = q1dot*((-1)*l3*sin(q1+q2+q3+theta0)+(-1)*r3*sin(q1+q2+q3+theta0))+ 
+              q2dot*((-1)*l3*sin(q1+q2+q3+theta0)+(-1)*r3*sin(q1+q2+q3+theta0))+ 
+              q3dot*((-1)*l3*sin(q1+q2+q3+theta0)+(-1)*r3*sin(q1+q2+q3+theta0))+ 
+              theta0dot*((-1)*l3*sin(q1+q2+q3+theta0)+(-1)*r3*sin(q1+q2+q3+theta0));
+    ////////
+    jedot31 = 0;
+    jedot32 = 0;
+    jedot33 = 0;
+    jedot34 = 0;
+    jedot35 = 0;
+    jedot36 = 0;
+
+    jedot(0,0) = jedot11;
+    jedot(0,1) = jedot12;
+    jedot(0,2) = jedot13;
+    jedot(0,3) = jedot14;
+    jedot(0,4) = jedot15;
+    jedot(0,5) = jedot16;
+    /////////
+    jedot(1,0) = jedot21;
+    jedot(1,1) = jedot22;
+    jedot(1,2) = jedot23;
+    jedot(1,3) = jedot24;
+    jedot(1,4) = jedot25;
+    jedot(1,5) = jedot26;
+    /////////
+    jedot(2,0) = jedot31;
+    jedot(2,1) = jedot32;
+    jedot(2,2) = jedot33;
+    jedot(2,3) = jedot34;
+    jedot(2,4) = jedot35;
+    jedot(2,5) = jedot36;
+ 
+
+
+    // jacobian.topRows(3) = je;
+    // jacobian.bottomRows(3) = jb;
+    // jacobiandot.topRows(3) = jedot;
+    // jacobiandot.bottomRows(3) = jbdot;
+
+    jacobian(0,0) = je(0,0);
+    jacobian(1,0) = je(1,0);
+    jacobian(2,0) = je(2,0);
+    jacobian(3,0) = jb(0,0);
+    jacobian(4,0) = jb(1,0);
+    jacobian(5,0) = jb(2,0);
+    ///////////// 
+    jacobian(0,1) = je(0,1);
+    jacobian(1,1) = je(1,1);
+    jacobian(2,1) = je(2,1);
+    jacobian(3,1) = jb(0,1);
+    jacobian(4,1) = jb(1,1);
+    jacobian(5,1) = jb(2,1);
+    ////////////
+    jacobian(0,2) = je(0,2);
+    jacobian(1,2) = je(1,2);
+    jacobian(2,2) = je(2,2);
+    jacobian(3,2) = jb(0,2);
+    jacobian(4,2) = jb(1,2);
+    jacobian(5,2) = jb(2,2);
+    ///////////// 
+    jacobian(0,3) = je(0,3);
+    jacobian(1,3) = je(1,3);
+    jacobian(2,3) = je(2,3);
+    jacobian(3,3) = jb(0,3);
+    jacobian(4,3) = jb(1,3);
+    jacobian(5,3) = jb(2,3);
+    ///////////// 
+    jacobian(0,4) = je(0,4);
+    jacobian(1,4) = je(1,4);
+    jacobian(2,4) = je(2,4);
+    jacobian(3,4) = jb(0,4);
+    jacobian(4,4) = jb(1,4);
+    jacobian(5,4) = jb(2,4);
+    ///////////// 
+    jacobian(0,5) = je(0,5);
+    jacobian(1,5) = je(1,5);
+    jacobian(2,5) = je(2,5);
+    jacobian(3,5) = jb(0,5);
+    jacobian(4,5) = jb(1,5);
+    jacobian(5,5) = jb(2,5);
+
+    jacobiandot(0,0) = jedot(0,0);
+    jacobiandot(1,0) = jedot(1,0);
+    jacobiandot(2,0) = jedot(2,0);
+    jacobiandot(3,0) = jbdot(0,0);
+    jacobiandot(4,0) = jbdot(1,0);
+    jacobiandot(5,0) = jbdot(2,0);
+    ///////////// 
+    jacobiandot(0,1) = jedot(0,1);
+    jacobiandot(1,1) = jedot(1,1);
+    jacobiandot(2,1) = jedot(2,1);
+    jacobiandot(3,1) = jbdot(0,1);
+    jacobiandot(4,1) = jbdot(1,1);
+    jacobiandot(5,1) = jbdot(2,1);
+    ////////////
+    jacobiandot(0,2) = jedot(0,2);
+    jacobiandot(1,2) = jedot(1,2);
+    jacobiandot(2,2) = jedot(2,2);
+    jacobiandot(3,2) = jbdot(0,2);
+    jacobiandot(4,2) = jbdot(1,2);
+    jacobiandot(5,2) = jbdot(2,2);
+    ///////////// 
+    jacobiandot(0,3) = jedot(0,3);
+    jacobiandot(1,3) = jedot(1,3);
+    jacobiandot(2,3) = jedot(2,3);
+    jacobiandot(3,3) = jbdot(0,3);
+    jacobiandot(4,3) = jbdot(1,3);
+    jacobiandot(5,3) = jbdot(2,3);
+    ///////////// 
+    jacobiandot(0,4) = jedot(0,4);
+    jacobiandot(1,4) = jedot(1,4);
+    jacobiandot(2,4) = jedot(2,4);
+    jacobiandot(3,4) = jbdot(0,4);
+    jacobiandot(4,4) = jbdot(1,4);
+    jacobiandot(5,4) = jbdot(2,4);
+    ///////////// 
+    jacobiandot(0,5) = jedot(0,5);
+    jacobiandot(1,5) = jedot(1,5);
+    jacobiandot(2,5) = jedot(2,5);
+    jacobiandot(3,5) = jbdot(0,5);
+    jacobiandot(4,5) = jbdot(1,5);
+    jacobiandot(5,5) = jbdot(2,5);
+    
+
+    
+
     
 
     z(0) = xc0;
@@ -424,12 +606,7 @@ void calculateStep(){  //calculate stuff in each iteration
     z(4) = q2;
     z(5) = q3;
 
-    zdot(0) = xc0dot;
-    zdot(1) = yc0dot;
-    zdot(2) = theta0dot;
-    zdot(3) = q1dot;
-    zdot(4) = q2dot;
-    zdot(5) = q3dot;
+
 
     
         
@@ -438,602 +615,602 @@ void calculateStep(){  //calculate stuff in each iteration
     c21 =    (-1)*l3*m3*q3dot*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)+q2dot*((-1)*l2*m2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0)+m3*((q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)))+q1dot*((-1)*l1*m1*(q1dot+theta0dot)*sin(q1+theta0)+m2*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0))+m3*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)))+theta0dot*(m1*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(-1)*l1*(q1dot+theta0dot)*sin(q1+theta0))+m2*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0))+m3*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)));
 
     c31 =    (-1)*xc0dot*(m1*(l1*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0)+( 
-    -1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))+m2*(((-1)* 
-    q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*((-1)* 
-    q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)+(-1)*theta0dot*( 
-    r0x*cos(theta0)+(-1)*r0y*sin(theta0)))+m3*(((-1)*q1dot+(-1)* 
-    theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1)* 
-    q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*( 
-    (-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+ 
-    theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0))))+(-1)* 
-    yc0dot*(m1*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+( 
-    -1)*l1*(q1dot+theta0dot)*sin(q1+theta0))+m2*(theta0dot*((-1)*r0y* 
-    cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+ 
-    theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot)*sin( 
-    q1+q2+theta0))+m3*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0)) 
-    +(q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+( 
-    q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+ 
-    q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0))) 
-    +q3dot*((-1)*l3*m3*xc0dot*cos(q1+q2+q3+theta0)+(-1)*l3*m3* 
-    yc0dot*sin(q1+q2+q3+theta0)+(1/2)*m3*((-2)*l3*(q1dot+q2dot+q3dot+ 
-    theta0dot)*(r0x*cos(theta0)+l1*cos(q1+theta0)+r1*cos(q1+theta0)+l2*cos( 
-    q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0)+(-1)*r0y* 
-    sin(theta0))*sin(q1+q2+q3+theta0)+(-2)*l3*((q1dot+theta0dot)*(l1*cos( 
-    q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0) 
-    +r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+ 
-    theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+q3+ 
-    theta0)+2*l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)* 
-    cos(q1+q2+q3+theta0)*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)* 
-    l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+( 
-    -1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+(-2)*l3* 
-    cos(q1+q2+q3+theta0)*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+(( 
-    -1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1) 
-    *q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+ 
-    q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)* 
-    sin(q1+q2+q3+theta0))))+(1/2)*((-1)*m1*(2*(l1*((-1)*q1dot+(-1) 
-    *theta0dot)*cos(q1+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y* 
-    sin(theta0)))*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+l1*((-1) 
-    *q1dot+(-1)*theta0dot)*sin(q1+theta0))+2*(l1*(q1dot+theta0dot)*cos( 
-    q1+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*(theta0dot*(( 
-    -1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(-1)*l1*(q1dot+theta0dot)* 
-    sin(q1+theta0)))+(-1)*m2*(2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos( 
-    q1+theta0)+r1*cos(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)* 
-    theta0dot)*cos(q1+q2+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y* 
-    sin(theta0)))*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)* 
-    q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+l2*((-1)* 
-    q1dot+(-1)*q2dot+(-1)*theta0dot)*sin(q1+q2+theta0))+2*((q1dot+ 
-    theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*(q1dot+q2dot+ 
-    theta0dot)*cos(q1+q2+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0) 
-    ))*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+ 
-    theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*( 
-    q1dot+q2dot+theta0dot)*sin(q1+q2+theta0)))+(-1)*m3*(2*(((-1)*q1dot+ 
-    (-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1) 
-    *q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+ 
-    l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+ 
-    q3+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1) 
-    *theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot) 
-    *(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1) 
-    *theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)* 
-    q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+ 
-    2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+ 
-    q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+ 
-    q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1) 
-    *r0y*sin(theta0)))*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin( 
-    theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0) 
-    )+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin( 
-    q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+ 
-    theta0))))+q2dot*(xc0dot*((-1)*l2*m2*cos(q1+q2+theta0)+m3*((-1)* 
-    l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+ 
-    q3+theta0)))+yc0dot*((-1)*l2*m2*sin(q1+q2+theta0)+m3*((-1)*l2*sin( 
-    q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0)))+ 
-    (1/2)*(m2*((-2)*l2*(q1dot+q2dot+theta0dot)*(r0x*cos(theta0)+l1* 
-    cos(q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+(-1)*r0y*sin(theta0) 
-    )*sin(q1+q2+theta0)+(-2)*l2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1* 
-    cos(q1+theta0))+l2*(q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)+theta0dot*( 
-    r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+theta0)+2*l2*((-1)* 
-    q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)*((-1)*r0y*cos( 
-    theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+ 
-    theta0)+(-1)*l2*sin(q1+q2+theta0))+(-2)*l2*cos(q1+q2+theta0)*((-1)* 
-    theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
-    (l1*sin(q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+( 
-    -1)*theta0dot)*sin(q1+q2+theta0)))+m3*(2*((q1dot+theta0dot)*(l1*cos( 
-    q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0) 
-    +r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+ 
-    theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)*l2*sin( 
-    q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+ 
-    2*(((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+ 
-    r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1) 
-    *theta0dot)*cos(q1+q2+q3+theta0))*((-1)*r0y*cos(theta0)+(-1)*r0x* 
-    sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2* 
-    sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+ 
-    theta0))+2*((-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)* 
-    l3*cos(q1+q2+q3+theta0))*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin( 
-    theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0) 
-    )+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2* 
-    sin(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)* 
-    theta0dot)*sin(q1+q2+q3+theta0))+2*(r0x*cos(theta0)+l1*cos(q1+theta0)+r1* 
-    cos(q1+theta0)+l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3*cos(q1+q2+ 
-    q3+theta0)+(-1)*r0y*sin(theta0))*((q1dot+q2dot+theta0dot)*((-1)*l2* 
-    sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+ 
-    q3dot+theta0dot)*sin(q1+q2+q3+theta0)))))+q1dot*(xc0dot*((-1)*l1* 
-    m1*cos(q1+theta0)+m2*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+( 
-    -1)*l2*cos(q1+q2+theta0))+m3*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos( 
-    q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)* 
-    l3*cos(q1+q2+q3+theta0)))+yc0dot*((-1)*l1*m1*sin(q1+theta0)+m2*(( 
-    -1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+ 
-    theta0))+m3*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2* 
-    sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+ 
-    theta0)))+(1/2)*(m1*((-2)*l1*(q1dot+theta0dot)*(r0x*cos(theta0)+l1* 
-    cos(q1+theta0)+(-1)*r0y*sin(theta0))*sin(q1+theta0)+(-2)*l1*(l1*( 
-    q1dot+theta0dot)*cos(q1+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin( 
-    theta0)))*sin(q1+theta0)+2*l1*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0) 
-    *((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0))+ 
-    (-2)*l1*cos(q1+theta0)*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0) 
-    )+l1*((-1)*q1dot+(-1)*theta0dot)*sin(q1+theta0)))+m2*(2*((q1dot+ 
-    theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*(q1dot+q2dot+ 
-    theta0dot)*cos(q1+q2+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0) 
-    ))*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+ 
-    q2+theta0))+2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos( 
-    q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+ 
-    theta0))*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+ 
-    theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0))+2*((-1)* 
-    l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0))*( 
-    (-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)* 
-    theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)* 
-    q2dot+(-1)*theta0dot)*sin(q1+q2+theta0))+2*(r0x*cos(theta0)+l1*cos(q1+ 
-    theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+(-1)*r0y*sin(theta0))*(( 
-    q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1) 
-    *l2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0)))+m3*(2*((q1dot+ 
-    theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*( 
-    l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+ 
-    theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin( 
-    theta0)))*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2* 
-    sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+ 
-    theta0))+2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+ 
-    theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+ 
-    r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1) 
-    *theta0dot)*cos(q1+q2+q3+theta0))*((-1)*r0y*cos(theta0)+(-1)*r0x* 
-    sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2* 
-    sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+ 
-    theta0))+2*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2* 
-    cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+ 
-    theta0))*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+( 
-    -1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1) 
-    *q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+ 
-    l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+ 
-    q3+theta0))+2*(r0x*cos(theta0)+l1*cos(q1+theta0)+r1*cos(q1+theta0)+l2* 
-    cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0)+(-1)* 
-    r0y*sin(theta0))*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1* 
-    sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1) 
-    *r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin( 
-    q1+q2+q3+theta0)))))+theta0dot*(xc0dot*(m1*((-1)*r0x*cos(theta0)+(-1)* 
-    l1*cos(q1+theta0)+r0y*sin(theta0))+m2*((-1)*r0x*cos(theta0)+(-1)*l1* 
-    cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+r0y* 
-    sin(theta0))+m3*((-1)*r0x*cos(theta0)+(-1)*l1*cos(q1+theta0)+(-1)* 
-    r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+ 
-    (-1)*l3*cos(q1+q2+q3+theta0)+r0y*sin(theta0)))+yc0dot*(m1*((-1)* 
-    r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0))+m2*((-1) 
-    *r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)* 
-    r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0))+m3*((-1)*r0y*cos(theta0) 
-    +(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+( 
-    -1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+ 
-    q2+q3+theta0)))+(1/2)*(m1*(2*(l1*((-1)*q1dot+(-1)*theta0dot)*cos( 
-    q1+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1) 
-    *r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0))+2*( 
-    l1*(q1dot+theta0dot)*cos(q1+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y* 
-    sin(theta0)))*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1* 
-    sin(q1+theta0))+2*((-1)*r0x*cos(theta0)+(-1)*l1*cos(q1+theta0)+r0y* 
-    sin(theta0))*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+l1*((-1) 
-    *q1dot+(-1)*theta0dot)*sin(q1+theta0))+2*(r0x*cos(theta0)+l1*cos(q1+ 
-    theta0)+(-1)*r0y*sin(theta0))*(theta0dot*((-1)*r0y*cos(theta0)+(-1)* 
-    r0x*sin(theta0))+(-1)*l1*(q1dot+theta0dot)*sin(q1+theta0)))+m2*(2*((( 
-    -1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*(( 
-    -1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)+(-1)* 
-    theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)*r0y*cos(theta0) 
-    +(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+( 
-    -1)*l2*sin(q1+q2+theta0))+2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1* 
-    cos(q1+theta0))+l2*(q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)+theta0dot*( 
-    r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)*r0y*cos(theta0)+(-1)* 
-    r0x*sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)* 
-    l2*sin(q1+q2+theta0))+2*((-1)*r0x*cos(theta0)+(-1)*l1*cos(q1+theta0)+ 
-    (-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+r0y*sin(theta0))*(( 
-    -1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)* 
-    theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)* 
-    q2dot+(-1)*theta0dot)*sin(q1+q2+theta0))+2*(r0x*cos(theta0)+l1*cos(q1+ 
-    theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+(-1)*r0y*sin(theta0))*( 
-    theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)* 
-    ((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+ 
-    q2dot+theta0dot)*sin(q1+q2+theta0)))+m3*(2*(((-1)*q1dot+(-1)* 
-    theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1)* 
-    q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*( 
-    (-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+ 
-    theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)* 
-    r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1* 
-    sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1) 
-    *l3*sin(q1+q2+q3+theta0))+2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1* 
-    cos(q1+theta0))+(q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+ 
-    q2+theta0))+l3*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*((-1)*r0x*cos(theta0)+(-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0)+r0y*sin(theta0))*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*(r0x*cos(theta0)+l1*cos(q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0)+(-1)*r0y*sin(theta0))*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)))));
+      -1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))+m2*(((-1)* 
+      q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*((-1)* 
+      q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)+(-1)*theta0dot*( 
+      r0x*cos(theta0)+(-1)*r0y*sin(theta0)))+m3*(((-1)*q1dot+(-1)* 
+      theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1)* 
+      q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*( 
+      (-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+ 
+      theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0))))+(-1)* 
+      yc0dot*(m1*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+( 
+      -1)*l1*(q1dot+theta0dot)*sin(q1+theta0))+m2*(theta0dot*((-1)*r0y* 
+      cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+ 
+      theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot)*sin( 
+      q1+q2+theta0))+m3*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0)) 
+      +(q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+( 
+      q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+ 
+      q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0))) 
+      +q3dot*((-1)*l3*m3*xc0dot*cos(q1+q2+q3+theta0)+(-1)*l3*m3* 
+      yc0dot*sin(q1+q2+q3+theta0)+(1/2)*m3*((-2)*l3*(q1dot+q2dot+q3dot+ 
+      theta0dot)*(r0x*cos(theta0)+l1*cos(q1+theta0)+r1*cos(q1+theta0)+l2*cos( 
+      q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0)+(-1)*r0y* 
+      sin(theta0))*sin(q1+q2+q3+theta0)+(-2)*l3*((q1dot+theta0dot)*(l1*cos( 
+      q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0) 
+      +r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+ 
+      theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+q3+ 
+      theta0)+2*l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)* 
+      cos(q1+q2+q3+theta0)*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)* 
+      l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+( 
+      -1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+(-2)*l3* 
+      cos(q1+q2+q3+theta0)*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+(( 
+      -1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1) 
+      *q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+ 
+      q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)* 
+      sin(q1+q2+q3+theta0))))+(1/2)*((-1)*m1*(2*(l1*((-1)*q1dot+(-1) 
+      *theta0dot)*cos(q1+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y* 
+      sin(theta0)))*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+l1*((-1) 
+      *q1dot+(-1)*theta0dot)*sin(q1+theta0))+2*(l1*(q1dot+theta0dot)*cos( 
+      q1+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*(theta0dot*(( 
+      -1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(-1)*l1*(q1dot+theta0dot)* 
+      sin(q1+theta0)))+(-1)*m2*(2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos( 
+      q1+theta0)+r1*cos(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)* 
+      theta0dot)*cos(q1+q2+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y* 
+      sin(theta0)))*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)* 
+      q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+l2*((-1)* 
+      q1dot+(-1)*q2dot+(-1)*theta0dot)*sin(q1+q2+theta0))+2*((q1dot+ 
+      theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*(q1dot+q2dot+ 
+      theta0dot)*cos(q1+q2+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0) 
+      ))*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+ 
+      theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*( 
+      q1dot+q2dot+theta0dot)*sin(q1+q2+theta0)))+(-1)*m3*(2*(((-1)*q1dot+ 
+      (-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1) 
+      *q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+ 
+      l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+ 
+      q3+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1) 
+      *theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot) 
+      *(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1) 
+      *theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)* 
+      q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+ 
+      2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+ 
+      q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+ 
+      q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1) 
+      *r0y*sin(theta0)))*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin( 
+      theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0) 
+      )+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin( 
+      q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+ 
+      theta0))))+q2dot*(xc0dot*((-1)*l2*m2*cos(q1+q2+theta0)+m3*((-1)* 
+      l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+ 
+      q3+theta0)))+yc0dot*((-1)*l2*m2*sin(q1+q2+theta0)+m3*((-1)*l2*sin( 
+      q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0)))+ 
+      (1/2)*(m2*((-2)*l2*(q1dot+q2dot+theta0dot)*(r0x*cos(theta0)+l1* 
+      cos(q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+(-1)*r0y*sin(theta0) 
+      )*sin(q1+q2+theta0)+(-2)*l2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1* 
+      cos(q1+theta0))+l2*(q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)+theta0dot*( 
+      r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+theta0)+2*l2*((-1)* 
+      q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)*((-1)*r0y*cos( 
+      theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+ 
+      theta0)+(-1)*l2*sin(q1+q2+theta0))+(-2)*l2*cos(q1+q2+theta0)*((-1)* 
+      theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
+      (l1*sin(q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+( 
+      -1)*theta0dot)*sin(q1+q2+theta0)))+m3*(2*((q1dot+theta0dot)*(l1*cos( 
+      q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0) 
+      +r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+ 
+      theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)*l2*sin( 
+      q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+ 
+      2*(((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+ 
+      r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1) 
+      *theta0dot)*cos(q1+q2+q3+theta0))*((-1)*r0y*cos(theta0)+(-1)*r0x* 
+      sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2* 
+      sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+ 
+      theta0))+2*((-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)* 
+      l3*cos(q1+q2+q3+theta0))*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin( 
+      theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0) 
+      )+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2* 
+      sin(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)* 
+      theta0dot)*sin(q1+q2+q3+theta0))+2*(r0x*cos(theta0)+l1*cos(q1+theta0)+r1* 
+      cos(q1+theta0)+l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3*cos(q1+q2+ 
+      q3+theta0)+(-1)*r0y*sin(theta0))*((q1dot+q2dot+theta0dot)*((-1)*l2* 
+      sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+ 
+      q3dot+theta0dot)*sin(q1+q2+q3+theta0)))))+q1dot*(xc0dot*((-1)*l1* 
+      m1*cos(q1+theta0)+m2*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+( 
+      -1)*l2*cos(q1+q2+theta0))+m3*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos( 
+      q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)* 
+      l3*cos(q1+q2+q3+theta0)))+yc0dot*((-1)*l1*m1*sin(q1+theta0)+m2*(( 
+      -1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+ 
+      theta0))+m3*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2* 
+      sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+ 
+      theta0)))+(1/2)*(m1*((-2)*l1*(q1dot+theta0dot)*(r0x*cos(theta0)+l1* 
+      cos(q1+theta0)+(-1)*r0y*sin(theta0))*sin(q1+theta0)+(-2)*l1*(l1*( 
+      q1dot+theta0dot)*cos(q1+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin( 
+      theta0)))*sin(q1+theta0)+2*l1*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0) 
+      *((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0))+ 
+      (-2)*l1*cos(q1+theta0)*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0) 
+      )+l1*((-1)*q1dot+(-1)*theta0dot)*sin(q1+theta0)))+m2*(2*((q1dot+ 
+      theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*(q1dot+q2dot+ 
+      theta0dot)*cos(q1+q2+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0) 
+      ))*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+ 
+      q2+theta0))+2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos( 
+      q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+ 
+      theta0))*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+ 
+      theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0))+2*((-1)* 
+      l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0))*( 
+      (-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)* 
+      theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)* 
+      q2dot+(-1)*theta0dot)*sin(q1+q2+theta0))+2*(r0x*cos(theta0)+l1*cos(q1+ 
+      theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+(-1)*r0y*sin(theta0))*(( 
+      q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1) 
+      *l2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0)))+m3*(2*((q1dot+ 
+      theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*( 
+      l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+ 
+      theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin( 
+      theta0)))*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2* 
+      sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+ 
+      theta0))+2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+ 
+      theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+ 
+      r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1) 
+      *theta0dot)*cos(q1+q2+q3+theta0))*((-1)*r0y*cos(theta0)+(-1)*r0x* 
+      sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2* 
+      sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+ 
+      theta0))+2*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2* 
+      cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+ 
+      theta0))*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+( 
+      -1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1) 
+      *q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+ 
+      l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+ 
+      q3+theta0))+2*(r0x*cos(theta0)+l1*cos(q1+theta0)+r1*cos(q1+theta0)+l2* 
+      cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0)+(-1)* 
+      r0y*sin(theta0))*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1* 
+      sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1) 
+      *r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin( 
+      q1+q2+q3+theta0)))))+theta0dot*(xc0dot*(m1*((-1)*r0x*cos(theta0)+(-1)* 
+      l1*cos(q1+theta0)+r0y*sin(theta0))+m2*((-1)*r0x*cos(theta0)+(-1)*l1* 
+      cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+r0y* 
+      sin(theta0))+m3*((-1)*r0x*cos(theta0)+(-1)*l1*cos(q1+theta0)+(-1)* 
+      r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+ 
+      (-1)*l3*cos(q1+q2+q3+theta0)+r0y*sin(theta0)))+yc0dot*(m1*((-1)* 
+      r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0))+m2*((-1) 
+      *r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)* 
+      r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0))+m3*((-1)*r0y*cos(theta0) 
+      +(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+( 
+      -1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+ 
+      q2+q3+theta0)))+(1/2)*(m1*(2*(l1*((-1)*q1dot+(-1)*theta0dot)*cos( 
+      q1+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1) 
+      *r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0))+2*( 
+      l1*(q1dot+theta0dot)*cos(q1+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y* 
+      sin(theta0)))*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1* 
+      sin(q1+theta0))+2*((-1)*r0x*cos(theta0)+(-1)*l1*cos(q1+theta0)+r0y* 
+      sin(theta0))*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+l1*((-1) 
+      *q1dot+(-1)*theta0dot)*sin(q1+theta0))+2*(r0x*cos(theta0)+l1*cos(q1+ 
+      theta0)+(-1)*r0y*sin(theta0))*(theta0dot*((-1)*r0y*cos(theta0)+(-1)* 
+      r0x*sin(theta0))+(-1)*l1*(q1dot+theta0dot)*sin(q1+theta0)))+m2*(2*((( 
+      -1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*(( 
+      -1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)+(-1)* 
+      theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)*r0y*cos(theta0) 
+      +(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+( 
+      -1)*l2*sin(q1+q2+theta0))+2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1* 
+      cos(q1+theta0))+l2*(q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)+theta0dot*( 
+      r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)*r0y*cos(theta0)+(-1)* 
+      r0x*sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)* 
+      l2*sin(q1+q2+theta0))+2*((-1)*r0x*cos(theta0)+(-1)*l1*cos(q1+theta0)+ 
+      (-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+r0y*sin(theta0))*(( 
+      -1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)* 
+      theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)* 
+      q2dot+(-1)*theta0dot)*sin(q1+q2+theta0))+2*(r0x*cos(theta0)+l1*cos(q1+ 
+      theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+(-1)*r0y*sin(theta0))*( 
+      theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)* 
+      ((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+ 
+      q2dot+theta0dot)*sin(q1+q2+theta0)))+m3*(2*(((-1)*q1dot+(-1)* 
+      theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1)* 
+      q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*( 
+      (-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+ 
+      theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)* 
+      r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1* 
+      sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1) 
+      *l3*sin(q1+q2+q3+theta0))+2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1* 
+      cos(q1+theta0))+(q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+ 
+      q2+theta0))+l3*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*((-1)*r0x*cos(theta0)+(-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0)+r0y*sin(theta0))*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*(r0x*cos(theta0)+l1*cos(q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0)+(-1)*r0y*sin(theta0))*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)))));
 
-        c41 =   (-1)*xc0dot*(l1*m1*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0)+ 
-    m2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0)) 
-    +l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0))+m3*( 
-    ((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(( 
-    -1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos( 
-    q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot) 
-    *cos(q1+q2+q3+theta0)))+(-1)*yc0dot*((-1)*l1*m1*(q1dot+theta0dot)* 
-    sin(q1+theta0)+m2*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1* 
-    sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0))+m3*( 
-    (q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+( 
-    q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+ 
-    q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0))) 
-    +q3dot*((-1)*l3*m3*xc0dot*cos(q1+q2+q3+theta0)+(-1)*l3*m3* 
-    yc0dot*sin(q1+q2+q3+theta0)+(1/2)*m3*((-2)*l3*(q1dot+q2dot+q3dot+ 
-    theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+r2* 
-    cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0))*sin(q1+q2+q3+theta0)+(-2)* 
-    l3*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+ 
-    q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+ 
-    q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1) 
-    *r0y*sin(theta0)))*sin(q1+q2+q3+theta0)+2*l3*((-1)*q1dot+(-1)* 
-    q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)*((-1)*l1* 
-    sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+(-1)* 
-    r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+(-2)*l3*cos(q1+ 
-    q2+q3+theta0)*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)* 
-    q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)* 
-    q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+ 
-    q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)* 
-    sin(q1+q2+q3+theta0))))+(1/2)*((-1)*m1*((-2)*l1*(q1dot+theta0dot)* 
-    (l1*(q1dot+theta0dot)*cos(q1+theta0)+theta0dot*(r0x*cos(theta0)+(-1)* 
-    r0y*sin(theta0)))*sin(q1+theta0)+2*l1*((-1)*q1dot+(-1)*theta0dot)* 
-    cos(q1+theta0)*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+l1*(( 
-    -1)*q1dot+(-1)*theta0dot)*sin(q1+theta0)))+(-1)*m2*(2*(((-1)* 
-    q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*((-1)* 
-    q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0))*((-1)*theta0dot*( 
-    r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin( 
-    q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)* 
-    theta0dot)*sin(q1+q2+theta0))+2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1* 
-    cos(q1+theta0))+l2*(q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)+theta0dot*( 
-    r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((q1dot+theta0dot)*((-1)*l1* 
-    sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot) 
-    *sin(q1+q2+theta0)))+(-1)*m3*(2*(((-1)*q1dot+(-1)*theta0dot)*( 
-    l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
-    theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+ 
-    (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0))*((-1)* 
-    theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
-    (l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
-    theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+ 
-    (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*(( 
-    q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+ 
-    theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+ 
-    q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)* 
-    r0y*sin(theta0)))*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)* 
-    r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+( 
-    -1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)* 
-    sin(q1+q2+q3+theta0))))+q2dot*(xc0dot*((-1)*l2*m2*cos(q1+q2+theta0)+ 
-    m3*((-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3* 
-    cos(q1+q2+q3+theta0)))+yc0dot*((-1)*l2*m2*sin(q1+q2+theta0)+m3*((-1) 
-    *l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+ 
-    q3+theta0)))+(1/2)*(m2*((-2)*l2*(q1dot+q2dot+theta0dot)*(l1*cos( 
-    q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0))*sin(q1+q2+theta0)+(-2)* 
-    l2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*(q1dot+ 
-    q2dot+theta0dot)*cos(q1+q2+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y* 
-    sin(theta0)))*sin(q1+q2+theta0)+2*l2*((-1)*q1dot+(-1)*q2dot+(-1)* 
-    theta0dot)*cos(q1+q2+theta0)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+ 
-    theta0)+(-1)*l2*sin(q1+q2+theta0))+(-2)*l2*cos(q1+q2+theta0)*((-1)* 
-    theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
-    (l1*sin(q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+( 
-    -1)*theta0dot)*sin(q1+q2+theta0)))+m3*(2*((q1dot+theta0dot)*(l1*cos( 
-    q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0) 
-    +r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+ 
-    theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)*l2*sin( 
-    q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+ 
-    2*(((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+ 
-    r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1) 
-    *theta0dot)*cos(q1+q2+q3+theta0))*((-1)*l1*sin(q1+theta0)+(-1)*r1* 
-    sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1) 
-    *l3*sin(q1+q2+q3+theta0))+2*((-1)*l2*cos(q1+q2+theta0)+(-1)*r2* 
-    cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0))*((-1)*theta0dot*(r0y* 
-    cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+ 
-    theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*( 
-    l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+(-1)* 
-    q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*(l1*cos( 
-    q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3* 
-    cos(q1+q2+q3+theta0))*((q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+ 
-    theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+ 
-    theta0dot)*sin(q1+q2+q3+theta0)))))+q1dot*(xc0dot*((-1)*l1*m1*cos( 
-    q1+theta0)+m2*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)* 
-    l2*cos(q1+q2+theta0))+m3*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+ 
-    theta0)+(-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3* 
-    cos(q1+q2+q3+theta0)))+yc0dot*((-1)*l1*m1*sin(q1+theta0)+m2*((-1)* 
-    l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0))+ 
-    m3*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+ 
-    q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0)))+( 
-    1/2)*(m1*((-2)*pow(l1,2)*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0)* 
-    sin(q1+theta0)+(-2)*pow(l1,2)*(q1dot+theta0dot)*cos(q1+theta0)*sin(q1+theta0)+ 
-    (-2)*l1*(l1*(q1dot+theta0dot)*cos(q1+theta0)+theta0dot*(r0x*cos(theta0)+ 
-    (-1)*r0y*sin(theta0)))*sin(q1+theta0)+(-2)*l1*cos(q1+theta0)*((-1)* 
-    theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+l1*((-1)*q1dot+(-1)* 
-    theta0dot)*sin(q1+theta0)))+m2*(2*(((-1)*q1dot+(-1)*theta0dot)*(l1* 
-    cos(q1+theta0)+r1*cos(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)* 
-    theta0dot)*cos(q1+q2+theta0))*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+ 
-    theta0)+(-1)*l2*sin(q1+q2+theta0))+2*((q1dot+theta0dot)*(l1*cos(q1+ 
-    theta0)+r1*cos(q1+theta0))+l2*(q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)+ 
-    theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)*l1*sin(q1+ 
-    theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0))+2*((-1)* 
-    l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0))*( 
-    (-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)* 
-    theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)* 
-    q2dot+(-1)*theta0dot)*sin(q1+q2+theta0))+2*(l1*cos(q1+theta0)+r1*cos( 
-    q1+theta0)+l2*cos(q1+q2+theta0))*((q1dot+theta0dot)*((-1)*l1*sin(q1+ 
-    theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot)*sin( 
-    q1+q2+theta0)))+m3*(2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0) 
-    +r1*cos(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2* 
-    cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+( 
-    -1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0))*((-1)*l1*sin(q1+ 
-    theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin( 
-    q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*((q1dot+theta0dot)*(l1* 
-    cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+ 
-    theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+ 
-    q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)* 
-    l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+( 
-    -1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*((-1)* 
-    l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+( 
-    -1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0))*((-1)* 
-    theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
-    (l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
-    theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+ 
-    (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*(l1* 
-    cos(q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+ 
-    l3*cos(q1+q2+q3+theta0))*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+( 
-    -1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+ 
-    theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+ 
-    theta0dot)*sin(q1+q2+q3+theta0)))))+theta0dot*(xc0dot*((-1)*l1*m1*cos( 
-    q1+theta0)+m2*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)* 
-    l2*cos(q1+q2+theta0))+m3*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+ 
-    theta0)+(-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3* 
-    cos(q1+q2+q3+theta0)))+yc0dot*((-1)*l1*m1*sin(q1+theta0)+m2*((-1)* 
-    l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0))+ 
-    m3*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+ 
-    q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0)))+( 
-    1/2)*(m1*((-2)*l1*(l1*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0) 
-    +(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+theta0)+( 
-    -2)*l1*(l1*(q1dot+theta0dot)*cos(q1+theta0)+theta0dot*(r0x*cos(theta0)+( 
-    -1)*r0y*sin(theta0)))*sin(q1+theta0)+(-2)*l1*cos(q1+theta0)*((-1)* 
-    theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+l1*((-1)*q1dot+(-1)* 
-    theta0dot)*sin(q1+theta0))+2*l1*cos(q1+theta0)*(theta0dot*((-1)*r0y* 
-    cos(theta0)+(-1)*r0x*sin(theta0))+(-1)*l1*(q1dot+theta0dot)*sin(q1+ 
-    theta0)))+m2*(2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1* 
-    cos(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+ 
-    q2+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1) 
-    *l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0))+ 
-    2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*(q1dot+ 
-    q2dot+theta0dot)*cos(q1+q2+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y* 
-    sin(theta0)))*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)* 
-    l2*sin(q1+q2+theta0))+2*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+ 
-    theta0)+(-1)*l2*cos(q1+q2+theta0))*((-1)*theta0dot*(r0y*cos(theta0)+ 
-    r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1* 
-    sin(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*sin(q1+ 
-    q2+theta0))+2*(l1*cos(q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0))* 
-    (theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot) 
-    *((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+ 
-    q2dot+theta0dot)*sin(q1+q2+theta0)))+m3*(2*(((-1)*q1dot+(-1)* 
-    theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1)* 
-    q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*( 
-    (-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+ 
-    theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)* 
-    l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+( 
-    -1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*((q1dot+ 
-    theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*( 
-    l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+ 
-    theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin( 
-    theta0)))*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2* 
-    sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+ 
-    theta0))+2*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2* 
-    cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+ 
-    theta0))*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+( 
-    -1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1) 
-    *q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+ 
-    l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+ 
-    q3+theta0))+2*(l1*cos(q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+ 
-    r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0))*(theta0dot*((-1)*r0y* 
-    cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+ 
-    theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin( 
-    q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+ 
-    theta0dot)*sin(q1+q2+q3+theta0)))));
+        c41 = (-1)*xc0dot*(l1*m1*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0)+ 
+      m2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0)) 
+      +l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0))+m3*( 
+      ((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(( 
+      -1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos( 
+      q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot) 
+      *cos(q1+q2+q3+theta0)))+(-1)*yc0dot*((-1)*l1*m1*(q1dot+theta0dot)* 
+      sin(q1+theta0)+m2*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1* 
+      sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0))+m3*( 
+      (q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+( 
+      q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+ 
+      q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0))) 
+      +q3dot*((-1)*l3*m3*xc0dot*cos(q1+q2+q3+theta0)+(-1)*l3*m3* 
+      yc0dot*sin(q1+q2+q3+theta0)+(1/2)*m3*((-2)*l3*(q1dot+q2dot+q3dot+ 
+      theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+r2* 
+      cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0))*sin(q1+q2+q3+theta0)+(-2)* 
+      l3*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+ 
+      q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+ 
+      q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1) 
+      *r0y*sin(theta0)))*sin(q1+q2+q3+theta0)+2*l3*((-1)*q1dot+(-1)* 
+      q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)*((-1)*l1* 
+      sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+(-1)* 
+      r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+(-2)*l3*cos(q1+ 
+      q2+q3+theta0)*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)* 
+      q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)* 
+      q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+ 
+      q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)* 
+      sin(q1+q2+q3+theta0))))+(1/2)*((-1)*m1*((-2)*l1*(q1dot+theta0dot)* 
+      (l1*(q1dot+theta0dot)*cos(q1+theta0)+theta0dot*(r0x*cos(theta0)+(-1)* 
+      r0y*sin(theta0)))*sin(q1+theta0)+2*l1*((-1)*q1dot+(-1)*theta0dot)* 
+      cos(q1+theta0)*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+l1*(( 
+      -1)*q1dot+(-1)*theta0dot)*sin(q1+theta0)))+(-1)*m2*(2*(((-1)* 
+      q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*((-1)* 
+      q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0))*((-1)*theta0dot*( 
+      r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin( 
+      q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)* 
+      theta0dot)*sin(q1+q2+theta0))+2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1* 
+      cos(q1+theta0))+l2*(q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)+theta0dot*( 
+      r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((q1dot+theta0dot)*((-1)*l1* 
+      sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot) 
+      *sin(q1+q2+theta0)))+(-1)*m3*(2*(((-1)*q1dot+(-1)*theta0dot)*( 
+      l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
+      theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+ 
+      (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0))*((-1)* 
+      theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
+      (l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
+      theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+ 
+      (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*(( 
+      q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+ 
+      theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+ 
+      q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)* 
+      r0y*sin(theta0)))*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)* 
+      r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+( 
+      -1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)* 
+      sin(q1+q2+q3+theta0))))+q2dot*(xc0dot*((-1)*l2*m2*cos(q1+q2+theta0)+ 
+      m3*((-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3* 
+      cos(q1+q2+q3+theta0)))+yc0dot*((-1)*l2*m2*sin(q1+q2+theta0)+m3*((-1) 
+      *l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+ 
+      q3+theta0)))+(1/2)*(m2*((-2)*l2*(q1dot+q2dot+theta0dot)*(l1*cos( 
+      q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0))*sin(q1+q2+theta0)+(-2)* 
+      l2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*(q1dot+ 
+      q2dot+theta0dot)*cos(q1+q2+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y* 
+      sin(theta0)))*sin(q1+q2+theta0)+2*l2*((-1)*q1dot+(-1)*q2dot+(-1)* 
+      theta0dot)*cos(q1+q2+theta0)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+ 
+      theta0)+(-1)*l2*sin(q1+q2+theta0))+(-2)*l2*cos(q1+q2+theta0)*((-1)* 
+      theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
+      (l1*sin(q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+( 
+      -1)*theta0dot)*sin(q1+q2+theta0)))+m3*(2*((q1dot+theta0dot)*(l1*cos( 
+      q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0) 
+      +r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+ 
+      theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)*l2*sin( 
+      q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+ 
+      2*(((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+ 
+      r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1) 
+      *theta0dot)*cos(q1+q2+q3+theta0))*((-1)*l1*sin(q1+theta0)+(-1)*r1* 
+      sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1) 
+      *l3*sin(q1+q2+q3+theta0))+2*((-1)*l2*cos(q1+q2+theta0)+(-1)*r2* 
+      cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0))*((-1)*theta0dot*(r0y* 
+      cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+ 
+      theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*( 
+      l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+(-1)* 
+      q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*(l1*cos( 
+      q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3* 
+      cos(q1+q2+q3+theta0))*((q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+ 
+      theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+ 
+      theta0dot)*sin(q1+q2+q3+theta0)))))+q1dot*(xc0dot*((-1)*l1*m1*cos( 
+      q1+theta0)+m2*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)* 
+      l2*cos(q1+q2+theta0))+m3*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+ 
+      theta0)+(-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3* 
+      cos(q1+q2+q3+theta0)))+yc0dot*((-1)*l1*m1*sin(q1+theta0)+m2*((-1)* 
+      l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0))+ 
+      m3*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+ 
+      q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0)))+( 
+      1/2)*(m1*((-2)*pow(l1,2)*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0)* 
+      sin(q1+theta0)+(-2)*pow(l1,2)*(q1dot+theta0dot)*cos(q1+theta0)*sin(q1+theta0)+ 
+      (-2)*l1*(l1*(q1dot+theta0dot)*cos(q1+theta0)+theta0dot*(r0x*cos(theta0)+ 
+      (-1)*r0y*sin(theta0)))*sin(q1+theta0)+(-2)*l1*cos(q1+theta0)*((-1)* 
+      theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+l1*((-1)*q1dot+(-1)* 
+      theta0dot)*sin(q1+theta0)))+m2*(2*(((-1)*q1dot+(-1)*theta0dot)*(l1* 
+      cos(q1+theta0)+r1*cos(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)* 
+      theta0dot)*cos(q1+q2+theta0))*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+ 
+      theta0)+(-1)*l2*sin(q1+q2+theta0))+2*((q1dot+theta0dot)*(l1*cos(q1+ 
+      theta0)+r1*cos(q1+theta0))+l2*(q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)+ 
+      theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)*l1*sin(q1+ 
+      theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0))+2*((-1)* 
+      l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0))*( 
+      (-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)* 
+      theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)* 
+      q2dot+(-1)*theta0dot)*sin(q1+q2+theta0))+2*(l1*cos(q1+theta0)+r1*cos( 
+      q1+theta0)+l2*cos(q1+q2+theta0))*((q1dot+theta0dot)*((-1)*l1*sin(q1+ 
+      theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot)*sin( 
+      q1+q2+theta0)))+m3*(2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0) 
+      +r1*cos(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2* 
+      cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+( 
+      -1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0))*((-1)*l1*sin(q1+ 
+      theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin( 
+      q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*((q1dot+theta0dot)*(l1* 
+      cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+ 
+      theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+ 
+      q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)* 
+      l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+( 
+      -1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*((-1)* 
+      l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+( 
+      -1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0))*((-1)* 
+      theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
+      (l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
+      theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+ 
+      (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*(l1* 
+      cos(q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+ 
+      l3*cos(q1+q2+q3+theta0))*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+( 
+      -1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+ 
+      theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+ 
+      theta0dot)*sin(q1+q2+q3+theta0)))))+theta0dot*(xc0dot*((-1)*l1*m1*cos( 
+      q1+theta0)+m2*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)* 
+      l2*cos(q1+q2+theta0))+m3*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+ 
+      theta0)+(-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3* 
+      cos(q1+q2+q3+theta0)))+yc0dot*((-1)*l1*m1*sin(q1+theta0)+m2*((-1)* 
+      l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0))+ 
+      m3*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+ 
+      q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0)))+( 
+      1/2)*(m1*((-2)*l1*(l1*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0) 
+      +(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+theta0)+( 
+      -2)*l1*(l1*(q1dot+theta0dot)*cos(q1+theta0)+theta0dot*(r0x*cos(theta0)+( 
+      -1)*r0y*sin(theta0)))*sin(q1+theta0)+(-2)*l1*cos(q1+theta0)*((-1)* 
+      theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+l1*((-1)*q1dot+(-1)* 
+      theta0dot)*sin(q1+theta0))+2*l1*cos(q1+theta0)*(theta0dot*((-1)*r0y* 
+      cos(theta0)+(-1)*r0x*sin(theta0))+(-1)*l1*(q1dot+theta0dot)*sin(q1+ 
+      theta0)))+m2*(2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1* 
+      cos(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+ 
+      q2+theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1) 
+      *l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0))+ 
+      2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*(q1dot+ 
+      q2dot+theta0dot)*cos(q1+q2+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y* 
+      sin(theta0)))*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)* 
+      l2*sin(q1+q2+theta0))+2*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+ 
+      theta0)+(-1)*l2*cos(q1+q2+theta0))*((-1)*theta0dot*(r0y*cos(theta0)+ 
+      r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1* 
+      sin(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*sin(q1+ 
+      q2+theta0))+2*(l1*cos(q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0))* 
+      (theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot) 
+      *((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+ 
+      q2dot+theta0dot)*sin(q1+q2+theta0)))+m3*(2*(((-1)*q1dot+(-1)* 
+      theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1)* 
+      q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*( 
+      (-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+ 
+      theta0)+(-1)*theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)* 
+      l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+( 
+      -1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*((q1dot+ 
+      theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*( 
+      l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+ 
+      theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin( 
+      theta0)))*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2* 
+      sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+ 
+      theta0))+2*((-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2* 
+      cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+ 
+      theta0))*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+( 
+      -1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1) 
+      *q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+ 
+      l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+ 
+      q3+theta0))+2*(l1*cos(q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+ 
+      r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0))*(theta0dot*((-1)*r0y* 
+      cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+ 
+      theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin( 
+      q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+ 
+      theta0dot)*sin(q1+q2+q3+theta0)))));
         
         c51 = (-1)*xc0dot*(l2*m2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)* 
-    cos(q1+q2+theta0)+m3*(((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2* 
-    cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+( 
-    -1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)))+(-1)*yc0dot*((-1)* 
-    l2*m2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0)+m3*((q1dot+q2dot+ 
-    theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1) 
-    *l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)))+q3dot*((-1) 
-    *l3*m3*xc0dot*cos(q1+q2+q3+theta0)+(-1)*l3*m3*yc0dot*sin(q1+q2+ 
-    q3+theta0)+(1/2)*m3*((-2)*l3*(q1dot+q2dot+q3dot+theta0dot)*(l2* 
-    cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0))*sin(q1+ 
-    q2+q3+theta0)+(-2)*l3*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+ 
-    theta0))+(q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0) 
-    )+l3*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x* 
-    cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+q3+theta0)+2*l3*((-1)* 
-    q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)*(( 
-    -1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+ 
-    q2+q3+theta0))+(-2)*l3*cos(q1+q2+q3+theta0)*((-1)*theta0dot*(r0y*cos( 
-    theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+ 
-    r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*sin( 
-    q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)* 
-    q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))))+(1/2)*((-1)*m2*((-2) 
-    *l2*(q1dot+q2dot+theta0dot)*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1* 
-    cos(q1+theta0))+l2*(q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)+theta0dot*( 
-    r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+theta0)+2*l2*((-1)* 
-    q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)*((-1)*theta0dot*( 
-    r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin( 
-    q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)* 
-    theta0dot)*sin(q1+q2+theta0)))+(-1)*m3*(2*(((-1)*q1dot+(-1)*q2dot+ 
-    (-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)* 
-    q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0))*( 
-    (-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)* 
-    theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)* 
-    q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*( 
-    (-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+ 
-    theta0))+2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+( 
-    q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*( 
-    q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos( 
-    theta0)+(-1)*r0y*sin(theta0)))*((q1dot+q2dot+theta0dot)*((-1)*l2*sin( 
-    q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+ 
-    theta0dot)*sin(q1+q2+q3+theta0))))+q2dot*(xc0dot*((-1)*l2*m2*cos( 
-    q1+q2+theta0)+m3*((-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+ 
-    (-1)*l3*cos(q1+q2+q3+theta0)))+yc0dot*((-1)*l2*m2*sin(q1+q2+theta0) 
-    +m3*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3* 
-    sin(q1+q2+q3+theta0)))+(1/2)*(m2*((-2)*pow(l2,2)*((-1)*q1dot+(-1)* 
-    q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)*sin(q1+q2+theta0)+(-2)*pow(l2,2)*( 
-    q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)*sin(q1+q2+theta0)+(-2)*l2*(( 
-    q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*(q1dot+q2dot+ 
-    theta0dot)*cos(q1+q2+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0) 
-    ))*sin(q1+q2+theta0)+(-2)*l2*cos(q1+q2+theta0)*((-1)*theta0dot*(r0y* 
-    cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+ 
-    theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)* 
-    sin(q1+q2+theta0)))+m3*(2*(((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)* 
-    (l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)* 
-    q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0))*((-1)*l2* 
-    sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+ 
-    theta0))+2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+( 
-    q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*( 
-    q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos( 
-    theta0)+(-1)*r0y*sin(theta0)))*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2* 
-    sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*((-1)*l2*cos(q1+ 
-    q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0))*(( 
-    -1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)* 
-    theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)* 
-    q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*( 
-    (-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+ 
-    theta0))+2*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+ 
-    theta0))*((q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2* 
-    sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+ 
-    q3+theta0)))))+q1dot*(xc0dot*((-1)*l2*m2*cos(q1+q2+theta0)+m3*((-1) 
-    *l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+ 
-    q3+theta0)))+yc0dot*((-1)*l2*m2*sin(q1+q2+theta0)+m3*((-1)*l2*sin( 
-    q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0)))+ 
-    (1/2)*(m2*((-2)*l2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+ 
-    theta0)+r1*cos(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)* 
-    cos(q1+q2+theta0))*sin(q1+q2+theta0)+(-2)*l2*((q1dot+theta0dot)*(l1* 
-    cos(q1+theta0)+r1*cos(q1+theta0))+l2*(q1dot+q2dot+theta0dot)*cos(q1+q2+ 
-    theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+theta0)+ 
-    (-2)*l2*cos(q1+q2+theta0)*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin( 
-    theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0) 
-    )+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*sin(q1+q2+theta0))+2* 
-    l2*cos(q1+q2+theta0)*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)* 
-    r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0)))+ 
-    m3*(2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+ 
-    theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+ 
-    r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1) 
-    *theta0dot)*cos(q1+q2+q3+theta0))*((-1)*l2*sin(q1+q2+theta0)+(-1)* 
-    r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*((q1dot+theta0dot) 
-    *(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*(l2* 
-    cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+theta0dot) 
-    *cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))* 
-    ((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin( 
-    q1+q2+q3+theta0))+2*((-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+ 
-    theta0)+(-1)*l3*cos(q1+q2+q3+theta0))*((-1)*theta0dot*(r0y*cos(theta0)+ 
-    r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1* 
-    sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*sin(q1+ 
-    q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)* 
-    q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*(l2*cos(q1+q2+theta0)+ 
-    r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0))*((q1dot+theta0dot)*((-1) 
-    *l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*(( 
-    -1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*( 
-    q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)))))+theta0dot*(xc0dot*( 
-    (-1)*l2*m2*cos(q1+q2+theta0)+m3*((-1)*l2*cos(q1+q2+theta0)+(-1)* 
-    r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0)))+yc0dot*((-1)* 
-    l2*m2*sin(q1+q2+theta0)+m3*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2* 
-    sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0)))+(1/2)*(m2*((-2)* 
-    l2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0)) 
-    +l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)+(-1)* 
-    theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+theta0)+(-2) 
-    *l2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*( 
-    q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)+theta0dot*(r0x*cos(theta0)+(-1)* 
-    r0y*sin(theta0)))*sin(q1+q2+theta0)+(-2)*l2*cos(q1+q2+theta0)*((-1)* 
-    theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
-    (l1*sin(q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+( 
-    -1)*theta0dot)*sin(q1+q2+theta0))+2*l2*cos(q1+q2+theta0)*(theta0dot*(( 
-    -1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)*((-1)* 
-    l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+ 
-    theta0dot)*sin(q1+q2+theta0)))+m3*(2*(((-1)*q1dot+(-1)*theta0dot)*( 
-    l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
-    theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+ 
-    (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)+(-1)* 
-    theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)*l2*sin(q1+ 
-    q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*( 
-    (q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+ 
-    theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+ 
-    q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)* 
-    r0y*sin(theta0)))*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+ 
-    theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*((-1)*l2*cos(q1+q2+theta0)+( 
-    -1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0))*((-1)* 
-    theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
-    (l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
-    theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+ 
-    (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*(l2* 
-    cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0))*( 
-    theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)* 
-    ((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot) 
-    *((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*( 
-    q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)))));
+      cos(q1+q2+theta0)+m3*(((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2* 
+      cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+( 
+      -1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)))+(-1)*yc0dot*((-1)* 
+      l2*m2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0)+m3*((q1dot+q2dot+ 
+      theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1) 
+      *l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)))+q3dot*((-1) 
+      *l3*m3*xc0dot*cos(q1+q2+q3+theta0)+(-1)*l3*m3*yc0dot*sin(q1+q2+ 
+      q3+theta0)+(1/2)*m3*((-2)*l3*(q1dot+q2dot+q3dot+theta0dot)*(l2* 
+      cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0))*sin(q1+ 
+      q2+q3+theta0)+(-2)*l3*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+ 
+      theta0))+(q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0) 
+      )+l3*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x* 
+      cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+q3+theta0)+2*l3*((-1)* 
+      q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)*(( 
+      -1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+ 
+      q2+q3+theta0))+(-2)*l3*cos(q1+q2+q3+theta0)*((-1)*theta0dot*(r0y*cos( 
+      theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+ 
+      r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*sin( 
+      q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)* 
+      q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))))+(1/2)*((-1)*m2*((-2) 
+      *l2*(q1dot+q2dot+theta0dot)*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1* 
+      cos(q1+theta0))+l2*(q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)+theta0dot*( 
+      r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+theta0)+2*l2*((-1)* 
+      q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)*((-1)*theta0dot*( 
+      r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin( 
+      q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)* 
+      theta0dot)*sin(q1+q2+theta0)))+(-1)*m3*(2*(((-1)*q1dot+(-1)*q2dot+ 
+      (-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)* 
+      q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0))*( 
+      (-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)* 
+      theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)* 
+      q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*( 
+      (-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+ 
+      theta0))+2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+( 
+      q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*( 
+      q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos( 
+      theta0)+(-1)*r0y*sin(theta0)))*((q1dot+q2dot+theta0dot)*((-1)*l2*sin( 
+      q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+ 
+      theta0dot)*sin(q1+q2+q3+theta0))))+q2dot*(xc0dot*((-1)*l2*m2*cos( 
+      q1+q2+theta0)+m3*((-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+ 
+      (-1)*l3*cos(q1+q2+q3+theta0)))+yc0dot*((-1)*l2*m2*sin(q1+q2+theta0) 
+      +m3*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3* 
+      sin(q1+q2+q3+theta0)))+(1/2)*(m2*((-2)*pow(l2,2)*((-1)*q1dot+(-1)* 
+      q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)*sin(q1+q2+theta0)+(-2)*pow(l2,2)*( 
+      q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)*sin(q1+q2+theta0)+(-2)*l2*(( 
+      q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*(q1dot+q2dot+ 
+      theta0dot)*cos(q1+q2+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0) 
+      ))*sin(q1+q2+theta0)+(-2)*l2*cos(q1+q2+theta0)*((-1)*theta0dot*(r0y* 
+      cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+ 
+      theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)* 
+      sin(q1+q2+theta0)))+m3*(2*(((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)* 
+      (l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)* 
+      q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0))*((-1)*l2* 
+      sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+ 
+      theta0))+2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+( 
+      q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*( 
+      q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos( 
+      theta0)+(-1)*r0y*sin(theta0)))*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2* 
+      sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*((-1)*l2*cos(q1+ 
+      q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0))*(( 
+      -1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)* 
+      theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)* 
+      q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*( 
+      (-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+ 
+      theta0))+2*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+ 
+      theta0))*((q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2* 
+      sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+ 
+      q3+theta0)))))+q1dot*(xc0dot*((-1)*l2*m2*cos(q1+q2+theta0)+m3*((-1) 
+      *l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+ 
+      q3+theta0)))+yc0dot*((-1)*l2*m2*sin(q1+q2+theta0)+m3*((-1)*l2*sin( 
+      q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0)))+ 
+      (1/2)*(m2*((-2)*l2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+ 
+      theta0)+r1*cos(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)* 
+      cos(q1+q2+theta0))*sin(q1+q2+theta0)+(-2)*l2*((q1dot+theta0dot)*(l1* 
+      cos(q1+theta0)+r1*cos(q1+theta0))+l2*(q1dot+q2dot+theta0dot)*cos(q1+q2+ 
+      theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+theta0)+ 
+      (-2)*l2*cos(q1+q2+theta0)*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin( 
+      theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0) 
+      )+l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*sin(q1+q2+theta0))+2* 
+      l2*cos(q1+q2+theta0)*((q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)* 
+      r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+theta0dot)*sin(q1+q2+theta0)))+ 
+      m3*(2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+ 
+      theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+ 
+      r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1) 
+      *theta0dot)*cos(q1+q2+q3+theta0))*((-1)*l2*sin(q1+q2+theta0)+(-1)* 
+      r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*((q1dot+theta0dot) 
+      *(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*(l2* 
+      cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+theta0dot) 
+      *cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))* 
+      ((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin( 
+      q1+q2+q3+theta0))+2*((-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+ 
+      theta0)+(-1)*l3*cos(q1+q2+q3+theta0))*((-1)*theta0dot*(r0y*cos(theta0)+ 
+      r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1* 
+      sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*sin(q1+ 
+      q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)* 
+      q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*(l2*cos(q1+q2+theta0)+ 
+      r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0))*((q1dot+theta0dot)*((-1) 
+      *l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*(( 
+      -1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*( 
+      q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)))))+theta0dot*(xc0dot*( 
+      (-1)*l2*m2*cos(q1+q2+theta0)+m3*((-1)*l2*cos(q1+q2+theta0)+(-1)* 
+      r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0)))+yc0dot*((-1)* 
+      l2*m2*sin(q1+q2+theta0)+m3*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2* 
+      sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0)))+(1/2)*(m2*((-2)* 
+      l2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0)) 
+      +l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0)+(-1)* 
+      theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+theta0)+(-2) 
+      *l2*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+l2*( 
+      q1dot+q2dot+theta0dot)*cos(q1+q2+theta0)+theta0dot*(r0x*cos(theta0)+(-1)* 
+      r0y*sin(theta0)))*sin(q1+q2+theta0)+(-2)*l2*cos(q1+q2+theta0)*((-1)* 
+      theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
+      (l1*sin(q1+theta0)+r1*sin(q1+theta0))+l2*((-1)*q1dot+(-1)*q2dot+( 
+      -1)*theta0dot)*sin(q1+q2+theta0))+2*l2*cos(q1+q2+theta0)*(theta0dot*(( 
+      -1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)*((-1)* 
+      l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(-1)*l2*(q1dot+q2dot+ 
+      theta0dot)*sin(q1+q2+theta0)))+m3*(2*(((-1)*q1dot+(-1)*theta0dot)*( 
+      l1*cos(q1+theta0)+r1*cos(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
+      theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+ 
+      (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)+(-1)* 
+      theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)*l2*sin(q1+ 
+      q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*( 
+      (q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+ 
+      theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+ 
+      q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)* 
+      r0y*sin(theta0)))*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+ 
+      theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*((-1)*l2*cos(q1+q2+theta0)+( 
+      -1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0))*((-1)* 
+      theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
+      (l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
+      theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+ 
+      (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*(l2* 
+      cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0))*( 
+      theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)* 
+      ((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot) 
+      *((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*( 
+      q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)))));
 
         c61 =  (-1)*l3*m3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot) 
-    *xc0dot*cos(q1+q2+q3+theta0)+l3*m3*(q1dot+q2dot+q3dot+theta0dot)* 
-    yc0dot*sin(q1+q2+q3+theta0)+(-1/2)*m3*((-2)*l3*(q1dot+q2dot+ 
-    q3dot+theta0dot)*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+ 
-    (q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3* 
-    (q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos( 
-    theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+q3+theta0)+2*l3*((-1)*q1dot+ 
-    (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)*((-1)* 
-    theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
-    (l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
-    theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+ 
-    (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0)))+q3dot* 
-    ((-1)*l3*m3*xc0dot*cos(q1+q2+q3+theta0)+(-1)*l3*m3*yc0dot*sin( 
-    q1+q2+q3+theta0)+(1/2)*m3*((-2)*pow(l3,2)*((-1)*q1dot+(-1)*q2dot+( 
-    -1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)*sin(q1+q2+q3+theta0)+( 
-    -2)*pow(l3,2)*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)*sin(q1+ 
-    q2+q3+theta0)+(-2)*l3*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+ 
-    theta0))+(q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0) 
-    )+l3*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x* 
-    cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+q3+theta0)+(-2)*l3*cos( 
-    q1+q2+q3+theta0)*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1) 
-    *q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)* 
-    q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+ 
-    q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)* 
-    sin(q1+q2+q3+theta0))))+q2dot*((-1)*l3*m3*xc0dot*cos(q1+q2+q3+ 
-    theta0)+(-1)*l3*m3*yc0dot*sin(q1+q2+q3+theta0)+(1/2)*m3*((-2)*l3* 
-    (((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2* 
-    cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)* 
-    theta0dot)*cos(q1+q2+q3+theta0))*sin(q1+q2+q3+theta0)+(-2)*l3*((q1dot+ 
-    theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*( 
-    l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+ 
-    theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin( 
-    theta0)))*sin(q1+q2+q3+theta0)+(-2)*l3*cos(q1+q2+q3+theta0)*((-1)* 
-    theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
-    (l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
-    theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+ 
-    (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*l3* 
-    cos(q1+q2+q3+theta0)*((q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+ 
-    theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+ 
-    theta0dot)*sin(q1+q2+q3+theta0))))+q1dot*((-1)*l3*m3*xc0dot*cos(q1+ 
-    q2+q3+theta0)+(-1)*l3*m3*yc0dot*sin(q1+q2+q3+theta0)+(1/2)*m3*((-2) 
-    *l3*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+ 
-    theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+ 
-    r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1) 
-    *theta0dot)*cos(q1+q2+q3+theta0))*sin(q1+q2+q3+theta0)+(-2)*l3*(( 
-    q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+ 
-    theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+ 
-    q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)* 
-    r0y*sin(theta0)))*sin(q1+q2+q3+theta0)+(-2)*l3*cos(q1+q2+q3+theta0)*(( 
-    -1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)* 
-    theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)* 
-    q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*( 
-    (-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+ 
-    theta0))+2*l3*cos(q1+q2+q3+theta0)*((q1dot+theta0dot)*((-1)*l1*sin( 
-    q1+theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2* 
-    sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+ 
-    q3dot+theta0dot)*sin(q1+q2+q3+theta0))))+theta0dot*((-1)*l3*m3*xc0dot* 
-    cos(q1+q2+q3+theta0)+(-1)*l3*m3*yc0dot*sin(q1+q2+q3+theta0)+(1/2)* 
-    m3*((-2)*l3*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1* 
-    cos(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+ 
-    q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)* 
-    q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)+(-1)*theta0dot*(r0x*cos( 
-    theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+q3+theta0)+(-2)*l3*((q1dot+ 
-    theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*( 
-    l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+ 
-    theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin( 
-    theta0)))*sin(q1+q2+q3+theta0)+(-2)*l3*cos(q1+q2+q3+theta0)*((-1)* 
-    theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
-    (l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
-    theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+ 
-    (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*l3* 
-    cos(q1+q2+q3+theta0)*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin( 
-    theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0) 
-    )+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin( 
-    q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+ 
-    theta0))));
+      *xc0dot*cos(q1+q2+q3+theta0)+l3*m3*(q1dot+q2dot+q3dot+theta0dot)* 
+      yc0dot*sin(q1+q2+q3+theta0)+(-1/2)*m3*((-2)*l3*(q1dot+q2dot+ 
+      q3dot+theta0dot)*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+ 
+      (q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3* 
+      (q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos( 
+      theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+q3+theta0)+2*l3*((-1)*q1dot+ 
+      (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)*((-1)* 
+      theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
+      (l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
+      theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+ 
+      (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0)))+q3dot* 
+      ((-1)*l3*m3*xc0dot*cos(q1+q2+q3+theta0)+(-1)*l3*m3*yc0dot*sin( 
+      q1+q2+q3+theta0)+(1/2)*m3*((-2)*pow(l3,2)*((-1)*q1dot+(-1)*q2dot+( 
+      -1)*q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)*sin(q1+q2+q3+theta0)+( 
+      -2)*pow(l3,2)*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)*sin(q1+ 
+      q2+q3+theta0)+(-2)*l3*((q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+ 
+      theta0))+(q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0) 
+      )+l3*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x* 
+      cos(theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+q3+theta0)+(-2)*l3*cos( 
+      q1+q2+q3+theta0)*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1) 
+      *q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)* 
+      q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+ 
+      q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)* 
+      sin(q1+q2+q3+theta0))))+q2dot*((-1)*l3*m3*xc0dot*cos(q1+q2+q3+ 
+      theta0)+(-1)*l3*m3*yc0dot*sin(q1+q2+q3+theta0)+(1/2)*m3*((-2)*l3* 
+      (((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+r2* 
+      cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)* 
+      theta0dot)*cos(q1+q2+q3+theta0))*sin(q1+q2+q3+theta0)+(-2)*l3*((q1dot+ 
+      theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*( 
+      l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+ 
+      theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin( 
+      theta0)))*sin(q1+q2+q3+theta0)+(-2)*l3*cos(q1+q2+q3+theta0)*((-1)* 
+      theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
+      (l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
+      theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+ 
+      (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*l3* 
+      cos(q1+q2+q3+theta0)*((q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+ 
+      theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+ 
+      theta0dot)*sin(q1+q2+q3+theta0))))+q1dot*((-1)*l3*m3*xc0dot*cos(q1+ 
+      q2+q3+theta0)+(-1)*l3*m3*yc0dot*sin(q1+q2+q3+theta0)+(1/2)*m3*((-2) 
+      *l3*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+ 
+      theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+q2+theta0)+ 
+      r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1) 
+      *theta0dot)*cos(q1+q2+q3+theta0))*sin(q1+q2+q3+theta0)+(-2)*l3*(( 
+      q1dot+theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+ 
+      theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+ 
+      q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)* 
+      r0y*sin(theta0)))*sin(q1+q2+q3+theta0)+(-2)*l3*cos(q1+q2+q3+theta0)*(( 
+      -1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)* 
+      theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)* 
+      q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*( 
+      (-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+ 
+      theta0))+2*l3*cos(q1+q2+q3+theta0)*((q1dot+theta0dot)*((-1)*l1*sin( 
+      q1+theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2* 
+      sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+ 
+      q3dot+theta0dot)*sin(q1+q2+q3+theta0))))+theta0dot*((-1)*l3*m3*xc0dot* 
+      cos(q1+q2+q3+theta0)+(-1)*l3*m3*yc0dot*sin(q1+q2+q3+theta0)+(1/2)* 
+      m3*((-2)*l3*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1* 
+      cos(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*cos(q1+ 
+      q2+theta0)+r2*cos(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)* 
+      q3dot+(-1)*theta0dot)*cos(q1+q2+q3+theta0)+(-1)*theta0dot*(r0x*cos( 
+      theta0)+(-1)*r0y*sin(theta0)))*sin(q1+q2+q3+theta0)+(-2)*l3*((q1dot+ 
+      theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(q1dot+q2dot+theta0dot)*( 
+      l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0))+l3*(q1dot+q2dot+q3dot+ 
+      theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin( 
+      theta0)))*sin(q1+q2+q3+theta0)+(-2)*l3*cos(q1+q2+q3+theta0)*((-1)* 
+      theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)* 
+      (l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)* 
+      theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+ 
+      (-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*l3* 
+      cos(q1+q2+q3+theta0)*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin( 
+      theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0) 
+      )+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin( 
+      q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+ 
+      theta0))));
     
     c(0) = c11;
     c(1) = c21;
@@ -1402,10 +1579,31 @@ void calculateStep(){  //calculate stuff in each iteration
     fext_star(5) = 0;
 
 
-    qext = je.transpose()*fext;
 
-    qact=qext+c+(h*jacobian.inverse())*(zddotdot+md.inverse()*(-fext_star+fdes_star-bd*edot-Kd*e)-jacobiandot*zdot);
 
+    qext = (je.transpose())*fext;
+
+    // std::cout<<"fdes_star is: "<<fdes_star<<std::endl;
+
+    // std::cout<<"fext_star is: "<<fext_star<<std::endl;
+
+    // std::cout<<"qext is: "<<qext<<std::endl;
+
+    // vec1 = jacobiandot*zdot;
+    // vec2 = (zddotdot+md.inverse()*(-fext_star+fdes_star-bd*edot-kd*e)-jacobiandot*zdot);
+    // vec3 = (h*jacobian.inverse())*(zddotdot+md.inverse()*(-fext_star+fdes_star-bd*edot-kd*e)-jacobiandot*zdot);
+
+    // std::cout<<"jacobiandot*zdot is (vec1): "<<vec1<<std::endl;
+    // std::cout<<"(zddotdot+md.inverse()*(-fext_star+fdes_star-bd*edot-kd*e)-jacobiandot*zdot) is (vec2): "<<vec2<<std::endl;
+    // std::cout<<"(h*jacobian.inverse())*(zddotdot+md.inverse()*(-fext_star+fdes_star-bd*edot-kd*e)-jacobiandot*zdot) is (vec3): "<<vec3<<std::endl;
+    // std::cout<<"c is: "<<c<<std::endl;
+    // std::cout<<"qext is: "<<qext<<std::endl;
+
+    mat = h*jacobian.inverse();
+
+
+
+    qact=qext+c+(h*jacobian.inverse())*(zddotdot+md.inverse()*(-fext_star+fdes_star-bd*edot-kd*e)-jacobiandot*zdot);
     // qact = je.transpose()*fact;
 
     // torq[0] = qact(3); //torque of q1
@@ -1425,6 +1623,7 @@ double lsTorqCalc();
 double leTorqCalc();
 
 void JointControlUpdateStep(){
+  /*
 	errorq[0] = q1des - q1;
 	errorq[1] = q2des - q2;
 	error_qdot[0] = q1dotdes - q1dot;
@@ -1437,6 +1636,7 @@ void JointControlUpdateStep(){
     else{
         std::cout<<"the error of q1 is: " <<errorq[0]<< " the error of q2 is: "<<errorq[1]<<" the error of q1dot is: "<<error_qdot[0]<<" the error of q2dot is: "<<error_qdot[1]<<std::endl;
     }
+    */
 } 
 
 void desiredTrajectory(double t){//PROSOXH!: allagh ton indexes apo matlab se c++ stous pinakes
@@ -1575,7 +1775,7 @@ void diagnostics(){
     // std::cout<<"fext_y is: "<<fext(1)<<" N "<<std::endl;
     // std::cout<<"xfd_x is: "<<xfd(0)<<" and xfd_y is: "<<xfd(1)<<std::endl;
     // std::cout<<"xcd_x is: "<<xcd(0)<<" and xcd_y is: "<<xcd(1)<<std::endl;
-    // std::cout<<"xd_x is: "<< xd(0) <<std::endl;
+    // std::cout<<"xd_x is: "<< xd(0) <<std::endl;-619501
     // std::cout<<"xd_y is: "<< xd(1) <<std::endl;
     // std::cout<<"xd_theta is: "<< xd(2) <<std::endl;
     // std::cout<<"fact_x is: "<<fact(0)<<" N " <<std::endl;
@@ -1598,15 +1798,29 @@ void diagnostics(){
     // std::cout<<"target theta is: "<<thetat<<" rad"<<std::endl;
 
     std::cout<<"fext x is: "<<fext(0)<<" N"<<std::endl;
-    std::cout<<"error x is: "<<e(0)<<" m "<<std::endl;
-    std::cout<<"error y is: "<<e(1)<<" m "<<std::endl;
-    std::cout<<"error theta is: "<<e(2)<<" rad "<<std::endl;
-    std::cout<<"fx is: "<<qact(0)<<" N "<<std::endl;
-    std::cout<<"fy is: "<<qact(1)<<" N "<<std::endl;
-    std::cout<<"RW torque is: "<<qact(2)<<" Nm "<<std::endl;
-    std::cout<<"t1 (shoulder torque) is: "<<qact(3)<<" Nm "<<std::endl;
-    std::cout<<"t2 (elbow torque) is: "<<qact(4)<<" Nm "<<std::endl;
-    std::cout<<"t3 (wrist torque) is: "<<qact(5)<<" Nm "<<std::endl;
+    std::cout<<"fext y is: "<<fext(1)<<" N"<<std::endl;
+    std::cout<<"next  is: "<<fext(2)<<" Nm"<<std::endl;
+    // std::cout<<"error x is: "<<e(0)<<" m "<<std::endl;
+    // std::cout<<"error y is: "<<e(1)<<" m "<<std::endl;
+    // std::cout<<"error theta is: "<<e(2)<<" rad "<<std::endl;
+    // std::cout<<"fx is: "<<qact(0)<<" N "<<std::endl;
+    // std::cout<<"fy is: "<<qact(1)<<" N "<<std::endl;
+    // std::cout<<"RW torque is: "<<qact(2)<<" Nm "<<std::endl;
+    // std::cout<<"t1 (shoulder torque) is: "<<qact(3)<<" Nm "<<std::endl;
+    // std::cout<<"t2 (elbow torque) is: "<<qact(4)<<" Nm "<<std::endl;
+    // std::cout<<"t3 (wrist torque) is: "<<qact(5)<<" Nm "<<std::endl;
+
+    std::cout<<"h is: "<<h<<std::endl;
+    std::cout<<"jacobian.inverse is: "<<jacobian.inverse()<<std::endl;
+    std::cout<<"h*jacobian.inverse() is: "<<mat<<std::endl;
+    std::cout<<"qact calculated is: "<<qact<<std::endl;
+
+
+    // std::cout<<"h is: "<<h <<std::endl;
+    // std::cout<<"je is: "<<je <<std::endl;
+    // std::cout<<"jacobian is: "<<jacobian<<std::endl;
+    // std::cout<<"jacobian dot is: "<<jacobiandot<<std::endl;
+
 
     // std::cout<<"fact x is: "<<fact(0)<<" N"<<std::endl;
     // std::cout<<"fact y is: "<<fact(1)<<" N"<<std::endl;

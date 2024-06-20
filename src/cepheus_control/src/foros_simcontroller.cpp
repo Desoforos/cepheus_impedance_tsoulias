@@ -181,6 +181,7 @@ int main(int argc, char **argv) {
             // } //mallon to xreiazetai tha to ksanavalo
             desiredTrajectory(dur_time);
             calculateStep();
+            diagnostics(); 
             //ImpedanceControlUpdateStep();
 
             /*UPDATE THE ROS MESSAGES*/
@@ -228,7 +229,7 @@ int main(int argc, char **argv) {
             base_wrench.torque.y = 0.0;
             base_wrench.torque.z = 0.0;      
 
-            diagnostics();   
+              
 
         }
 		if(reachedTarget){ //na ftiakso to reachedGoal kalytera gia na teleionei to peirama, na ftiakso xrono

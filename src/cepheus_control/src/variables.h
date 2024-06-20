@@ -44,8 +44,8 @@ double xch_in, ych_in, thetach_in; //arxikh thesh chaser (end effector)
 double xt_in, yt_in, thetat_in;     //arxikh thesh target (ring)
 
 /*PD parameters*/
-double Kp = 5;
-double Kd = 0.5;
+// double Kp = 5;
+// double Kd = 0.5;
 
 
 
@@ -147,11 +147,11 @@ Eigen::MatrixXd a_matrix = Eigen::MatrixXd::Identity(6,6);
 Eigen::VectorXd fdes(3) ; //(0.1,0,0) arxikopoiheitai sthn initialise
 // Eigen::VectorXd fdes_star(3);
 Eigen::MatrixXd ke_star=100*Eigen::MatrixXd::Identity(3,3);
-Eigen::MatrixXd kd_e = Eigen::MatrixXd::Zero(3,3);
-Eigen::MatrixXd kd_b = Eigen::MatrixXd::Zero(3,3);
+Eigen::MatrixXd kd_e(3,3); // = Eigen::MatrixXd::Zero(3,3);
+Eigen::MatrixXd kd_b(3,3); // = Eigen::MatrixXd::Zero(3,3);
 Eigen::MatrixXd md(6,6);// = Eigen::MatrixXd::Zero(6,6);
-Eigen::MatrixXd md_e = 30000*Eigen::MatrixXd::Identity(3,3);
-Eigen::MatrixXd md_b = 30000*Eigen::MatrixXd::Identity(3,3);
+Eigen::MatrixXd md_e = 30000*Eigen::MatrixXd::Identity(3,3); //anti gia 30000
+Eigen::MatrixXd md_b = 30000*Eigen::MatrixXd::Identity(3,3); //anti gia 30000
 Eigen::MatrixXd bd(6,6);// = Eigen::MatrixXd::Zero(6,6);
 Eigen::MatrixXd bd_e = Eigen::MatrixXd::Zero(3,3);
 Eigen::MatrixXd bd_b = Eigen::MatrixXd::Zero(3,3);
@@ -169,7 +169,7 @@ Eigen::Vector3d rEddotdot(0,0,0);// =  Eigen::VectorXd::Zero(3);
 
 double a1 = 1000; //for xd anti gia 10000
 double a2 = 0.001; //anti gia 0.0001
-double t0 =0 , t_free =50; //anti gia 200
+double t0 =0 , t_free =100; //anti gia 200
 double z_free = 1;
 double ts_free = 0.1*t_free;
 double wn_free = 6/ts_free;
@@ -254,6 +254,12 @@ Eigen::VectorXd fext_star(6);// = Eigen::VectorXd::Zero(6);
 Eigen::VectorXd qext(6);// = Eigen::VectorXd::Zero(6); 
 Eigen::MatrixXd jb(3,6);// = Eigen::MatrixXd::Zero(3,6); //jacobian of base
 Eigen::MatrixXd jbdot(3,6); //= Eigen::MatrixXd::Zero(3,6); //jacobian of base
+
+/*for diagnostics*/
+Eigen::VectorXd vec1(6);
+Eigen::VectorXd vec2(6);
+Eigen::VectorXd vec3(6);
+Eigen::MatrixXd mat(6,6);
 
 
 
