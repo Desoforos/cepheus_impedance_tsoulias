@@ -10,6 +10,7 @@ In the real robot, it shall be the topics that the cepheus_interface reads.
 #include "variables.h"
 #include "callbacks.h"
 #include "calculations.h"
+#include "base_controller.h"
 
 #include <typeinfo>
 
@@ -66,7 +67,7 @@ int main(int argc, char **argv) {
     bool paramsinit = false;
 
     /* ros init */
-    ros::init(argc, argv, "foros_simcontroller_node");
+    ros::init(argc, argv, "new_foros_simcontroller_node");
     ros::NodeHandle nh;
     ros::Time curr_time, t_beg;
     // ros::Duration dur_time; //duration of movement
@@ -108,7 +109,7 @@ int main(int argc, char **argv) {
     // msg_TY.data = 0.0;
 
 
-    ROS_INFO("[foros_simcontroller]: torques initialized to 0. \n");
+    ROS_INFO("[new_foros_simcontroller]: torques initialized to 0. \n");
     
 
     // double frequency = (float)1/DT;
@@ -126,32 +127,18 @@ int main(int argc, char **argv) {
     //ros::Rate loop_rate(frequency);
     ros::Rate loop_rate(10); //10Hz
 
-
-	for (int i = 0; i < 3; i++) {  //initialize errors and torques
-		errorq[i] = 0.0;
-		error_qdot[i] = 0.0;
-		torq[i] = 0.0;
-		prev_torq[i] = 0.0;
-	}
-
-    
-    // ROS_INFO("[foros_simcontroller]: Give me Kp, Kd. \n");
-    // std::cin>>Kp>>Kd;  //kala einai ta kp=5 kai kd=0.5
-    // ROS_INFO("[foros_simcontroller]: Give me q1des, q2des. \n");
-    // std::cin>>q1des>>q2des; //apla gia na ksekinisei
-    // q1des = q1des* (M_PI / 180);
-    // q2des = q2des* (M_PI / 180);
     char command;
-    //initialiseParameters();
+    
+    reachedTarget = false;
+    start_movement = false;
+    firstTime = true;
+
 
     while(ros::ok()){
-        // for (int i = 0; i < 3; i++) {
-		// 	prev_torq[i] = torq[i];
-		// }
         //ros::spinOnce(); //once it spins it will read the current rw, le, ls and the callbacks will update the values q1,q2,q3 and the velocities
         //now we update the errors and we recalculate the desired efforts to publish as msg_LE,msg_LS
         if(!start_movement){
-            ROS_INFO("[foros_simcontroller]: Press Y to start the controller. Caution! Do not press it before running Gazebo. \n");
+            ROS_INFO("[new_foros_simcontroller]: Press Y to start the controller. Caution! Do not press it before running Gazebo. \n");
             std::cin>> command;
             if(command == 'Y'){
                 start_movement= true;
@@ -159,97 +146,45 @@ int main(int argc, char **argv) {
         }
         else{
             if(!hasbegun){
-                ROS_INFO("[foros_simcontroller]: initializing movement");
+                ROS_INFO("[new_foros_simcontroller]: Initializiing control procedure.");
                 hasbegun = true; //apla gia to rosinfo na mas pei oti ksekinaei tin kinhsh
                 t_beg  = ros::Time::now(); //initialize starting moment
             }
             if(!paramsinit){
                 ros::spinOnce();
                 // ros::Duration(2).sleep();
-                ROS_INFO("[foros_simcontroller]: Initializing parameters... \n");
+                ROS_INFO("[new_foros_simcontroller]: Initializing parameters... \n");
                 initialiseParameters();
                 paramsinit = true;
-                ROS_INFO("[foros_simcontroller]: Parameters have been initialized. \n");
+                ROS_INFO("[new_foros_simcontroller]: Parameters have been initialized. \n");
+                ROS_INFO("[new_foros_simcontroller]: Initializiing movement.");
                 //continue;
                 // ros::Duration(2).sleep();
             }
             ros::spinOnce();
             curr_time = ros::Time::now();
 		    dur_time = curr_time.toSec() - t_beg.toSec();
-            // if(dur_time<200){
-            //     desiredTrajectory(dur_time);
-            // } //mallon to xreiazetai tha to ksanavalo
-            desiredTrajectory(dur_time);
-            calculateStep();
-            // diagnostics(); 
-
-            //ImpedanceControlUpdateStep();
-
-            /*UPDATE THE ROS MESSAGES*/
-            // msg_TX.data = qact(0);
-            // msg_TY.data = qact(1); 
-            for(int i=0; i<5; i++){
-                if(qact(i)>20){
-                    qact(i) = 20;
-                }
-                else if(qact(i) < -20){
-                     qact(i) = -20;
-                }
-
-            } //just to not send it to hell
-            diagnostics(); 
-            base_wrench.force.x = qact(0);//qact(0);
-            base_wrench.force.y = qact(1);//qact(1);
-            // base_wrench.torque.z = qact(2);
-            msg_RW.data = qact(2); //to bazo anapoda bas kai
-			msg_LS.data = qact(3);
-			msg_LE.data = qact(4);
-			msg_LW.data = qact(5);
-            msg_ex.data = e(0); //for error plotting
-            msg_ey.data = e(1);
-            msg_etheta.data = e(2);
-            msg_xd_x.data = xd(0);
-            msg_xd_y.data = xd(1);
-
-
-            // thruster_x_pub.publish(msg_TX);
-            // thruster_y_pub.publish(msg_TY); den xreiazontai pia exo to base force
-
+ 
+            // diagnostics();
+            //desiredTrajectory(dur_time); 
+            basePDcontroll();
+            base_wrench.force.x = fx;
+            base_wrench.force.y = fy;
+            base_wrench.torque.z = ns;
 
             base_force_pub.publish(base_wrench);
-            RW_torque_pub.publish(msg_RW);
-            LS_torque_pub.publish(msg_LS);
-            LE_torque_pub.publish(msg_LE);
-            LW_torque_pub.publish(msg_LW);
-            error_x_pub.publish(msg_ex);
-            error_y_pub.publish(msg_ey);
-            error_theta_pub.publish(msg_etheta);
-            xd_x_pub.publish(msg_xd_x);
-            xd_y_pub.publish(msg_xd_y);
 
-
-
-            //clear msgs after publish
-            msg_RW.data = 0.0;
-            msg_LS.data = 0.0;
-            msg_LE.data = 0.0;
-            msg_LW.data = 0.0;
             base_wrench.force.x = 0.0;
             base_wrench.force.y = 0.0;
             base_wrench.force.z = 0.0;
             base_wrench.torque.x = 0.0;
             base_wrench.torque.y = 0.0;
             base_wrench.torque.z = 0.0;      
-
-              
-
         }
 		if(reachedTarget){ //na ftiakso to reachedGoal kalytera gia na teleionei to peirama, na ftiakso xrono
-			ROS_INFO("[foros_simcontroller]: target position achieved, stopped publishing. \n");
+			ROS_INFO("[new_foros_simcontroller]: Target position achieved, stopped publishing. \n");
 			break;
 		}     
-        //ros::spinOnce();
-        //ros::Duration(2).sleep(); 
         loop_rate.sleep();
 
     }

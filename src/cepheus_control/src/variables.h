@@ -5,9 +5,9 @@
 
 /////////////// GLOBAL VARIABLES DECLARATION START////////////////////////
 /*Boolean flags*/
-bool reachedTarget = false;
-bool start_movement = false;
-bool firstTime = true; //boolean for first time listening
+bool reachedTarget;// = false;
+bool start_movement;// = false;
+bool firstTime;// = true; //boolean for first time listening
 
 /*Cepheus' variables*/
 double q1;       // angle of first joint [rad] from callback
@@ -169,7 +169,7 @@ Eigen::Vector3d rEddotdot(0,0,0);// =  Eigen::VectorXd::Zero(3);
 
 double a1 = 1000; //for xd anti gia 10000
 double a2 = 0.001; //anti gia 0.0001
-double t0 =0 , t_free =100; //anti gia 200
+double t0 =0 , t_free =15; //anti gia 200
 double z_free = 1;
 double ts_free = 0.1*t_free;
 double wn_free = 6/ts_free;
@@ -235,7 +235,7 @@ double frequency = (float)1/DT;
 
 // /////////////EXTRA KOSTAS PARAMETERS////////////////////
 // double w = 2; mallon no need
-double z_cont =1 , ts_cont = 2, wn_cont = 6/ts_cont;
+double z_cont =1 , ts_cont = 5, wn_cont = 6/ts_cont;
 double q01 = 27.88931 * M_PI/180;
 double lt;
 double s01 = 0.5, s02 = 0.2;
@@ -261,7 +261,15 @@ Eigen::VectorXd vec2(6);
 Eigen::VectorXd vec3(6);
 Eigen::MatrixXd mat(6,6);
 
+double offset = 0.09/2;
 
+/*for base controller*/
+double fx = 0,fy = 0,ns =0 ;
+//gains
+double kpx = 0.5,kdx = 0.6;
+double kpy = 0.5,kdy = 0.6;
+double kpth = 0.5,kdth = 0.6;
+double kprop = 0.5, kder = 10;
 
 
 

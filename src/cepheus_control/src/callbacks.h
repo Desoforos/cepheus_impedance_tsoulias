@@ -4,52 +4,61 @@
 /////////////// CALLBACK FUNCTIONS DEFINITION START////////////////////////
 
 void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update the current position of ee and ring
-    ee_x = msg->pose[6].position.x;//left grip pose[6]
-    ee_y = msg->pose[6].position.y;
-    xt= msg->pose[8].position.x; //ringx
-    yt = msg->pose[8].position.y; //ringy
-	xc0 = msg->pose[3].position.x; //pose of base
-	yc0 = msg->pose[3].position.y;
-	xc0dot = msg->twist[3].linear.x; //velocity of base 
-	yc0dot = msg->twist[3].linear.y;
-	xtdot = msg->twist[8].linear.x;
-	ytdot = msg->twist[8].linear.y;
-	thetatdot = msg->twist[8].angular.z;
-	tf::Quaternion q( //for angle of base
-        msg->pose[3].orientation.x,
-        msg->pose[3].orientation.y,
-        msg->pose[3].orientation.z,
-        msg->pose[3].orientation.w);
-    tf::Matrix3x3 m(q);
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
-	theta0 = yaw; //angle of base
-	theta0dot = msg->twist[3].angular.z; //angledot of base
-	//////kai gia stoxo
-	tf::Quaternion qring(
-        msg->pose[8].orientation.x,
-        msg->pose[8].orientation.y,
-        msg->pose[8].orientation.z,
-        msg->pose[8].orientation.w);
-    tf::Matrix3x3 mring(qring);
-    double rollring, pitchring, yawring;
-    mring.getRPY(rollring, pitchring, yawring);
-	thetat = yawring; //angle of base
-	tf::Quaternion qee( //for angle of ee
-        msg->pose[6].orientation.x,
-        msg->pose[6].orientation.y,
-        msg->pose[6].orientation.z,
-        msg->pose[6].orientation.w);
-    tf::Matrix3x3 m_ee(qee);	
-    double rollee, pitchee, yawee;
-    m_ee.getRPY(rollee, pitchee, yawee);
-	thetach = yawee; //angle of chaser(ee)
-	xee(0) = ee_x;
-	xee(1) = ee_y;
-	xee(2) = thetach;
-	xeedot(0) = msg->twist[6].linear.x;
-	xeedot(1) = msg->twist[6].linear.y;
-	xeedot(2) = msg->twist[6].angular.z;
+	int i;
+	for(i=0; i<msg->name.size(); i++){
+		//  ROS_INFO("[Gazebo Callback] Link Name: %s", msg->name[i]);
+		if(msg->name[i] == "cepheus::left_grip"){
+			ee_x = msg->pose[i].position.x;//left grip pose[6]
+    		ee_y = msg->pose[i].position.y;
+			tf::Quaternion qee( //for angle of ee
+				msg->pose[i].orientation.x,
+				msg->pose[i].orientation.y,
+				msg->pose[i].orientation.z,
+				msg->pose[i].orientation.w);
+    		tf::Matrix3x3 m_ee(qee);	
+    		double rollee, pitchee, yawee;
+			m_ee.getRPY(rollee, pitchee, yawee);
+			thetach = yawee; //angle of chaser(ee)
+			xee(0) = ee_x;
+			xee(1) = ee_y;
+			xee(2) = thetach;
+			xeedot(0) = msg->twist[i].linear.x;
+			xeedot(1) = msg->twist[i].linear.y;
+			xeedot(2) = msg->twist[i].angular.z;
+		}
+		if(msg->name[i] == "simple_ring::base_link"){
+			xt= msg->pose[i].position.x - offset; //targetx minus the offset of the cube
+    		yt = msg->pose[i].position.y; //targety
+			xtdot = msg->twist[i].linear.x;
+			ytdot = msg->twist[i].linear.y;
+			thetatdot = msg->twist[i].angular.z;
+			tf::Quaternion qring(
+				msg->pose[i].orientation.x,
+				msg->pose[i].orientation.y,
+				msg->pose[i].orientation.z,
+				msg->pose[i].orientation.w);
+			tf::Matrix3x3 mring(qring);
+			double rollring, pitchring, yawring;
+			mring.getRPY(rollring, pitchring, yawring);
+			thetat = yawring; //angle of target
+		}
+		if(msg->name[i] == "cepheus::cepheus_base"){
+			xc0 = msg->pose[i].position.x; //pose of base
+			yc0 = msg->pose[i].position.y;
+			xc0dot = msg->twist[i].linear.x; //velocity of base 
+			yc0dot = msg->twist[i].linear.y;
+			tf::Quaternion q( //for angle of base
+				msg->pose[i].orientation.x,
+				msg->pose[i].orientation.y,
+				msg->pose[i].orientation.z,
+				msg->pose[i].orientation.w);
+			tf::Matrix3x3 m(q);
+			double roll, pitch, yaw;
+			m.getRPY(roll, pitch, yaw);
+			theta0 = yaw; //angle of base
+			theta0dot = msg->twist[i].angular.z; //angledot of base
+		}
+	}
 	if(firstTime){   //initialize the postiion of chaser and target for the first time ONLY
 		xch_in = ee_x;
 		ych_in = ee_y;
@@ -82,13 +91,23 @@ void ee_target_posCallback(const geometry_msgs::Pose::ConstPtr& msg){
 */
 
 void jointStatesCallback(const sensor_msgs::JointState::ConstPtr& msg){
+	int i;
     //ROS_INFO("[foros_simcontroller]: Joint state received! q1: %f q2: %f q1dot: %f q2dot: %f \n",msg->position[1], msg->position[0], msg-> velocity[1], msg-> velocity[0]);
-    q1      = msg->position[1]; //shoulder
-    q2      = msg->position[0]; //elbow
-    q1dot   = msg->velocity[1];
-    q2dot   = msg->velocity[0];	
-	q3 		= msg->position[2]; //wrist
-	q3dot 	= msg->velocity[2];
+	for(i=0; i<msg->name.size(); i++){
+		// ROS_INFO("[Gazebo Callback] Joint Name: %s", msg->name[i]);
+		if(msg->name[i] == "left_shoulder_joint"){
+			q1 = msg->position[i];
+			q1dot = msg->velocity[i];
+		}
+		else if(msg->name[i] == "left_elbow_joint"){
+			q2 = msg->position[i];
+			q2dot = msg->velocity[i];
+		}
+		else if(msg->name[i] == "left_wrist_joint"){
+			q3 = msg->position[i];
+			q3dot = msg->velocity[i];
+		}
+	}
 	//theta0 	= msg->position[3]; //reaction wheel MALLON OXI DEN TO THELEI APO RW ALLA APO BASE ORIENTATION
 	//theta0dot = msg->velocity[3];
 }

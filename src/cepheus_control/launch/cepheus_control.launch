@@ -24,7 +24,7 @@
 		output="screen">
 		<param
 			name="robot_description"
-			command="$(find xacro)/xacro '$(find cepheus_description)/urdf/cepheus.xacro'" />
+			command="$(find xacro)/xacro '$(find cepheus_description)/urdf/cepheus_simplified.xacro'" />
 		<remap 
 			from="/joint_states"
 			to="/cepheus/joint_states" />

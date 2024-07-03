@@ -44,61 +44,62 @@ void initialiseParameters(){//initialise constant parameters
     // i2zz=(1/12)*m2*pow((l2+r2),2);
     // i3zz=(1/12)*m3*pow((l3+r3),2);
     //DOKIMI ALLA DEN DOYLEPSE
-    itzz = 0.067; //itzz=(1/6)*mt*(lt^2);
-    ibzz = 0.160875;
-    i1zz = 0.000346;
-    i2zz = 0.000346;
-    i3zz = 0.091927;
-    m0 = 13.3; //ta evala se sxolio gia na valo tous kosta
-    m1 = 0.083;
-    m2 = 0.187;
-    m3 = 0.03547;
-    r0 = 0.1954;
-    r1 = 0.062;
-    r2 = 0.062;
-    r3 = 0.06553; //apo prakseis monos mou
-    l0 = 0;
-    l1 = 0.119;
-    l2 = 0.119;
-    l3 = 0.01947;
-    mt = 10;
+    // itzz = 0.067; //itzz=(1/6)*mt*(lt^2);
+    // ibzz = 0.160875;
+    // i1zz = 0.000346;
+    // i2zz = 0.000346;
+    // i3zz = 0.091927;
+    // m0 = 13.3; //ta evala se sxolio gia na valo tous kosta
+    // m1 = 0.083;
+    // m2 = 0.187;
+    // m3 = 0.03547;
+    // r0 = 0.1954;
+    // r1 = 0.062;
+    // r2 = 0.062;
+    // r3 = 0.06553; //apo prakseis monos mou
+    // l0 = 0;
+    // l1 = 0.119;
+    // l2 = 0.119;
+    // l3 = 0.01947;
+    // mt = 10;
 
     r0x = 0.17271; //syntetagmenes tou shoulder joint se sxesh me vash, apo xacro ta phra
     r0y = 0.091404;
-    ROS_INFO("[initParams]: Double parameters have been set. \n");
+    
 
     /* METAVLHTES APO PEIRAMA KOSTA */ 
-    // m0=53;  //ta evala se sxolio pros to paron
-    // m1=0.2314;
-    // m2=0.1;
-    // m3=4.6*pow(10,-2);
-    // mt = 1;
+    m0=53;  
+    m1=0.2314;
+    m2=0.1;
+    m3=4.6*pow(10,-2);
+    mt = 1;
 
-    // M=m0+m1+m2+m3;
+    M=m0+m1+m2+m3;
 
-    // l1=0.185;
-    // l2=0.143;
-    // l3=0.0411;
-    // lt=0.03; //what is this
-    // r0x=0.1425;
-    // r0y=-0.08225;
-    // r1=0.185;
-    // r2=0.143;
-    // r3=0.0261;
-    // l0 = 0;
+    l1=0.185;
+    l2=0.143;
+    l3=0.0411;
+    lt=0.03; //what is this
+    r0x=0.1425;
+    r0y=-0.08225;
+    r1=0.185;
+    r2=0.143;
+    r3=0.0261;
+    l0 = 0;
     // a=sqrt(r0x*r0x+r0y*r0y);
     // b=l1+r1;
     // c=l2+r2;
     // d=l3+r3; //den nomizo na ta xreiazomaste
-    // i0zz=2.1837;
-    // i1zz=6.81*pow(10,-3);
-    // i2zz=1.487*pow(10,-5);
-    // i3zz=1.2287*pow(10,-5);
-    // itzz=1;
+    ibzz=2.1837;
+    i1zz=6.81*pow(10,-3);
+    i2zz=1.487*pow(10,-5);
+    i3zz=1.2287*pow(10,-5);
+    itzz=1;
 
-
+    ROS_INFO("[initParams]: Double parameters have been set. \n");
     
-    // itzz = 0.067;
+    // itzz = 0.067; //allo afto oxi tou kosta
+
 
     // M = m0 + m1 + m2 + m3; //1 apo to reaction wheel
     // a = r0*m0/M;
@@ -1275,7 +1276,7 @@ void calculateStep(){  //calculate stuff in each iteration
     cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0)+(-1)*r0y*sin(theta0)) ;
 
     h33 = (1/2)*( 
-    2*i0zz+2*i1zz+2*i2zz+2*i3zz+m1*(2*pow((r0x*cos(theta0)+l1*cos(q1+theta0) 
+    2*ibzz+2*i1zz+2*i2zz+2*i3zz+m1*(2*pow((r0x*cos(theta0)+l1*cos(q1+theta0) 
     +(-1)*r0y*sin(theta0)),2)+2*pow(((-1)*r0y*cos(theta0)+(-1)*r0x*sin( 
     theta0)+(-1)*l1*sin(q1+theta0)),2))+m2*(2*pow((r0x*cos(theta0)+l1*cos(q1+ 
     theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+(-1)*r0y*sin(theta0)),2)+ 
@@ -1598,7 +1599,7 @@ void calculateStep(){  //calculate stuff in each iteration
     // std::cout<<"(h*jacobian.inverse())*(zddotdot+md.inverse()*(-fext_star+fdes_star-bd*edot-kd*e)-jacobiandot*zdot) is (vec3): "<<vec3<<std::endl;
     // std::cout<<"c is: "<<c<<std::endl;
     // std::cout<<"qext is: "<<qext<<std::endl;
-
+    std::cout<<"jacobian determinant is: "<<jacobian.determinant()<<std::endl;
     mat = h*jacobian.inverse();
 
 
@@ -1810,6 +1811,7 @@ void diagnostics(){
     // std::cout<<"t2 (elbow torque) is: "<<qact(4)<<" Nm "<<std::endl;
     // std::cout<<"t3 (wrist torque) is: "<<qact(5)<<" Nm "<<std::endl;
 
+    std::cout<<"jacobian is: "<<jacobian<<std::endl;
     std::cout<<"h is: "<<h<<std::endl;
     std::cout<<"jacobian.inverse is: "<<jacobian.inverse()<<std::endl;
     std::cout<<"h*jacobian.inverse() is: "<<mat<<std::endl;
