@@ -72,6 +72,7 @@ int main(int argc, char **argv) {
     ros::Time curr_time, t_beg;
     // ros::Duration dur_time; //duration of movement
     double dur_time;
+    double tf; //time of movement before reaching target
 
     /* Create publishers */
     ros::Publisher RW_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/reaction_wheel_effort_controller/command", 1);
@@ -133,6 +134,12 @@ int main(int argc, char **argv) {
     start_movement = false;
     firstTime = true;
 
+    ROS_INFO("[new_foros_simcontroller]: Please provide the tf before proceeding. \n");
+
+    std::cin>>tf;
+
+
+
 
     while(ros::ok()){
         //ros::spinOnce(); //once it spins it will read the current rw, le, ls and the callbacks will update the values q1,q2,q3 and the velocities
@@ -155,6 +162,7 @@ int main(int argc, char **argv) {
                 // ros::Duration(2).sleep();
                 ROS_INFO("[new_foros_simcontroller]: Initializing parameters... \n");
                 initialiseParameters();
+                calculateTrajecotryPolynomials(tf);
                 paramsinit = true;
                 ROS_INFO("[new_foros_simcontroller]: Parameters have been initialized. \n");
                 ROS_INFO("[new_foros_simcontroller]: Initializiing movement.");
@@ -167,6 +175,7 @@ int main(int argc, char **argv) {
  
             // diagnostics();
             //desiredTrajectory(dur_time); 
+            baseTrajectory(dur_time);
             basePDcontroll();
             base_wrench.force.x = fx;
             base_wrench.force.y = fy;

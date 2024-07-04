@@ -167,8 +167,8 @@ Eigen::Vector3d rEddotdot(0,0,0);// =  Eigen::VectorXd::Zero(3);
 
 
 
-double a1 = 1000; //for xd anti gia 10000
-double a2 = 0.001; //anti gia 0.0001
+// double a1 = 1000; //for xd anti gia 10000
+// double a2 = 0.001; //anti gia 0.0001
 double t0 =0 , t_free =15; //anti gia 200
 double z_free = 1;
 double ts_free = 0.1*t_free;
@@ -270,7 +270,10 @@ double kpx = 0.5,kdx = 0.6;
 double kpy = 0.5,kdy = 0.6;
 double kpth = 0.5,kdth = 0.6;
 double kprop = 0.5, kder = 10;
-
+//for polynomial
+double a0,a1,a2,a3,a4,a5;
+double xstep,ystep,thstep;
+double xstepdot, ystepdot, thstepdot;
 
 
 
