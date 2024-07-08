@@ -234,7 +234,7 @@ void initialiseParameters(){//initialise constant parameters
           0, 1, 0, 0, 0, 0,
           0, 0, 1, 0, 0, 0;
 
-    jbdot = Eigen::MatrixXd::Zero(3,6);
+    // jbdot = Eigen::MatrixXd::Zero(3,6);
 
 
     fdes << 100, 0, 0; //apo ta liga poy einai edo
@@ -330,7 +330,7 @@ void initialiseParameters(){//initialise constant parameters
     /*telos prosthikis apo desired trajectory*/
 }
 
-void calculateStep(){  //calculate stuff in each iteration
+void calculateMatrices(){  //calculate stuff in each iteration
     //nikiforos we dont use
     // j16 = -l3*sin(theta0+q1+q2+q3);
     // j15 = j16 - l2*sin(theta0+q1+q2);
@@ -1515,7 +1515,8 @@ void calculateStep(){  //calculate stuff in each iteration
 
     // e = xee - xd;
     // edot = xeedot - xddot; 
-
+    //ta svhno giati trexo apo base controller
+    /*
     e(0) = xee(0) - xd(0);
     e(1) = xee(1) - xd(1);
     e(2) = xee(2) - xd(2);
@@ -1530,7 +1531,7 @@ void calculateStep(){  //calculate stuff in each iteration
     edot(3) = xc0dot - xd_bdot(0);
     edot(4) = yc0dot - xd_bdot(1);
     edot(5) = theta0dot - xd_bdot(2);
-
+    */
 
     
 
@@ -1542,47 +1543,50 @@ void calculateStep(){  //calculate stuff in each iteration
     //na grapso thn sxesh pou syndeei ta torq[] me fact kai to n
     //factx, facty,nact
     
+    //ta svino giati trexo apo base controller
+    
+    // zdot(0) = xc0dot;
+    // zdot(1) = yc0dot;
+    // zdot(2) = theta0dot;
+    // zdot(3) = q1dot;
+    // zdot(4) = q2dot;
+    // zdot(5) = q3dot;
 
-    zdot(0) = xc0dot;
-    zdot(1) = yc0dot;
-    zdot(2) = theta0dot;
-    zdot(3) = q1dot;
-    zdot(4) = q2dot;
-    zdot(5) = q3dot;
+    // zddotdot(0) = xddotdot(0); //desired of end effector
+    // zddotdot(1) = xddotdot(1);
+    // zddotdot(2) = xddotdot(2);
+    // zddotdot(3) = xd_bdotdot(0); //desired of base 
+    // zddotdot(4) = xd_bdotdot(1);
+    // zddotdot(5) = xd_bdotdot(2);
+    
 
-    zddotdot(0) = xddotdot(0); //desired of end effector
-    zddotdot(1) = xddotdot(1);
-    zddotdot(2) = xddotdot(2);
-    zddotdot(3) = xd_bdotdot(0); //desired of base 
-    zddotdot(4) = xd_bdotdot(1);
-    zddotdot(5) = xd_bdotdot(2);
-
-    fdes_ee = fdes*fext(0)/(fext(0)+0.00001);
-    //to fdes_b einai mhden eksorismou
-    // fdes_star.head(3) = fdes_ee;
-    // fdes_star.tail(3) = fdes_b;
-    fdes_star(0) = fdes_ee(0);
-    fdes_star(1) = fdes_ee(1);
-    fdes_star(2) = fdes_ee(2);
-    fdes_star(3) = fdes_b(0);
-    fdes_star(4) = fdes_b(1);
-    fdes_star(5) = fdes_b(2);
+    // fdes_ee = fdes*fext(0)/(fext(0)+0.00001);
+    // //to fdes_b einai mhden eksorismou
+    // // fdes_star.head(3) = fdes_ee;
+    // // fdes_star.tail(3) = fdes_b;
+    // fdes_star(0) = fdes_ee(0);
+    // fdes_star(1) = fdes_ee(1);
+    // fdes_star(2) = fdes_ee(2);
+    // fdes_star(3) = fdes_b(0);
+    // fdes_star(4) = fdes_b(1);
+    // fdes_star(5) = fdes_b(2);
 
 
     
     // fext_star.head(3) = fext;
     // fext_star.tail(3) = Eigen::VectorXd::Zero(3);
-    fext_star(0) = fext(0);
-    fext_star(1) = fext(1);
-    fext_star(2) = fext(2);
-    fext_star(3) = 0;
-    fext_star(4) = 0;
-    fext_star(5) = 0;
+    //ta svhno logo base contorller
+    // fext_star(0) = fext(0);
+    // fext_star(1) = fext(1);
+    // fext_star(2) = fext(2);
+    // fext_star(3) = 0;
+    // fext_star(4) = 0;
+    // fext_star(5) = 0;
 
 
 
 
-    qext = (je.transpose())*fext;
+    // qext = (je.transpose())*fext;
 
     // std::cout<<"fdes_star is: "<<fdes_star<<std::endl;
 
@@ -1599,12 +1603,12 @@ void calculateStep(){  //calculate stuff in each iteration
     // std::cout<<"(h*jacobian.inverse())*(zddotdot+md.inverse()*(-fext_star+fdes_star-bd*edot-kd*e)-jacobiandot*zdot) is (vec3): "<<vec3<<std::endl;
     // std::cout<<"c is: "<<c<<std::endl;
     // std::cout<<"qext is: "<<qext<<std::endl;
-    std::cout<<"jacobian determinant is: "<<jacobian.determinant()<<std::endl;
-    mat = h*jacobian.inverse();
+    // std::cout<<"jacobian determinant is: "<<jacobian.determinant()<<std::endl;
+    // mat = h*jacobian.inverse();
 
 
 
-    qact=qext+c+(h*jacobian.inverse())*(zddotdot+md.inverse()*(-fext_star+fdes_star-bd*edot-kd*e)-jacobiandot*zdot);
+    // qact=qext+c+(h*jacobian.inverse())*(zddotdot+md.inverse()*(-fext_star+fdes_star-bd*edot-kd*e)-jacobiandot*zdot);
     // qact = je.transpose()*fact;
 
     // torq[0] = qact(3); //torque of q1

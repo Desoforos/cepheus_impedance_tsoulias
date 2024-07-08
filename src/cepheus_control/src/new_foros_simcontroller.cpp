@@ -88,6 +88,13 @@ int main(int argc, char **argv) {
     ros::Publisher error_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_theta", 1);
     ros::Publisher xd_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_x", 1);
     ros::Publisher xd_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_y", 1);
+    ros::Publisher xd_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_theta", 1);
+    ros::Publisher xt_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_x", 1);
+    ros::Publisher xt_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_y", 1);
+    ros::Publisher xt_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_theta", 1);
+
+
+
 
 
 
@@ -175,20 +182,46 @@ int main(int argc, char **argv) {
  
             // diagnostics();
             //desiredTrajectory(dur_time); 
-            baseTrajectory(dur_time);
-            basePDcontroll();
-            base_wrench.force.x = fx;
-            base_wrench.force.y = fy;
-            base_wrench.torque.z = ns;
+            calculateMatrices();
+            baseTrajectory(dur_time,tf);
+            // basePDcontroll();
+            calculateQ();
+
+            // base_wrench.force.x = qact(0);  //fx;
+            // base_wrench.force.y = qact(1);  //fy;
+            // //base_wrench.torque.z = qact(2); //ns;
+            // msg_RW.data = qact(2); //to bazo anapoda bas kai
+			// msg_LS.data = qact(3);
+			// msg_LE.data = qact(4);
+			// msg_LW.data = qact(5);
 
             base_force_pub.publish(base_wrench);
+            RW_torque_pub.publish(msg_RW);
+            LS_torque_pub.publish(msg_LS);
+            LE_torque_pub.publish(msg_LE);
+            LW_torque_pub.publish(msg_LW);
+            xd_x_pub.publish(msg_xd_x);
+            xd_y_pub.publish(msg_xd_y);
+            xd_theta_pub.publish(msg_xd_theta);
+            xt_x_pub.publish(msg_xt_x);
+            xt_y_pub.publish(msg_xt_y);
+            xt_theta_pub.publish(msg_xt_theta);
 
             base_wrench.force.x = 0.0;
             base_wrench.force.y = 0.0;
             base_wrench.force.z = 0.0;
             base_wrench.torque.x = 0.0;
             base_wrench.torque.y = 0.0;
-            base_wrench.torque.z = 0.0;      
+            base_wrench.torque.z = 0.0;
+            msg_RW.data = 0; //to bazo anapoda bas kai
+	        msg_LS.data = 0;
+	        msg_LE.data = 0;
+	        msg_LW.data = 0; 
+            msg_xt_x.data = 0;
+            msg_xt_y.data = 0;
+            msg_xt_theta.data = 0;
+            msg_xd_x.data = msg_xd_y.data = msg_xd_theta.data = 0;
+
         }
 		if(reachedTarget){ //na ftiakso to reachedGoal kalytera gia na teleionei to peirama, na ftiakso xrono
 			ROS_INFO("[new_foros_simcontroller]: Target position achieved, stopped publishing. \n");

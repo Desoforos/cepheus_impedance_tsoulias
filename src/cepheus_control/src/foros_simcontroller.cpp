@@ -180,7 +180,7 @@ int main(int argc, char **argv) {
             //     desiredTrajectory(dur_time);
             // } //mallon to xreiazetai tha to ksanavalo
             desiredTrajectory(dur_time);
-            calculateStep();
+            calculateMatrices();
             // diagnostics(); 
 
             //ImpedanceControlUpdateStep();

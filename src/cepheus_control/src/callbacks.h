@@ -27,7 +27,7 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 			xeedot(2) = msg->twist[i].angular.z;
 		}
 		if(msg->name[i] == "simple_ring::base_link"){
-			xt= msg->pose[i].position.x - offset; //targetx minus the offset of the cube
+			xt= msg->pose[i].position.x - offset - sd; //targetx minus the offset of the cube
     		yt = msg->pose[i].position.y; //targety
 			xtdot = msg->twist[i].linear.x;
 			ytdot = msg->twist[i].linear.y;
@@ -98,6 +98,7 @@ void jointStatesCallback(const sensor_msgs::JointState::ConstPtr& msg){
 		if(msg->name[i] == "left_shoulder_joint"){
 			q1 = msg->position[i];
 			q1dot = msg->velocity[i];
+			q1 = q1 + q01;
 		}
 		else if(msg->name[i] == "left_elbow_joint"){
 			q2 = msg->position[i];

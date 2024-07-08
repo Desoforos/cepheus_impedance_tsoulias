@@ -68,6 +68,11 @@ std_msgs::Float64 msg_etheta; //errortheta
 geometry_msgs::Wrench base_wrench; //x,y force of thrusters
 std_msgs::Float64 msg_xd_x; //xd_x
 std_msgs::Float64 msg_xd_y; //xd_y
+std_msgs::Float64 msg_xd_theta; //xd_y
+
+std_msgs::Float64 msg_xt_x; 
+std_msgs::Float64 msg_xt_y; 
+std_msgs::Float64 msg_xt_theta; 
 
 
 
@@ -253,7 +258,7 @@ Eigen::VectorXd fdes_star(6);// = Eigen::VectorXd::Zero(6);
 Eigen::VectorXd fext_star(6);// = Eigen::VectorXd::Zero(6); 
 Eigen::VectorXd qext(6);// = Eigen::VectorXd::Zero(6); 
 Eigen::MatrixXd jb(3,6);// = Eigen::MatrixXd::Zero(3,6); //jacobian of base
-Eigen::MatrixXd jbdot(3,6); //= Eigen::MatrixXd::Zero(3,6); //jacobian of base
+Eigen::MatrixXd jbdot = Eigen::MatrixXd::Zero(3,6);//= Eigen::MatrixXd::Zero(3,6); //jacobian of base
 
 /*for diagnostics*/
 Eigen::VectorXd vec1(6);
@@ -269,12 +274,15 @@ double fx = 0,fy = 0,ns =0 ;
 double kpx = 0.5,kdx = 0.6;
 double kpy = 0.5,kdy = 0.6;
 double kpth = 0.5,kdth = 0.6;
-double kprop = 0.5, kder = 10;
+//double kprop = 0.5, kder = 10; AFTA DOULEVOUN GIA TO APLO PD XORIS TRAJECTORY
+double kprop ,kder;
+
 //for polynomial
 double a0,a1,a2,a3,a4,a5;
 double xstep,ystep,thstep;
 double xstepdot, ystepdot, thstepdot;
-
+double xstepdotdot, ystepdotdot, thstepdotdot;
+double sd = 0.05; //safety distance
 
 
  

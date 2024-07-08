@@ -393,7 +393,7 @@
 			<!-- <updateRate>0</updateRate> anti gia 100 -->
 			<bodyName>cepheus_base</bodyName>
 			<topicName>force_base_topic</topicName>
-			<force_reference_frame>world</force_reference_frame>
+			<force_reference_frame>cepheus_base</force_reference_frame>
 		</plugin>
 	</gazebo>
 
