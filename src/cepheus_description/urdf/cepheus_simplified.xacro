@@ -168,11 +168,11 @@
 		</inertial>
 		<visual>
 			<origin
-				xyz="0 0 0.215"
+				xyz="0 0 0" 
 				rpy="0 0 0" />
 			<geometry>
-				<!-- <mesh filename="package://cepheus_description/urdf/meshes/cepheus.STL" /> -->
-				<cylinder length="0.43" radius="${base_radius}"/>
+				<mesh filename="package://cepheus_description/urdf/meshes/cepheus.STL" />
+				<!-- <cylinder length="0.43" radius="${base_radius}"/> -->
 			</geometry>
 			<material name="LightGrey"/>
 		</visual>
@@ -185,7 +185,7 @@
 			</geometry>
 		</collision>
 	</link>
-	<!-- <joint name="reaction_wheel_joint" type="continuous">
+	<joint name="reaction_wheel_joint" type="continuous">
 		<parent link="cepheus_base"/>
 		<child link="reaction_wheel"/>
 		<origin xyz="0.065 0 0.03815" rpy="0 0 0"/>
@@ -212,7 +212,7 @@
 				iyz="0.0001"
 				izz="0.000197" />
 		</inertial>
-	</link> -->
+	</link>
 	<gazebo reference="cepheus_base">
 		<mu1>0</mu1>
 		<mu2>0</mu2>
