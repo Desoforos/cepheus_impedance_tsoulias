@@ -74,6 +74,10 @@ std_msgs::Float64 msg_xt_x;
 std_msgs::Float64 msg_xt_y; 
 std_msgs::Float64 msg_xt_theta; 
 
+std_msgs::Float64 msg_xee_x; 
+std_msgs::Float64 msg_xee_y; 
+std_msgs::Float64 msg_xee_theta; 
+
 
 
 /*Impedance control variables*/
@@ -241,7 +245,7 @@ double frequency = (float)1/DT;
 // /////////////EXTRA KOSTAS PARAMETERS////////////////////
 // double w = 2; mallon no need
 double z_cont =1 , ts_cont = 5, wn_cont = 6/ts_cont;
-double q01 = 27.88931 * M_PI/180;
+double q01 = -27.88931 * M_PI/180; //gonia tou shoulder joint se sxesh me base
 double lt;
 double s01 = 0.5, s02 = 0.2;
 double i0zz;

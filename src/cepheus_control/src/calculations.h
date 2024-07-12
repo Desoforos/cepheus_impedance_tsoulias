@@ -63,38 +63,73 @@ void initialiseParameters(){//initialise constant parameters
     // l3 = 0.01947;
     // mt = 10;
 
-    r0x = 0.17271; //syntetagmenes tou shoulder joint se sxesh me vash, apo xacro ta phra
-    r0y = 0.091404;
+    // r0x = 0.17271; //syntetagmenes tou shoulder joint se sxesh me vash, apo xacro ta phra
+    // r0y = 0.091404;
     
 
     /* METAVLHTES APO PEIRAMA KOSTA */ 
-    m0=53;  
-    m1=0.2314;
-    m2=0.1;
-    m3=4.6*pow(10,-2);
-    mt = 1;
+    // m0=53;  
+    // m1=0.2314;
+    // m2=0.1;
+    // m3=0.046;
+    // mt = 1;
 
-    M=m0+m1+m2+m3;
+    // M=m0+m1+m2+m3;
 
-    l1=0.185;
-    l2=0.143;
-    l3=0.0411;
-    lt=0.03; //what is this
-    r0x=0.1425;
-    r0y=-0.08225;
-    r1=0.185;
-    r2=0.143;
-    r3=0.0261;
-    l0 = 0;
+    // l1=0.185;
+    // l2=0.143;
+    // l3=0.0411;
+    // lt=0.03; //what is this
+    // r0x=0.1425;
+    // r0y=-0.08225;
+    // r1=0.185;
+    // r2=0.143;
+    // r3=0.0261;
+    // l0 = 0;
     // a=sqrt(r0x*r0x+r0y*r0y);
     // b=l1+r1;
     // c=l2+r2;
     // d=l3+r3; //den nomizo na ta xreiazomaste
-    ibzz=2.1837;
-    i1zz=6.81*pow(10,-3);
-    i2zz=1.487*pow(10,-5);
-    i3zz=1.2287*pow(10,-5);
-    itzz=1;
+    
+    // ibzz=2.1837;
+    // i1zz=6.81*pow(10,-3);
+    // i2zz=1.487*pow(10,-5);
+    // i3zz=1.2287*pow(10,-5);
+    // itzz=1;
+    /*ta mhkh prokyptoun apo typous gia afthereta plath kai ypsh (des xacro)*/
+    // ibzz = 1.06;
+    // i1zz = 0.0026476;
+    // i2zz = 0.0006849;
+    // i3zz = 0.0000188;
+    // itzz = 0.00135;
+
+    /*apo nikiforo 12/7/24*/
+    m0 = 53;
+    l0 = 0;
+    r0x=0.1425;
+    r0y=-0.08225;
+    m1 = 1;
+    l1 = r1 = 0.25;
+    m2 = 0.5;
+    l2 = r2 = 0.25;
+    m3 = 0.1;
+    l3 = r3 = 0.125;
+    double x1,x2,x3;
+    double radius = 0.2;
+    double y = 0.02;
+    x1 = l1+r1;
+    x2 = l2+r2;
+    x3 = l3+r3;
+
+    M=m0+m1+m2+m3;
+
+    ibzz = (1/2)*m0*radius*radius;
+    i1zz = (1/12)*m1*(x1*x1 + y*y);
+    i2zz = (1/12)*m2*(x2*x2 + y*y);
+    i3zz = (1/12)*m3*(x3*x3 + y*y);
+
+
+
 
     ROS_INFO("[initParams]: Double parameters have been set. \n");
     
@@ -174,17 +209,17 @@ void initialiseParameters(){//initialise constant parameters
     // md.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
     // md.bottomRightCorner(3,3) = md_b;
     //anagastika me to xeri giati olo xalaei
-    c << 0, 0, 0, 0, 0, 0;
-    z << 0, 0, 0, 0, 0, 0;
-    zdot << 0, 0, 0, 0, 0, 0;
-    zddotdot << 0, 0, 0, 0, 0, 0;
-    e << 0, 0, 0, 0, 0, 0;
-    edot << 0, 0, 0, 0, 0, 0;
-    edotdot << 0, 0, 0, 0, 0, 0;
+    // c << 0, 0, 0, 0, 0, 0;
+    // z << 0, 0, 0, 0, 0, 0;
+    // zdot << 0, 0, 0, 0, 0, 0;
+    // zddotdot << 0, 0, 0, 0, 0, 0;
+    // e << 0, 0, 0, 0, 0, 0;
+    // edot << 0, 0, 0, 0, 0, 0;
+    // edotdot << 0, 0, 0, 0, 0, 0;
     a_x << 0, 0, 0, 0, 0, 0;
     a_y << 0, 0, 0, 0, 0, 0;
     a_theta << 0, 0, 0, 0, 0, 0;
-    qact << 0, 0, 0, 0, 0, 0;
+    // qact << 0, 0, 0, 0, 0, 0;
 
     md << md_e(0,0) , md_e(0,1), md_e(0,2) , 0, 0, 0,
           md_e(1,0), md_e(1,1), md_e(1,2) , 0, 0, 0,

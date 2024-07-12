@@ -92,7 +92,9 @@ int main(int argc, char **argv) {
     ros::Publisher xt_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_x", 1);
     ros::Publisher xt_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_y", 1);
     ros::Publisher xt_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_theta", 1);
-
+    ros::Publisher xee_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_x", 1);
+    ros::Publisher xee_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_y", 1);
+    ros::Publisher xee_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_theta", 1);
 
 
 
@@ -195,17 +197,20 @@ int main(int argc, char **argv) {
 			// msg_LE.data = qact(4);
 			// msg_LW.data = qact(5);
 
-            base_force_pub.publish(base_wrench);
-            RW_torque_pub.publish(msg_RW);
-            LS_torque_pub.publish(msg_LS);
-            LE_torque_pub.publish(msg_LE);
-            LW_torque_pub.publish(msg_LW);
+            // base_force_pub.publish(base_wrench);
+            // RW_torque_pub.publish(msg_RW);
+            // LS_torque_pub.publish(msg_LS);
+            // LE_torque_pub.publish(msg_LE);
+            // LW_torque_pub.publish(msg_LW);
             xd_x_pub.publish(msg_xd_x);
             xd_y_pub.publish(msg_xd_y);
             xd_theta_pub.publish(msg_xd_theta);
             xt_x_pub.publish(msg_xt_x);
             xt_y_pub.publish(msg_xt_y);
             xt_theta_pub.publish(msg_xt_theta);
+            xee_x_pub.publish(msg_xee_x);
+            xee_y_pub.publish(msg_xee_y);
+            xee_theta_pub.publish(msg_xee_theta);
 
             base_wrench.force.x = 0.0;
             base_wrench.force.y = 0.0;

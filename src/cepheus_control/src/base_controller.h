@@ -76,7 +76,7 @@ void calculateTrajecotryPolynomials(double tf){
     
     
     eq_matrix << pow(tf,3), pow(tf,4), pow(tf,5),
-                3*pow(tf,3), 4*pow(tf,3), 5*pow(tf,4),
+                3*pow(tf,2), 4*pow(tf,3), 5*pow(tf,4),
                 6*tf, 12*pow(tf,2), 20*pow(tf,3); 
     
     eq_bscale << 1 , 0, 0;
@@ -140,9 +140,10 @@ void calculateQ(){
     // Eigen::MatrixXd temp(6,6);
     // Eigen::MatrixXd tempinv(6,6);
     Eigen::VectorXd zdot(6);
-    Eigen::VectorXd e =  xd - x;
-    Eigen::VectorXd edot = xddot - xdot;
-    Eigen::VectorXd u = xddotdot + kprop*e + kder*edot;
+    /*allazo to e apo xd-x se x -xd ara allazei o nomos elegxou u*/
+    Eigen::VectorXd e =  x - xd;
+    Eigen::VectorXd edot = xdot - xddot;
+    Eigen::VectorXd u = xddotdot - kprop*e - kder*edot;
 
 
 
@@ -159,9 +160,9 @@ void calculateQ(){
     // qact = h*u +c; //oxi toso aplo
     Eigen::VectorXd q = c + temp*(u - jacobiandot*zdot);
 
-    std::cout <<" c is: "<<c<<std::endl;
-    std::cout <<" h*j^-1 is: "<<temp<<std::endl;
-    std::cout << "e is: "<< e<<std::endl;
+    // std::cout <<" c is: "<<c<<std::endl;
+    // std::cout <<" h*j^-1 is: "<<temp<<std::endl;
+    // std::cout << "e is: "<< e<<std::endl;
     std::cout << "q is: "<<q<<std::endl;
 
     // std::cout<<"[Q calculator]: fx is: "<<q(0)<<std::endl;
@@ -170,8 +171,8 @@ void calculateQ(){
 
     base_wrench.force.x = q(0);  //fx;
     base_wrench.force.y = q(1);  //fy;
-    //base_wrench.torque.z = qact(2); //ns;
-    msg_RW.data = q(2); //to bazo anapoda bas kai
+    base_wrench.torque.z = q(2); //ns;
+    // msg_RW.data = q(2); // to bgazo kai evala to wrench
 	msg_LS.data = q(3);
 	msg_LE.data = q(4);
 	msg_LW.data = q(5);
@@ -182,4 +183,7 @@ void calculateQ(){
     msg_xt_x.data = xt_in;
     msg_xt_y.data = yt_in;
     msg_xt_theta.data = thetat_in;
+    msg_xee_x.data = x(0);
+    msg_xee_y.data = x(1);
+    msg_xee_theta.data = x(2);
 }

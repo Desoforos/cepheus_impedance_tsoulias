@@ -14,7 +14,7 @@
   #   pid: {p: 10.0, i: 0.1, d: 1.0}
   reaction_wheel_effort_controller:
     type: effort_controllers/JointEffortController
-    joint: reaction_wheel_joint
+    joint: r_joint
     pid: {p: 10, i: 0.1, d: 1.0}
   left_shoulder_effort_controller:
     type: effort_controllers/JointEffortController
