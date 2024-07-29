@@ -11,9 +11,9 @@
 	<xacro:property name="gripper" value="0.0672" /> -->
 	<xacro:property name="base_radius" value="0.2" />
 	<xacro:property name="y" value="0.02" />
-	<xacro:property name="arm_length" value="0.5" />
+	<!-- <xacro:property name="arm_length" value="0.5" />
 	<xacro:property name="forearm_length" value="0.5" />
-	<xacro:property name="gripper_length" value="0.25" />
+	<xacro:property name="gripper_length" value="0.125" />
 	<xacro:property name="base_mass" value="53" />
 	<xacro:property name="arm_mass" value="1" />
 	<xacro:property name="forearm_mass" value="0.5" />
@@ -21,7 +21,19 @@
 	<xacro:property name="base_inertia" value="${(1/2)*base_mass*base_radius*base_radius}" />
 	<xacro:property name="arm_inertia" value="${(1/12)*arm_mass*(arm_length*arm_length+y*y)}" />
 	<xacro:property name="forearm_inertia" value="${(1/12)*forearm_mass*(forearm_length*forearm_length+y*y)}" />
-	<xacro:property name="gripper_inertia" value="${(1/12)*gripper_mass*(gripper_length*gripper_length+y*y)}" />
+	<xacro:property name="gripper_inertia" value="${(1/12)*gripper_mass*(gripper_length*gripper_length+y*y)}" /> -->
+	<!-- gia sygkrish me simscape 29/7 -->
+	<xacro:property name="arm_length" value="0.37" />
+	<xacro:property name="forearm_length" value="0.368" />
+	<xacro:property name="gripper_length" value="0.0822" />
+	<xacro:property name="base_mass" value="53" />
+	<xacro:property name="arm_mass" value="0.2314" />
+	<xacro:property name="forearm_mass" value="0.1" />
+	<xacro:property name="gripper_mass" value="0.046" />
+	<xacro:property name="base_inertia" value="2.1837" />
+	<xacro:property name="arm_inertia" value="0.0068" />
+	<xacro:property name="forearm_inertia" value="${1.487/100000}" />
+	<xacro:property name="gripper_inertia" value="${1.2287/100000}" />
 
 
 
@@ -168,11 +180,11 @@
 		</inertial>
 		<visual>
 			<origin
-				xyz="0 0 0" 
+				xyz="0 0 0.215" 
 				rpy="0 0 0" />
 			<geometry>
-				<mesh filename="package://cepheus_description/urdf/meshes/cepheus.STL" />
-				<!-- <cylinder length="0.43" radius="${base_radius}"/> -->
+				<!-- <mesh filename="package://cepheus_description/urdf/meshes/cepheus.STL" /> -->
+				<cylinder length="0.43" radius="${base_radius}"/>
 			</geometry>
 			<material name="LightGrey"/>
 		</visual>
@@ -185,7 +197,7 @@
 			</geometry>
 		</collision>
 	</link>
-	<joint name="reaction_wheel_joint" type="continuous">
+	<!-- <joint name="reaction_wheel_joint" type="continuous">
 		<parent link="cepheus_base"/>
 		<child link="reaction_wheel"/>
 		<origin xyz="0.065 0 0.03815" rpy="0 0 0"/>
@@ -212,7 +224,7 @@
 				iyz="0.0001"
 				izz="0.000197" />
 		</inertial>
-	</link>
+	</link> -->
 	<gazebo reference="cepheus_base">
 		<mu1>0</mu1>
 		<mu2>0</mu2>
@@ -411,6 +423,12 @@
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
 	</transmission>
+	<gazebo reference="left_wrist_joint">
+		<provideFeedback>true</provideFeedback>
+		<!-- <sensor name="force_torque" type="force_torque">
+          <update_rate>30</update_rate>
+    	</sensor> -->
+	</gazebo>
     <gazebo>
 		<plugin name="ft_sensor" filename="libgazebo_ros_ft_sensor.so">
 			<updateRate>0</updateRate>   <!--poly shmantiko na einai 0, allios kanei bug!!!!(nikhforos)-->
@@ -422,13 +440,6 @@
           		<stddev>0.003</stddev> <!-- change this to simulate noise --> 
         	</noise>
 		</plugin>
-	</gazebo>
-
-    <gazebo reference="left_wrist_joint">
-		<provideFeedback>true</provideFeedback>
-		<!-- <sensor name="force_torque" type="force_torque">
-          <update_rate>30</update_rate>
-    	</sensor> -->
 	</gazebo>
 
 

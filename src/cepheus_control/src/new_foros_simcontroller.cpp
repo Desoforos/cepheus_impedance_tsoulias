@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
     ros::Publisher LW_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_wrist_effort_controller/command", 1);
     // ros::Publisher thruster_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/thrusterx_effort_controller/command", 1); evgala ta dyo prismatic joints ki ebala gazebo plugin
     // ros::Publisher thruster_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/thrustery_effort_controller/command", 1);
-    ros::Publisher base_force_pub = nh.advertise<geometry_msgs::Wrench>("/cepheus/force_base_topic", 1); //anti gia 10 gia na doume
+    ros::Publisher base_force_pub = nh.advertise<geometry_msgs::Wrench>("/cepheus/force_base_topic", 10); //anti gia 10 gia na doume
     /*Publisher for debugging purposes*/
     ros::Publisher error_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_x", 1);
     ros::Publisher error_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_y", 1);
@@ -95,6 +95,8 @@ int main(int argc, char **argv) {
     ros::Publisher xee_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_x", 1);
     ros::Publisher xee_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_y", 1);
     ros::Publisher xee_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_theta", 1);
+
+    
 
 
 
@@ -135,7 +137,7 @@ int main(int argc, char **argv) {
     ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",1,gazeboposCallback);
     
     //ros::Rate loop_rate(frequency);
-    ros::Rate loop_rate(10); //10Hz
+    ros::Rate loop_rate(100); //100Hz
 
     char command;
     
@@ -198,7 +200,7 @@ int main(int argc, char **argv) {
 			// msg_LW.data = qact(5);
 
             base_force_pub.publish(base_wrench);
-            RW_torque_pub.publish(msg_RW);
+            // RW_torque_pub.publish(msg_RW);
             LS_torque_pub.publish(msg_LS);
             LE_torque_pub.publish(msg_LE);
             LW_torque_pub.publish(msg_LW);
@@ -218,14 +220,14 @@ int main(int argc, char **argv) {
             base_wrench.torque.x = 0.0;
             base_wrench.torque.y = 0.0;
             base_wrench.torque.z = 0.0;
-            msg_RW.data = 0; //to bazo anapoda bas kai
-	        msg_LS.data = 0;
-	        msg_LE.data = 0;
-	        msg_LW.data = 0; 
-            msg_xt_x.data = 0;
-            msg_xt_y.data = 0;
-            msg_xt_theta.data = 0;
-            msg_xd_x.data = msg_xd_y.data = msg_xd_theta.data = 0;
+            msg_RW.data = 0.0; //to bazo anapoda bas kai
+	        msg_LS.data = 0.0;
+	        msg_LE.data = 0.0;
+	        msg_LW.data = 0.0; 
+            msg_xt_x.data = 0.0;
+            msg_xt_y.data = 0.0;
+            msg_xt_theta.data = 0.0;
+            msg_xd_x.data = msg_xd_y.data = msg_xd_theta.data = 0.0;
 
         }
 		if(reachedTarget){ //na ftiakso to reachedGoal kalytera gia na teleionei to peirama, na ftiakso xrono

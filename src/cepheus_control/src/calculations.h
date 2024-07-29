@@ -104,16 +104,34 @@ void initialiseParameters(){//initialise constant parameters
     // itzz = 0.00135;
 
     /*apo nikiforo 12/7/24*/
+    // m0 = 53;
+    // l0 = 0;
+    // r0x=0.1425;
+    // r0y=-0.08225;
+    // m1 = 1;
+    // l1 = r1 = 0.25;
+    // m2 = 0.5;
+    // l2 = r2 = 0.25;
+    // m3 = 0.1;
+    // l3 = r3 = 0.125/2;
+
+
+    /*gia peirama me kosta 25/7/24*/
     m0 = 53;
     l0 = 0;
     r0x=0.1425;
     r0y=-0.08225;
-    m1 = 1;
-    l1 = r1 = 0.25;
-    m2 = 0.5;
-    l2 = r2 = 0.25;
-    m3 = 0.1;
-    l3 = r3 = 0.125;
+    m1 = 0.2314;
+    l1 = r1 = 0.185;
+    m2 = 0.1;
+    l2 = r2 = 0.143;
+    m3 = 0.046;
+    l3 = r3 = 0.0411;
+    mt = 1;
+    q01 = -0.5236;
+    s01 = 0.5;
+    s02 = 0.2;
+
     double x1,x2,x3;
     double radius = 0.2;
     double y = 0.02;
@@ -229,6 +247,9 @@ void initialiseParameters(){//initialise constant parameters
           0         , 0        , 0       ,md_b(2,0), md_b(2,1), md_b(2,2);
     
     ROS_INFO("[initParams]: Md has been set. \n");
+
+
+
     
     bd_e = 2*z_cont*wn_cont*md_e -i3; //anti gia Be ebala i3
 
@@ -847,7 +868,7 @@ void calculateMatrices(){  //calculate stuff in each iteration
       cos(q1+theta0))+(q1dot+q2dot+theta0dot)*(l2*cos(q1+q2+theta0)+r2*cos(q1+ 
       q2+theta0))+l3*(q1dot+q2dot+q3dot+theta0dot)*cos(q1+q2+q3+theta0)+theta0dot*(r0x*cos(theta0)+(-1)*r0y*sin(theta0)))*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0)+(-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0)+(-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0)+(-1)*l3*sin(q1+q2+q3+theta0))+2*((-1)*r0x*cos(theta0)+(-1)*l1*cos(q1+theta0)+(-1)*r1*cos(q1+theta0)+(-1)*l2*cos(q1+q2+theta0)+(-1)*r2*cos(q1+q2+theta0)+(-1)*l3*cos(q1+q2+q3+theta0)+r0y*sin(theta0))*((-1)*theta0dot*(r0y*cos(theta0)+r0x*sin(theta0))+((-1)*q1dot+(-1)*theta0dot)*(l1*sin(q1+theta0)+r1*sin(q1+theta0))+((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*(l2*sin(q1+q2+theta0)+r2*sin(q1+q2+theta0))+l3*((-1)*q1dot+(-1)*q2dot+(-1)*q3dot+(-1)*theta0dot)*sin(q1+q2+q3+theta0))+2*(r0x*cos(theta0)+l1*cos(q1+theta0)+r1*cos(q1+theta0)+l2*cos(q1+q2+theta0)+r2*cos(q1+q2+theta0)+l3*cos(q1+q2+q3+theta0)+(-1)*r0y*sin(theta0))*(theta0dot*((-1)*r0y*cos(theta0)+(-1)*r0x*sin(theta0))+(q1dot+theta0dot)*((-1)*l1*sin(q1+theta0)+(-1)*r1*sin(q1+theta0))+(q1dot+q2dot+theta0dot)*((-1)*l2*sin(q1+q2+theta0)+(-1)*r2*sin(q1+q2+theta0))+(-1)*l3*(q1dot+q2dot+q3dot+theta0dot)*sin(q1+q2+q3+theta0)))));
 
-        c41 = (-1)*xc0dot*(l1*m1*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0)+ 
+      c41 = (-1)*xc0dot*(l1*m1*((-1)*q1dot+(-1)*theta0dot)*cos(q1+theta0)+ 
       m2*(((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0)) 
       +l2*((-1)*q1dot+(-1)*q2dot+(-1)*theta0dot)*cos(q1+q2+theta0))+m3*( 
       ((-1)*q1dot+(-1)*theta0dot)*(l1*cos(q1+theta0)+r1*cos(q1+theta0))+(( 
@@ -1595,16 +1616,16 @@ void calculateMatrices(){  //calculate stuff in each iteration
     // zddotdot(5) = xd_bdotdot(2);
     
 
-    // fdes_ee = fdes*fext(0)/(fext(0)+0.00001);
-    // //to fdes_b einai mhden eksorismou
+    fdes_ee = fdes*fext(0)/(fext(0)+0.00001);
+    //to fdes_b einai mhden eksorismou
     // // fdes_star.head(3) = fdes_ee;
     // // fdes_star.tail(3) = fdes_b;
-    // fdes_star(0) = fdes_ee(0);
-    // fdes_star(1) = fdes_ee(1);
-    // fdes_star(2) = fdes_ee(2);
-    // fdes_star(3) = fdes_b(0);
-    // fdes_star(4) = fdes_b(1);
-    // fdes_star(5) = fdes_b(2);
+    fdes_star(0) = fdes_ee(0);
+    fdes_star(1) = fdes_ee(1);
+    fdes_star(2) = fdes_ee(2);
+    fdes_star(3) = fdes_b(0);
+    fdes_star(4) = fdes_b(1);
+    fdes_star(5) = fdes_b(2);
 
 
     
@@ -1621,7 +1642,7 @@ void calculateMatrices(){  //calculate stuff in each iteration
 
 
 
-    // qext = (je.transpose())*fext;
+    qext = (je.transpose())*fext;
 
     // std::cout<<"fdes_star is: "<<fdes_star<<std::endl;
 

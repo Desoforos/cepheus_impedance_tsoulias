@@ -27,7 +27,7 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 			xeedot(2) = msg->twist[i].angular.z;
 		}
 		if(msg->name[i] == "simple_ring::base_link"){
-			xt= msg->pose[i].position.x;//TO EVGALA GIA NA DO KATI - offset - sd; //targetx minus the offset of the cube
+			xt= msg->pose[i].position.x - offset - sd; //targetx minus the offset of the cube
     		yt = msg->pose[i].position.y; //targety
 			xtdot = msg->twist[i].linear.x;
 			ytdot = msg->twist[i].linear.y;
@@ -64,6 +64,7 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 		ych_in = ee_y;
 		xt_in = xt;
 		yt_in = yt;
+		/*gia peirama me kosta 28/7 peirazo ta xtin ytin*/
 		thetach_in = thetach;
 		thetat_in = thetat;
 		// x_target_in = xt;

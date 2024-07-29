@@ -97,7 +97,7 @@ void baseTrajectory(double t, double tf){
     sdotdot = 2*a2 + 6*a3*t + 12*a4*pow(t,2) + 20*a5*pow(t,3);
 
     if(t<=tf){
-        xstep = xE_in + s*(xt_in-xE_in);
+        xstep = xE_in + s*(xt_in - xE_in);
         ystep = yE_in + s*(yt_in - yE_in);
         thstep = thetaE_in + s*(thetat_in - thetaE_in);
 
@@ -158,7 +158,11 @@ void calculateQ(){
     // edot = xddot - xdot;
     // u=xddotdot + kprop*e + kder*edot;
     // qact = h*u +c; //oxi toso aplo
-    Eigen::VectorXd q = c + temp*(u - jacobiandot*zdot);
+    // Eigen::VectorXd q = c + temp*(u - jacobiandot*zdot);
+    // Eigen::VectorXd q = c + temp*(xddotdot+ 0.1*(-kder*edot - kprop*e) - jacobiandot*zdot);
+    
+    Eigen::VectorXd q = qext + c + temp*(xddotdot + md.inverse()*(-fext_star + fdes_star -bd*edot -kd*e)-jacobiandot*zdot);
+
 
     // std::cout <<" c is: "<<c<<std::endl;
     // std::cout <<" h*j^-1 is: "<<temp<<std::endl;

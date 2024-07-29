@@ -1,10 +1,12 @@
 digraph G {
-"left_arm" -> "left_forearm"[label=" Broadcaster: /robot_state_publisher\nAverage rate: 50.201\nBuffer length: 4.98\nMost recent transform: 544.781\nOldest transform: 539.801\n"];
-"cepheus" -> "left_arm"[label=" Broadcaster: /robot_state_publisher\nAverage rate: 50.201\nBuffer length: 4.98\nMost recent transform: 544.781\nOldest transform: 539.801\n"];
-"left_forearm" -> "left_grip"[label=" Broadcaster: /robot_state_publisher\nAverage rate: 50.201\nBuffer length: 4.98\nMost recent transform: 544.781\nOldest transform: 539.801\n"];
-"cepheus" -> "reaction_wheel"[label=" Broadcaster: /robot_state_publisher\nAverage rate: 50.201\nBuffer length: 4.98\nMost recent transform: 544.781\nOldest transform: 539.801\n"];
+"left_arm" -> "left_forearm"[label="Broadcaster: /cepheus/robot_state_publisher\nAverage rate: 50.201 Hz\nMost recent transform: 234.102 ( 0.008 sec old)\nBuffer length: 4.980 sec\n"];
+"cepheus_base" -> "left_arm"[label="Broadcaster: /cepheus/robot_state_publisher\nAverage rate: 50.201 Hz\nMost recent transform: 234.102 ( 0.008 sec old)\nBuffer length: 4.980 sec\n"];
+"p2" -> "cepheus_base"[label="Broadcaster: /cepheus/robot_state_publisher\nAverage rate: 50.201 Hz\nMost recent transform: 234.102 ( 0.008 sec old)\nBuffer length: 4.980 sec\n"];
+"left_forearm" -> "left_grip"[label="Broadcaster: /cepheus/robot_state_publisher\nAverage rate: 50.201 Hz\nMost recent transform: 234.102 ( 0.008 sec old)\nBuffer length: 4.980 sec\n"];
+"world" -> "p1"[label="Broadcaster: /cepheus/robot_state_publisher\nAverage rate: 50.201 Hz\nMost recent transform: 234.102 ( 0.008 sec old)\nBuffer length: 4.980 sec\n"];
+"p1" -> "p2"[label="Broadcaster: /cepheus/robot_state_publisher\nAverage rate: 50.201 Hz\nMost recent transform: 234.102 ( 0.008 sec old)\nBuffer length: 4.980 sec\n"];
 edge [style=invis];
  subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
-"Recorded at time: 544.803"[ shape=plaintext ] ;
-}->"cepheus";
+"Recorded at time: 234.110"[ shape=plaintext ] ;
+ }->"world";
 }
