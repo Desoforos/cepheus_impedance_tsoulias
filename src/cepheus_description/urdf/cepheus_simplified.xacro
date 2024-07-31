@@ -34,6 +34,10 @@
 	<xacro:property name="arm_inertia" value="0.0068" />
 	<xacro:property name="forearm_inertia" value="${1.487/100000}" />
 	<xacro:property name="gripper_inertia" value="${1.2287/100000}" />
+	<xacro:property name="joint_damping" value="0.1" />
+	<xacro:property name="joint_friction" value="0.1" />
+
+
 
 
 
@@ -62,7 +66,7 @@
 		<child link="p1"/>
 		<axis xyz="1 0 0"/>
 		<limit lower="-100" upper="100" effort="1000" velocity="10000"/>
-		<dynamics damping="0" friction="0"/>
+		<dynamics damping="${joint_damping}" friction="${joint_friction}"/>
 	</joint>
 	<link name="p1">
 		<inertial>
@@ -103,8 +107,8 @@
 			effort="1000"
 			velocity="10000"/>
 		<dynamics
-			damping="0"
-			friction="0"/>
+			damping="${joint_damping}"
+			friction="${joint_friction}"/>
 	</joint>
 	<link name="p2">
 		<inertial>
@@ -253,8 +257,8 @@
 			effort="20"
 			velocity="20" />
 		<dynamics
-			damping="1"
-			friction="1" />
+			damping="${joint_damping}"
+			friction="${joint_friction}" />
 	</joint>
 	<link name="left_arm">
 		<inertial>
@@ -314,8 +318,8 @@
 			effort="2"
 			velocity="20" />
 		<dynamics
-			damping="1"
-			friction="1" />
+			damping="${joint_damping}"
+			friction="${joint_friction}" />
 	</joint>
 	<link name="left_forearm">
 		<inertial>
@@ -375,8 +379,8 @@
 			effort="2"
 			velocity="20" />
 		<dynamics
-			damping="1"
-			friction="1" />
+			damping="${joint_damping}"
+			friction="${joint_friction}" />
 	</joint>
 	<link name="left_grip">
 		<inertial>

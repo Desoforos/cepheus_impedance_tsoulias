@@ -20,24 +20,6 @@ In the real robot, it shall be the topics that the cepheus_interface reads.
 #define VEL_FILTER 0.05
 #define TORQUE_LIMIT 0.00000001
 
-typedef Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> Matrix;
-
-template<typename MatType>
-using PseudoInverseType = Eigen::Matrix<typename MatType::Scalar, MatType::ColsAtCompileTime, MatType::RowsAtCompileTime>;
-
-template<typename MatType>
-PseudoInverseType<MatType> pseudoInverse(const MatType &a, double epsilon = std::numeric_limits<double>::epsilon())
-{
-    using WorkingMatType = Eigen::Matrix<typename MatType::Scalar, Eigen::Dynamic, Eigen::Dynamic, 0, MatType::MaxRowsAtCompileTime, MatType::MaxColsAtCompileTime>;
-    Eigen::BDCSVD<WorkingMatType> svd(a, Eigen::ComputeThinU | Eigen::ComputeThinV);
-    svd.setThreshold(epsilon*std::max(a.cols(), a.rows()));
-    Eigen::Index rank = svd.rank();
-    Eigen::Matrix<typename MatType::Scalar, Eigen::Dynamic, MatType::RowsAtCompileTime,
-    0, Eigen::BDCSVD<WorkingMatType>::MaxDiagSizeAtCompileTime, MatType::MaxRowsAtCompileTime>
-    tmp = svd.matrixU().leftCols(rank).adjoint();
-    tmp = svd.singularValues().head(rank).asDiagonal().inverse() * tmp;
-    return svd.matrixV().leftCols(rank) * tmp;
-}
 
 
 
@@ -75,28 +57,28 @@ int main(int argc, char **argv) {
     double tf; //time of movement before reaching target
 
     /* Create publishers */
-    ros::Publisher RW_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/reaction_wheel_effort_controller/command", 1);
-    ros::Publisher LS_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_shoulder_effort_controller/command", 1);
-    ros::Publisher LE_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_elbow_effort_controller/command", 1);
-    ros::Publisher LW_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_wrist_effort_controller/command", 1);
+    ros::Publisher RW_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/reaction_wheel_effort_controller/command", 100);
+    ros::Publisher LS_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_shoulder_effort_controller/command", 100);
+    ros::Publisher LE_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_elbow_effort_controller/command", 100);
+    ros::Publisher LW_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_wrist_effort_controller/command", 100);
     // ros::Publisher thruster_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/thrusterx_effort_controller/command", 1); evgala ta dyo prismatic joints ki ebala gazebo plugin
     // ros::Publisher thruster_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/thrustery_effort_controller/command", 1);
-    ros::Publisher base_force_pub = nh.advertise<geometry_msgs::Wrench>("/cepheus/force_base_topic", 10); //anti gia 10 gia na doume
+    ros::Publisher base_force_pub = nh.advertise<geometry_msgs::Wrench>("/cepheus/force_base_topic", 100); //anti gia 10 gia na doume
     /*Publisher for debugging purposes*/
-    ros::Publisher error_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_x", 1);
-    ros::Publisher error_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_y", 1);
-    ros::Publisher error_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_theta", 1);
-    ros::Publisher xd_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_x", 1);
-    ros::Publisher xd_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_y", 1);
-    ros::Publisher xd_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_theta", 1);
-    ros::Publisher xt_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_x", 1);
-    ros::Publisher xt_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_y", 1);
-    ros::Publisher xt_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_theta", 1);
-    ros::Publisher xee_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_x", 1);
-    ros::Publisher xee_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_y", 1);
-    ros::Publisher xee_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_theta", 1);
+    ros::Publisher error_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_x", 100);
+    ros::Publisher error_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_y", 100);
+    ros::Publisher error_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_theta", 100);
+    ros::Publisher xd_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_x", 100);
+    ros::Publisher xd_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_y", 100);
+    ros::Publisher xd_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_theta", 100);
+    ros::Publisher xt_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_x", 100);
+    ros::Publisher xt_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_y", 100);
+    ros::Publisher xt_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_theta", 100);
+    ros::Publisher xee_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_x", 100);
+    ros::Publisher xee_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_y", 100);
+    ros::Publisher xee_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_theta", 100);
 
-    
+
 
 
 
@@ -129,12 +111,12 @@ int main(int argc, char **argv) {
     /* Create subscribers */
     // ros::Subscriber RW_velocity_sub = nh.subscribe<sensor_msgs::JointState>("/cepheus/joint_states", 1, velocityCheckCallback);
     // ros::Subscriber position_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states", 1, positionCheckCallback);
-	ros::Subscriber joint_states_sub = nh.subscribe<sensor_msgs::JointState>("/cepheus/joint_states",1,jointStatesCallback);
+	ros::Subscriber joint_states_sub = nh.subscribe<sensor_msgs::JointState>("/cepheus/joint_states",100,jointStatesCallback);
 
     //ros::Subscriber ee_target_pos_sub = nh.subscribe<geometry_msgs::Pose>("/cepheus/ee_target_pos", 1, ee_target_posCallback);
     //ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 1, lsPosCallback);
     ros::Subscriber force_sub = nh.subscribe("/cepheus/ft_sensor_topic", 100, forceCallback);
-    ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",1,gazeboposCallback);
+    ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",100,gazeboposCallback);
     
     //ros::Rate loop_rate(frequency);
     ros::Rate loop_rate(100); //100Hz
@@ -155,9 +137,14 @@ int main(int argc, char **argv) {
     while(ros::ok()){
         //ros::spinOnce(); //once it spins it will read the current rw, le, ls and the callbacks will update the values q1,q2,q3 and the velocities
         //now we update the errors and we recalculate the desired efforts to publish as msg_LE,msg_LS
+
         if(!start_movement){
             ROS_INFO("[new_foros_simcontroller]: Press Y to start the controller. Caution! Do not press it before running Gazebo. \n");
             std::cin>> command;
+            ros::spinOnce();
+            xee_x_pub.publish(msg_xee_x);
+            xee_y_pub.publish(msg_xee_y);
+            xee_theta_pub.publish(msg_xee_theta);
             if(command == 'Y'){
                 start_movement= true;
             }
@@ -188,8 +175,8 @@ int main(int argc, char **argv) {
             //desiredTrajectory(dur_time); 
             calculateMatrices();
             baseTrajectory(dur_time,tf);
-            // basePDcontroll();
-            calculateQ();
+            basePDcontroll();  //ena apo ta dyo tha exo anoikto
+            // calculateQ();
 
             // base_wrench.force.x = qact(0);  //fx;
             // base_wrench.force.y = qact(1);  //fy;
@@ -204,6 +191,7 @@ int main(int argc, char **argv) {
             LS_torque_pub.publish(msg_LS);
             LE_torque_pub.publish(msg_LE);
             LW_torque_pub.publish(msg_LW);
+
             xd_x_pub.publish(msg_xd_x);
             xd_y_pub.publish(msg_xd_y);
             xd_theta_pub.publish(msg_xd_theta);
@@ -233,7 +221,16 @@ int main(int argc, char **argv) {
 		if(reachedTarget){ //na ftiakso to reachedGoal kalytera gia na teleionei to peirama, na ftiakso xrono
 			ROS_INFO("[new_foros_simcontroller]: Target position achieved, stopped publishing. \n");
 			break;
-		}     
+		}
+    
+        // ros::spinOnce();
+        // std::cout<<"[Newforoscontroller callback] ee x is: "<<ee_x<<std::endl;
+		// std::cout<<"[Newforoscontroller callback] ee y is: "<<ee_y<<std::endl;
+		// std::cout<<"[Newforoscontroller callback] ee theta is: "<<thetach<<std::endl;
+        // xee_x_pub.publish(msg_xee_x);
+        // xee_y_pub.publish(msg_xee_y);
+        // xee_theta_pub.publish(msg_xee_theta);
+
         loop_rate.sleep();
 
     }

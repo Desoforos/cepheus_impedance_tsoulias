@@ -114,6 +114,12 @@ void initialiseParameters(){//initialise constant parameters
     // l2 = r2 = 0.25;
     // m3 = 0.1;
     // l3 = r3 = 0.125/2;
+    // M=m0+m1+m2+m3;
+
+    // ibzz = (1/2)*m0*radius*radius;
+    // i1zz = (1/12)*m1*(x1*x1 + y*y);
+    // i2zz = (1/12)*m2*(x2*x2 + y*y);
+    // i3zz = (1/12)*m3*(x3*x3 + y*y);
 
 
     /*gia peirama me kosta 25/7/24*/
@@ -132,6 +138,13 @@ void initialiseParameters(){//initialise constant parameters
     s01 = 0.5;
     s02 = 0.2;
 
+    ibzz = 2.1837;
+    i1zz = 0.0068;
+    i2zz = 1.487/100000;
+    i3zz = 1.2287/100000;
+
+
+
     double x1,x2,x3;
     double radius = 0.2;
     double y = 0.02;
@@ -141,10 +154,7 @@ void initialiseParameters(){//initialise constant parameters
 
     M=m0+m1+m2+m3;
 
-    ibzz = (1/2)*m0*radius*radius;
-    i1zz = (1/12)*m1*(x1*x1 + y*y);
-    i2zz = (1/12)*m2*(x2*x2 + y*y);
-    i3zz = (1/12)*m3*(x3*x3 + y*y);
+
 
 
 

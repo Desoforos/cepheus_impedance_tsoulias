@@ -27,13 +27,14 @@ void basePDcontroll(){
     ethdot = thstepdot - xeedot(2); //thetafEddotdot
     /*end of polynomial trajectory*/
 
-    std::cout<<"///////////////////"<<std::endl;
-    std::cout<<"yt is: "<<yt<<std::endl;
-    std::cout<<"ee_y is: "<<ee_y<<std::endl;
-    std::cout<<"xt is: "<<xt<<std::endl;
-    std::cout<<"ee_x is: "<<ee_x<<std::endl;
-    std::cout<<"xtdot is: "<<xtdot<<std::endl;
-    std::cout<<"ytdot is: "<<ytdot<<std::endl;
+    // std::cout<<"///////////////////"<<std::endl;
+    // std::cout<<"yt is: "<<yt<<std::endl;
+    // std::cout<<"ee_y is: "<<ee_y<<std::endl;
+    // std::cout<<"xt is: "<<xt<<std::endl;
+    // std::cout<<"ee_x is: "<<ee_x<<std::endl;
+    // std::cout<<"xtdot is: "<<xtdot<<std::endl;
+    // std::cout<<"ytdot is: "<<ytdot<<std::endl;
+
     // std::cout<<"error x is: "<<ex<<std::endl;
     // std::cout<<"error y is: "<<ey<<std::endl;
     // std::cout<<"error x dot is: "<<exdot<<std::endl;
@@ -51,6 +52,20 @@ void basePDcontroll(){
 
     std::cout<<"fx is: "<<fx<<std::endl;
     std::cout<<"fy is: "<<fy<<std::endl;
+
+    base_wrench.force.x = fx;  //fx;
+    base_wrench.force.y = fy;  //fy;
+    base_wrench.torque.z = ns; //ns;
+
+    msg_xd_x.data = xstep;
+    msg_xd_y.data = ystep;
+    msg_xd_theta.data = thstep;
+    msg_xt_x.data = xt_in; //ta evala sthn callback synarthsh
+    msg_xt_y.data = yt_in;
+    msg_xt_theta.data = thetat_in;
+    msg_xee_x.data = ee_x;
+    msg_xee_y.data = ee_y;
+    msg_xee_theta.data = thetach;
 
 
 }
@@ -71,8 +86,8 @@ void calculateTrajecotryPolynomials(double tf){
     Eigen::VectorXd eq_bscale(3);
     double ts = 0.1*tf;
     double wn = 6/ts;
-    kprop = wn*wn;
-    kder = 2*wn;
+    kprop_mb = wn*wn;
+    kder_mb = 2*wn; //ta vgala tha ta vro monos mou
     
     
     eq_matrix << pow(tf,3), pow(tf,4), pow(tf,5),
@@ -143,7 +158,7 @@ void calculateQ(){
     /*allazo to e apo xd-x se x -xd ara allazei o nomos elegxou u*/
     Eigen::VectorXd e =  x - xd;
     Eigen::VectorXd edot = xdot - xddot;
-    Eigen::VectorXd u = xddotdot - kprop*e - kder*edot;
+    Eigen::VectorXd u = xddotdot - kprop_mb*e - kder_mb*edot;
 
 
 
@@ -155,13 +170,15 @@ void calculateQ(){
     Eigen::MatrixXd temp = h*(jacobian.inverse());
     
 
-    // edot = xddot - xdot;
+    edot = xddot - xdot;
     // u=xddotdot + kprop*e + kder*edot;
     // qact = h*u +c; //oxi toso aplo
-    // Eigen::VectorXd q = c + temp*(u - jacobiandot*zdot);
-    // Eigen::VectorXd q = c + temp*(xddotdot+ 0.1*(-kder*edot - kprop*e) - jacobiandot*zdot);
-    
-    Eigen::VectorXd q = qext + c + temp*(xddotdot + md.inverse()*(-fext_star + fdes_star -bd*edot -kd*e)-jacobiandot*zdot);
+    Eigen::VectorXd q = c + temp*(u - jacobiandot*zdot);
+    // Eigen::VectorXd q = c + temp*(xddotdot+ 1*(-kder*edot - kprop*e) - jacobiandot*zdot);
+
+
+    //meiktos controller, den doulevei kala
+    // Eigen::VectorXd q = qext + c + temp*(xddotdot + md.inverse()*(-fext_star + fdes_star -bd*edot -kd*e)-jacobiandot*zdot);
 
 
     // std::cout <<" c is: "<<c<<std::endl;
@@ -184,7 +201,7 @@ void calculateQ(){
     msg_xd_x.data = xd(0);
     msg_xd_y.data = xd(1);
     msg_xd_theta.data = xd(2);
-    msg_xt_x.data = xt_in;
+    msg_xt_x.data = xt_in; //ta evala sthn callback synarthsh
     msg_xt_y.data = yt_in;
     msg_xt_theta.data = thetat_in;
     msg_xee_x.data = x(0);

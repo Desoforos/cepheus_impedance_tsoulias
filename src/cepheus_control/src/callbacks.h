@@ -25,9 +25,15 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 			xeedot(0) = msg->twist[i].linear.x;
 			xeedot(1) = msg->twist[i].linear.y;
 			xeedot(2) = msg->twist[i].angular.z;
+			msg_xee_x.data = xee(0);
+			msg_xee_y.data = xee(1);
+			msg_xee_theta.data = xee(2);
+			// std::cout<<"[Gazebo callback] ee x is: "<<ee_x<<std::endl;
+			// std::cout<<"[Gazebo callback] ee y is: "<<ee_y<<std::endl;
+			// std::cout<<"[Gazebo callback] ee theta is: "<<thetach<<std::endl;
 		}
 		if(msg->name[i] == "simple_ring::base_link"){
-			xt= msg->pose[i].position.x - offset - sd; //targetx minus the offset of the cube
+			xt= msg->pose[i].position.x - offset - sd; //targetx minus the offset of the cube minus a safety distance
     		yt = msg->pose[i].position.y; //targety
 			xtdot = msg->twist[i].linear.x;
 			ytdot = msg->twist[i].linear.y;
@@ -64,19 +70,21 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 		ych_in = ee_y;
 		xt_in = xt;
 		yt_in = yt;
-		/*gia peirama me kosta 28/7 peirazo ta xtin ytin*/
 		thetach_in = thetach;
-		thetat_in = thetat;
+		thetat_in = thetat - M_PI/4; //gia na yparxei mia diafora hehe
 		// x_target_in = xt;
 		// y_target_in = yt;
 		xE_contact = xt;
 		yE_contact = yt;
-		thetaE_contact = thetat - M_PI/2;
+		thetaE_contact = thetat;// - M_PI/2;
 		//theta_target_in = thetat;
 		xE_in = ee_x;
 		yE_in = ee_y;
 		thetaE_in = thetach; //ousiastika to egrapsa 2 fores, useless
 		firstTime = false;
+		// msg_xt_x.data = xt_in;
+    	// msg_xt_y.data = yt_in;
+    	// msg_xt_theta.data = thetat_in;
 		ROS_INFO("[callbacks]: First positions have been recorded (xE_in etc). \n");
 	}
 }

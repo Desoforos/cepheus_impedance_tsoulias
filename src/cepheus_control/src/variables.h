@@ -278,15 +278,16 @@ double fx = 0,fy = 0,ns =0 ;
 double kpx = 0.5,kdx = 0.6;
 double kpy = 0.5,kdy = 0.6;
 double kpth = 0.5,kdth = 0.6;
-//double kprop = 0.5, kder = 10; AFTA DOULEVOUN GIA TO APLO PD XORIS TRAJECTORY
-double kprop ,kder;
+//double kprop = 0.5, kder = 10; AFTA DOULEVOUN GIA TO APLO PD XORIS TRAJECTORY gia tis palies mazes klp
+double kprop = 0.5 ,kder = 20;
+double kprop_mb,kder_mb; //model based
 
 //for polynomial
 double a0,a1,a2,a3,a4,a5;
 double xstep,ystep,thstep;
 double xstepdot, ystepdot, thstepdot;
 double xstepdotdot, ystepdotdot, thstepdotdot;
-double sd = 0.05; //safety distance
+double sd = 0.25; //safety distance
 
 
  
