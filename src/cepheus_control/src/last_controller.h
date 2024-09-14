@@ -5,6 +5,23 @@
 void controller(){
   Eigen::VectorXd jvw(2);
   Eigen::MatrixXd jvq(2,3);
+  Eigen::MatrixXd j1(6,6);
+  Eigen::MatrixXd j1dot(6,6);
+  Eigen::VectorXd cstar(6);
+  Eigen::MatrixXd hstar(6,6);
+  Eigen::MatrixXd jstar(6,6);
+  Eigen::MatrixXd jestar(6,3);
+
+  Eigen::MatrixXd h11star(2,2);
+  Eigen::MatrixXd h12star(2,4);
+  Eigen::MatrixXd h21star(4,2);
+  Eigen::MatrixXd h22star(4,4);
+
+  Eigen::MatrixXd hbar(4,4);
+
+
+
+
   double p1=M;
   double p2=(m1+m2+m3)*r0x;
   double p3=(m1+m2+m3)*r0y;
@@ -338,6 +355,57 @@ void controller(){
   jvq << je14, je15, je16,
           je24, je25, je26,
           je34, je35, je36;
+  
+  j1 << 1, 0, 0, 0, 0, 0,
+        0, 1, 0, 0, 0, 0,
+        0, 0, 1, 0, 0, 0,
+        0, 0, 1, 0, 0, 0,
+        1, 0, je13, je14, je15, je16,
+        0, 1, je23, je24, je25, je26,
+        0, 0, 1, je34, je35, je36;
+  
+  j1dot << 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        0, 0, je13dot, je14dot, je15dot, je16dot,
+        0, 0, je23dot, je24dot, je25dot, je26dot,
+        0, 0, 0, je34dot, je35dot, je36dot;
+
+  
+  hstar = (j1.transpose()).inverse()*h*j1.inverse();
+
+  cstar = (j1.transpose()).inverse()*(c-h*j1.inverse()*j1dot*v1); //na ftiakso to v1
+
+  jstar = (j1.transpose()).inverse();
+
+  jestar = jstar*(je.inverse());
+
+  h11star << hstar[0][0], hstar[0][1],
+            hstar[1][0], hstar[1][1];
+  
+  h12star << hstar[0][2], hstar[0][3], hstar[0][4], hstar[0][5],
+            hstar[1][2], hstar[1][3], hstar[1][4], hstar[1][5];
+  
+  h21star << hstar[2][0], hstar[2][1],
+              hstar[3][0], hstar[3][1],
+              hstar[4][0], hstar[4][1],
+              hstar[5][0], hstar[5][1];
+  
+  h22star << hstar[2][2], hstar[2][3], hstar[2][4], hstar[2][5],
+              hstar[3][2], hstar[3][3], hstar[3][4], hstar[3][5],
+              hstar[4][2], hstar[4][3], hstar[4][4], hstar[4][5],
+              hstar[5][2], hstar[5][3], hstar[5][4], hstar[5][5];
+  
+
+  hbar = h22star - h21star*h11star*h12star;
+
+  
+
+
+
+
+
 
 
 
