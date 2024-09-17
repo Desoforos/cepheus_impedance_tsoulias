@@ -98,7 +98,9 @@
         "typeindex": "cpp",
         "variant": "cpp",
         "bit": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "codecvt": "c",
+        "future": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

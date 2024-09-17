@@ -284,9 +284,9 @@ double kprop_mb,kder_mb; //model based
 
 //for polynomial
 double a0,a1,a2,a3,a4,a5;
-double xstep,ystep,thstep;
-double xstepdot, ystepdot, thstepdot;
-double xstepdotdot, ystepdotdot, thstepdotdot;
+double xstep,ystep,thstep,theta0step;
+double xstepdot, ystepdot, thstepdot,theta0stepdot;
+double xstepdotdot, ystepdotdot, thstepdotdot,theta0stepdotdot;
 double sd = 0.25; //safety distance
 
 

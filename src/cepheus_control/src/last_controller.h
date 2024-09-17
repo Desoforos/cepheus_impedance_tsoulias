@@ -2,11 +2,66 @@
 #include "variables.h"
 
 
+
+void finaltrajectories(){
+   double s,sdot, sdotdot;
+
+    s = a0 + a1*t + a2*pow(t,2) + a3*pow(t,3) + a4*pow(t,4) + a5*pow(t,5);
+    sdot = a1 + 2*a2*t + 3*a3*pow(t,2) + 4*a4*pow(t,3) + 5*a5*pow(t,4);
+    sdotdot = 2*a2 + 6*a3*t + 12*a4*pow(t,2) + 20*a5*pow(t,3);
+    double xstepfr, ystepfr, thstepfr, theta0stepfr;
+    double xstepdotfr, ystepdotfr, thstepdotfr, theta0stepdotfr;
+    double xstepdotdotfr, ystepdotdotfr, thstepdotdotfr, theta0stepdotdotfr;
+    double xstepc, ystepc, thstepc, theta0stepc;
+    double xstepdotc, ystepdotc, thstepdotc, theta0stepcdot;
+    double xstepdotdotc, ystepdotdotc, thstepdotdotc, theta0stepcdotdot;
+
+
+    xstepfr = xE_in + s*(xt_in - xE_in);
+    ystepfr = yE_in + s*(yt_in - yE_in);
+    thstepfr = thetaE_in + s*(thetat_in - thetaE_in);
+
+    xstepdotfr = sdot*(xt_in-xE_in);
+    ystepdotfr = sdot*(yt_in - yE_in);
+    thstepdotfr = sdot*(thetat_in - thetaE_in);
+
+    xstepdotdotfr = sdotdot*(xt_in-xE_in);
+    ystepdotdotfr = sdotdot*(yt_in - yE_in);
+    thstepdotdotfr = sdotdot*(thetat_in - thetaE_in);
+
+    xstepc = xt_in;
+    ystepc = yt_in;
+    thstepc = thetat_in;
+
+    xstepdotc = 0;
+    ystepdotc = 0;
+    thstepdotc = 0;
+
+    xstepdotdotc = 0;
+    ystepdotdotc = 0;
+    thstepdotdotc = 0;
+
+    xstep = xstepfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+xstepc*(abs(fext(0))/(abs(fext(0))+a2));
+    xstepdot = xstepdotfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+xstepdotc*(abs(fext(0))/(abs(fext(0))+a2));
+    xstepdotdot = xstepdotdotfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+xstepdotdotc*(abs(fext(0))/(abs(fext(0))+a2));
+
+    ystep = ystepfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+ystepc*(abs(fext(0))/(abs(fext(0))+a2));
+    ystepdot = ystepdotfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+ystepdotc*(abs(fext(0))/(abs(fext(0))+a2));
+    ystepdotdot = ystepdotdotfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+ystepdotdotc*(abs(fext(0))/(abs(fext(0))+a2));
+
+    thstep = thstepfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+thstepc*(abs(fext(0))/(abs(fext(0))+a2));
+    thstepdot = thstepdotfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+thstepdotc*(abs(fext(0))/(abs(fext(0))+a2));
+    thstepdotdot = thstepdotdotfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+thstepdotdotc*(abs(fext(0))/(abs(fext(0))+a2));
+
+}
+
+
+
 void controller(){
   Eigen::VectorXd jvw(2);
   Eigen::MatrixXd jvq(2,3);
-  Eigen::MatrixXd j1(6,6);
-  Eigen::MatrixXd j1dot(6,6);
+  Eigen::MatrixXd jac1(6,6);
+  Eigen::MatrixXd jac1dot(6,6);
   Eigen::VectorXd cstar(6);
   Eigen::MatrixXd hstar(6,6);
   Eigen::MatrixXd jstar(6,6);
@@ -19,6 +74,23 @@ void controller(){
 
   Eigen::MatrixXd hbar(4,4);
 
+  Eigen::VectorXd c1star(2);
+  Eigen::VectorXd c2star(4);
+  Eigen::MatrixXd cbar(4,4);
+
+  Eigen::MatrixXd je11star(2,2);
+  Eigen::VectorXd je12star(2);
+  Eigen::MatrixXd je21star(4,2);
+  Eigen::VectorXd je22star(4);
+
+  Eigen::MatrixXd jebar(4,3);
+  Eigen::VectorXd qe(3);
+  Eigen::VectorXd qbar(4);
+
+  Eigen::VectorXd xdotdot_des(3);
+  Eigen::VectorXd fdes(3);
+  Eigen::VectorXd qe(3);
+  Eigen::VectorXd v1(6);
 
 
 
@@ -41,6 +113,23 @@ void controller(){
   double p17=m3*l3*r0y;
   double p18=(l1+r1)*m3*l3;
   double p19=(l2+r2)*m3*l3;
+  double a1 = pow(10,20);
+  double a2 = pow(10,-20);
+  double z_free=1;
+  double ts_f=0.2*t_free;
+  double wn_free=6/ts_f;
+  double kdf=1;
+  double mdf=kdf/pow(wn_free,2);
+  double bdf=2*z_free*wn_free*mdf;
+  Eigen::MatrixXd md_f = mdf*Eigen::MatrixXd::Identity(4,4);
+  Eigen::MatrixXd bd_f = bdf*Eigen::MatrixXd::Identity(4,4);
+  Eigen::MatrixXd kd_f = kdf*Eigen::MatrixXd::Identity(4,4);
+  double ke = pow(10,6);
+  double z_contact=z_free*sqrt(kdf/(kdf+ke))
+  double wn_contact=wn_free*sqrt((kdf+ke)/kdf)
+  double fd = 0.1;
+
+
 
   h11 = p1;
   h12 = 0;
@@ -356,7 +445,7 @@ void controller(){
           je24, je25, je26,
           je34, je35, je36;
   
-  j1 << 1, 0, 0, 0, 0, 0,
+  jac1 << 1, 0, 0, 0, 0, 0,
         0, 1, 0, 0, 0, 0,
         0, 0, 1, 0, 0, 0,
         0, 0, 1, 0, 0, 0,
@@ -364,7 +453,7 @@ void controller(){
         0, 1, je23, je24, je25, je26,
         0, 0, 1, je34, je35, je36;
   
-  j1dot << 0, 0, 0, 0, 0, 0,
+  jac1dot << 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0,
@@ -373,11 +462,14 @@ void controller(){
         0, 0, 0, je34dot, je35dot, je36dot;
 
   
-  hstar = (j1.transpose()).inverse()*h*j1.inverse();
+  hstar = (jac1.transpose()).inverse()*h*jac1.inverse();
 
-  cstar = (j1.transpose()).inverse()*(c-h*j1.inverse()*j1dot*v1); //na ftiakso to v1
+  
+  v1 <<xc0dot, yc0dot, theta0dot, q1dot, q2dot, q3dot;
+  cstar = (jac1.transpose()).inverse()*(c-h*jac1.inverse()*jac1dot*v1); //na ftiakso to v1
+  // v1 = qDot;% = [rbdot; theta0Dot; qdot_joint];
 
-  jstar = (j1.transpose()).inverse();
+  jstar = (jac1.transpose()).inverse();
 
   jestar = jstar*(je.inverse());
 
@@ -400,13 +492,49 @@ void controller(){
 
   hbar = h22star - h21star*h11star*h12star;
 
+  c1star << cstar[0], cstar[1];
+  c2star << cstar[2], cstar[3], cstar[4], cstar[5];
+
+  cbar=c2star-h21star*(h11star.inverse())*c1star;
+
+  je11star << jestar[0][0], jestar[0][1],
+              jestar[1][0], jestar[1][1];
   
+  je21star << jestar[2][0], jestar[2][1],
+              jestar[3][0], jestar[3][1],
+              jestar[4][0], jestar[4][1],
+              jestar[5][0], jestar[5][1];
+  
+  je12star << jestar[0][2], jestar[1][2];
+
+  je13star << jestar[2][2], jestar[3][2], jestar[4][2], jestar[5][2];
+
+// Jebar=[Je21star-H21star*inv(H11star)*Je11star Je22star-H21star*inv(H11star)*Je12star];
+
+jebar << je21star-h21star*(h11star.inverse())*je11star, je22star-h21star*(h11star.inverse())*je12star;
+
+// Qext=[0;0;Fext;0]; na to ftiakso
+qe << 0, fext(0), 0;  //den eimai sigouros gia afto
 
 
 
+Eigen::MatrixXd md=md_f*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+md_c*(abs(fext(0))/(abs(fext(0))+a2));
+
+Eigen::MatrixXd bd=bd_f*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+bd_c*(abs(fext(0))/(abs(fext(0))+a2));
+
+fdes << 0, 0, fd*abs(fext(0))/(abs(fext(0))+a2), 0;
+
+// xdotdot_des=[theta0dotdot_des;xEdotdot_des;thetaEdotdot_des];
+xdotdot_des<< theta0dotdot_des, xEdotdot_des, thetaEdotdot_des;
+
+Eigen::VectorXd u = xdotdot_des+md\(-kd*error-bd*error_dot-qext + fdes); 
+
+qbar = hbar*u +cbar - jbar*qe; 
+
+qe << 0, fext(0), 0;
+Eigen::VectorXd qbar=hbar*u+cbar-jebar*qe;
 
 
-
-
+Eigen::VectorXd tau = (jbar.inverse())*qbar;
 
 }
