@@ -436,6 +436,33 @@ void calculateMatrices(){  //calculate stuff in each iteration
     // jacobiandot(1,3) = j24dot;
     // jacobiandot(1,4) = j25dot;
     // jacobiandot(1,5) = j26dot;
+    /*Jacobian coefficients*/
+  double j13, j14, j15, j16, j23, j24, j25, j26;
+
+  /*Jacobiandot coefficients*/
+  double j13dot, j14dot, j15dot, j16dot, j23dot, j24dot, j25dot, j26dot;
+
+  /*c coefficients*/
+  double c11, c21, c31, c41, c51, c61;
+
+  /*h coefficients*/
+  double h11, h12, h13, h14, h15, h16,
+          h21, h22, h23, h24, h25, h26,
+          h31, h32, h33, h34, h35, h36,
+          h41, h42, h43, h44, h45, h46,
+          h51, h52, h53, h54, h55, h56,
+          h61, h62, h63, h64, h65, h66;
+
+  /*JE coefficients*/
+  double je11, je12, je13, je14, je15, je16;
+  double je21, je22, je23, je24, je25, je26;
+  double je31, je32, je33, je34, je35, je36;
+
+  /*JE DOT coefficients*/
+  double jedot11, jedot12, jedot13, jedot14, jedot15, jedot16;
+  double jedot21, jedot22, jedot23, jedot24, jedot25, jedot26;
+  double jedot31, jedot32, jedot33, jedot34, jedot35, jedot36;
+
 
 
     je11 = 1;

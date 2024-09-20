@@ -11,6 +11,7 @@ In the real robot, it shall be the topics that the cepheus_interface reads.
 #include "callbacks.h"
 #include "calculations.h"
 #include "base_controller.h"
+#include "last_controller.h"
 
 #include <typeinfo>
 
@@ -173,10 +174,13 @@ int main(int argc, char **argv) {
  
             // diagnostics();
             //desiredTrajectory(dur_time); 
-            calculateMatrices();
-            baseTrajectory(dur_time,tf);
-            basePDcontroll();  //ena apo ta dyo tha exo anoikto
+            // calculateMatrices(); //den xreiazetai pleon einai mesa sto controler()
+            // baseTrajectory(dur_time,tf);
+            finaltrajectories(dur_time); //apo last_controller.h
+            // basePDcontroll();  //ena apo ta dyo tha exo anoikto
             // calculateQ();
+            controller(); //apo last_controller.h
+
 
             // base_wrench.force.x = qact(0);  //fx;
             // base_wrench.force.y = qact(1);  //fy;
@@ -192,15 +196,15 @@ int main(int argc, char **argv) {
             LE_torque_pub.publish(msg_LE);
             LW_torque_pub.publish(msg_LW);
 
-            xd_x_pub.publish(msg_xd_x);
-            xd_y_pub.publish(msg_xd_y);
-            xd_theta_pub.publish(msg_xd_theta);
-            xt_x_pub.publish(msg_xt_x);
-            xt_y_pub.publish(msg_xt_y);
-            xt_theta_pub.publish(msg_xt_theta);
-            xee_x_pub.publish(msg_xee_x);
-            xee_y_pub.publish(msg_xee_y);
-            xee_theta_pub.publish(msg_xee_theta);
+            // xd_x_pub.publish(msg_xd_x);
+            // xd_y_pub.publish(msg_xd_y);
+            // xd_theta_pub.publish(msg_xd_theta);
+            // xt_x_pub.publish(msg_xt_x);
+            // xt_y_pub.publish(msg_xt_y);
+            // xt_theta_pub.publish(msg_xt_theta);
+            // xee_x_pub.publish(msg_xee_x);
+            // xee_y_pub.publish(msg_xee_y);
+            // xee_theta_pub.publish(msg_xee_theta);
 
             base_wrench.force.x = 0.0;
             base_wrench.force.y = 0.0;
