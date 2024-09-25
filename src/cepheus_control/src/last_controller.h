@@ -337,6 +337,26 @@ void controller(){
   je15 = 1;
   je16 = 1;
 
+  std::cout<<"theta0 is: "<<theta0<<std::endl;
+  std::cout<<"theta0dot is: "<<theta0dot<<std::endl; 
+  std::cout<<"r0x is: "<<r0x<<std::endl;
+  std::cout<<"r0y is: "<<r0y<<std::endl;
+  std::cout<<"l1 is: "<<l1<<std::endl;
+  std::cout<<"l2 is: "<<l2<<std::endl;
+  std::cout<<"l3 is: "<<l3<<std::endl;
+  std::cout<<"r1 is: "<<r1<<std::endl;
+  std::cout<<"r2 is: "<<r2<<std::endl;
+  std::cout<<"r3 is: "<<r3<<std::endl;
+  std::cout<<"q01 is: "<<q01<<std::endl;
+  std::cout<<"q1 is: "<<q1<<std::endl;
+  std::cout<<"q2 is: "<<q2<<std::endl;
+  std::cout<<"q3 is: "<<q3<<std::endl;
+  std::cout<<"q1dot is: "<<q1dot<<std::endl;
+  std::cout<<"q2dot is: "<<q2dot<<std::endl;
+  std::cout<<"q3dot is: "<<q3dot<<std::endl;
+
+
+
 
 
   jedot11 = 0;
@@ -488,10 +508,13 @@ void controller(){
 
   jvw << je13 , je23;
   //std::cout<<"jvw check "<<std::endl;
+  std::cout <<"jvw is: "<<jvw<<std::endl;
 
   jvq << je14, je15, je16,
           je24, je25, je26;
   //std::cout<<"jvq check "<<std::endl;
+  std::cout <<"jvq is: "<<jvq<<std::endl;
+
 
 
   jac1 << 1, 0, 0, 0, 0, 0,
@@ -502,6 +525,8 @@ void controller(){
           0, 0, 1, je34, je35, je36;
 
   //std::cout<<"jac1 check "<<std::endl;
+  std::cout <<"jac1 is: "<<jac1<<std::endl;
+
 
   
   jac1dot << 0, 0, 0, 0, 0, 0,
@@ -512,13 +537,19 @@ void controller(){
         0, 0, 0, jedot34, jedot35, jedot36;
 
   //std::cout<<"jac1dot check "<<std::endl;
+  std::cout <<"jac1dot is: "<<jac1dot<<std::endl;
+
 
   
   hstar = (jac1.transpose()).inverse()*h*jac1.inverse();
+  std::cout <<"hstar is: "<<hstar<<std::endl;
+
 
   
   v1 <<xc0dot, yc0dot, theta0dot, q1dot, q2dot, q3dot;
   //std::cout<<"v1 check "<<std::endl;
+  std::cout <<"v1 is: "<<v1<<std::endl;
+
 
   cstar = (jac1.transpose()).inverse()*(c-h*jac1.inverse()*jac1dot*v1); //na ftiakso to v1
   // v1 = qDot;% = [rbdot; theta0dot; qdot_joint);
@@ -689,4 +720,6 @@ base_wrench.torque.z = tau(0);//ns;
 msg_LS.data = tau(1);
 msg_LE.data = tau(2);
 msg_LW.data = tau(3);
+
+std::cout<<"/////////////////"<<std::endl;
 }
