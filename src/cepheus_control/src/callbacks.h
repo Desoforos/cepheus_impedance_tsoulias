@@ -63,6 +63,7 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 			m.getRPY(roll, pitch, yaw);
 			theta0 = yaw; //angle of base
 			theta0dot = msg->twist[i].angular.z; //angledot of base
+			std::cout<<"[Gazebo callback] theta0dot is: "<<theta0dot<<std::endl;
 		}
 	}
 	if(firstTime){   //initialize the postiion of chaser and target for the first time ONLY
@@ -120,6 +121,10 @@ void jointStatesCallback(const sensor_msgs::JointState::ConstPtr& msg){
 			q3dot = msg->velocity[i];
 		}
 	}
+	std::cout<<"[Joint states callback] q1dot is: "<<q1dot<<std::endl;
+	std::cout<<"[Joint states callback] q2dot is: "<<q2dot<<std::endl;
+	std::cout<<"[Joint states callback] q3dot is: "<<q3dot<<std::endl;
+
 	//theta0 	= msg->position[3]; //reaction wheel MALLON OXI DEN TO THELEI APO RW ALLA APO BASE ORIENTATION
 	//theta0dot = msg->velocity[3];
 }

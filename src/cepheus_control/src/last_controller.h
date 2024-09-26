@@ -539,7 +539,9 @@ void controller(){
   //std::cout<<"jac1dot check "<<std::endl;
   std::cout <<"jac1dot is: "<<jac1dot<<std::endl;
 
-
+  std::cout<<"jac1.transpose().inverse() is: "<<(jac1.transpose()).inverse()<<std::endl;
+  std::cout<<"h is: "<<h<<std::endl;
+  std::cout<<"jac1.innverse is: "<<jac1.inverse()<<std::endl;
   
   hstar = (jac1.transpose()).inverse()*h*jac1.inverse();
   std::cout <<"hstar is: "<<hstar<<std::endl;
@@ -552,9 +554,12 @@ void controller(){
 
 
   cstar = (jac1.transpose()).inverse()*(c-h*jac1.inverse()*jac1dot*v1); //na ftiakso to v1
+  std::cout<<"cstar is: "<<cstar<<std::endl;
   // v1 = qDot;% = [rbdot; theta0dot; qdot_joint);
 
   jstar = (jac1.transpose()).inverse();
+  std::cout<<"jstar is: "<<jstar<<std::endl;
+
   Eigen::MatrixXd j12star(2,4);
   Eigen::MatrixXd j22star(4,4);
 
@@ -574,6 +579,7 @@ void controller(){
 
 
   jestar = jstar*(je.transpose());
+  std::cout<<"jestar is: "<<jestar<<std::endl;
 
 
   h11star << hstar(0,0), hstar(0,1),
