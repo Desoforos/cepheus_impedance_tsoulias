@@ -199,26 +199,26 @@ void controller(){
   h35 = p8 + p9 + p12*cos(q2) + p13*cos(q1 + q2) + 2*p19*cos(q3) + p18*cos(q2 + q3) + p16*cos(q1 + q2 + q3) + p14*sin(q1 + q2) + p17*sin(q1 + q2 + q3);
   h36 = p9 + p19*cos(q3) + p18*cos(q2 + q3) + p16*cos(q1 + q2 + q3) + p17*sin(q1 + q2 + q3);
 
-  h31 = (-1)*p4*sin(q1 + theta0) + (-1)*p5*sin(q1 + q2 + theta0) + (-1)*p15*sin(q1 + q2 + q3 + theta0);
-  h32 = p4*cos(q1 + theta0) + p5*cos(q1 + q2 + theta0) + p15*cos(q1 + q2 + q3 + theta0);
-  h33 = p7 + p8 + p9 + p10*cos(q1) + 2*p12*cos(q2) + p13*cos(q1 + q2) + 2*p19*cos(q3)+ 2*p18*cos(q2 + q3) + p16*cos(q1 + q2 + q3) + p11*sin(q1) + p14*sin(q1 +q2) + p17*sin(q1 + q2 + q3);
-  h34 = p7 + p8 + p9 + 2*p12*cos(q2) + 2*p19*cos(q3) + 2*p18*cos(q2 + q3);
-  h35 = p8 + p9 + p12*cos(q2) + 2*p19*cos(q3) + p18*cos(q2 + q3);
-  h36 = p9 + p19*cos(q3) + p18*cos(q2 + q3);
+  h41 = (-1)*p4*sin(q1 + theta0) + (-1)*p5*sin(q1 + q2 + theta0) + (-1)*p15*sin(q1 + q2 + q3 + theta0);
+  h42 = p4*cos(q1 + theta0) + p5*cos(q1 + q2 + theta0) + p15*cos(q1 + q2 + q3 + theta0);
+  h43 = p7 + p8 + p9 + p10*cos(q1) + 2*p12*cos(q2) + p13*cos(q1 + q2) + 2*p19*cos(q3)+ 2*p18*cos(q2 + q3) + p16*cos(q1 + q2 + q3) + p11*sin(q1) + p14*sin(q1 +q2) + p17*sin(q1 + q2 + q3);
+  h44 = p7 + p8 + p9 + 2*p12*cos(q2) + 2*p19*cos(q3) + 2*p18*cos(q2 + q3);
+  h45 = p8 + p9 + p12*cos(q2) + 2*p19*cos(q3) + p18*cos(q2 + q3);
+  h46 = p9 + p19*cos(q3) + p18*cos(q2 + q3);
 
-  h41 = (-1)*p5*sin(q1 + q2 + theta0) + (-1)*p15*sin(q1 + q2 + q3 + theta0);
-  h42 = p5*cos(q1 + q2 + theta0) + p15*cos(q1 + q2 + q3 + theta0);
-  h43 = p8 + p9 + p12*cos(q2) + p13*cos(q1 + q2) + 2*p19*cos(q3) + p18*cos(q2 +q3) + p16*cos(q1 + q2 + q3) + p14*sin(q1 + q2) + p17*sin(q1 + q2 + q3);
-  h44 = p8 + p9 +p12*cos(q2) + 2*p19*cos(q3) + p18*cos(q2 + q3);
-  h45 = p8 + p9 + 2*p19*cos(q3);
-  h46 = p9 + p19*cos(q3);
+  h51 = (-1)*p5*sin(q1 + q2 + theta0) + (-1)*p15*sin(q1 + q2 + q3 + theta0);
+  h52 = p5*cos(q1 + q2 + theta0) + p15*cos(q1 + q2 + q3 + theta0);
+  h53 = p8 + p9 + p12*cos(q2) + p13*cos(q1 + q2) + 2*p19*cos(q3) + p18*cos(q2 +q3) + p16*cos(q1 + q2 + q3) + p14*sin(q1 + q2) + p17*sin(q1 + q2 + q3);
+  h54 = p8 + p9 +p12*cos(q2) + 2*p19*cos(q3) + p18*cos(q2 + q3);
+  h55 = p8 + p9 + 2*p19*cos(q3);
+  h56 = p9 + p19*cos(q3);
 
-  h51 = (-1)*p15*sin(q1 + q2 + q3 + theta0);
-  h52 = p15*cos(q1 + q2 + q3 + theta0);
-  h53 = p9 + p19*cos(q3) + p18*cos(q2 + q3) + p16*cos(q1 + q2 + q3) + p17*sin(q1 + q2 + q3);
-  h54 = p9 + p19*cos(q3) + p18*cos(q2 + q3);
-  h55 = p9 + p19*cos(q3);
-  h56 = p9;
+  h61 = (-1)*p15*sin(q1 + q2 + q3 + theta0);
+  h62 = p15*cos(q1 + q2 + q3 + theta0);
+  h63 = p9 + p19*cos(q3) + p18*cos(q2 + q3) + p16*cos(q1 + q2 + q3) + p17*sin(q1 + q2 + q3);
+  h64 = p9 + p19*cos(q3) + p18*cos(q2 + q3);
+  h65 = p9 + p19*cos(q3);
+  h66 = p9;
 
   c11 =(-1)*p2*pow(theta0dot,2)*cos(theta0) + (-1)*p4*pow((q1dot + theta0dot),2)*cos( 
     q1 + theta0) + (-1)*p5*pow(q1dot,2)*cos(q1 + q2 + theta0) + (-2)*p5*q1dot* 
@@ -305,37 +305,33 @@ void controller(){
   je13 = (-1)*r0y*cos(theta0) + (-1)*r0x*sin(theta0) + (-1)*l1*sin( 
     q01 + theta0 + q1) + (-1)*r1*sin(q01 + theta0 + q1) + (-1)*l2*sin( 
     q01 + theta0 + q1 + q2) + (-1)*r2*sin(q01 + theta0 + q1 + q2) +  
-    (-1)*l3*sin(q01 + theta0 + q1 + q2 + q3) + (-1)*r3*sin( 
-    q01 + theta0 + q1 + q2 + q3);
+    (-1)*l3*sin(q01 + theta0 + q1 + q2 + q3) + (-1)*r3*sin( q01 + theta0 + q1 + q2 + q3);
   je14 = (-1)*(l1 + r1)*sin(q01 + theta0 +  
     q1) + (-1)*(l2 + r2)*sin(q01 + theta0 + q1 + q2) + (-1)*(l3 +  
     r3)*sin(q01 + theta0 + q1 + q2 + q3);
   je15 = (-1)*(l2 + r2)*sin( 
     q01 + theta0 + q1 + q2) + (-1)*(l3 + r3)*sin(q01 + theta0 +  
     q1 + q2 + q3);
-  je16 = (-1)*(l3 + r3)*sin(q01 + theta0 + q1 +  
-    q2 + q3);
+  je16 = (-1)*(l3 + r3)*sin(q01 + theta0 + q1 + q2 + q3);
 
-  je11 = 0;
-  je12 = 1;
-  je13 = r0x*cos(theta0) + (l1 + r1)*cos(q01 + theta0 +  
-    q1) + l2*cos(q01 + theta0 + q1 + q2) + r2*cos(q01 + theta0 +  
-    q1 + q2) + l3*cos(q01 + theta0 + q1 + q2 + q3) + r3* 
-    cos(q01 + theta0 + q1 + q2 + q3) + (-1)*r0y*sin(theta0);
-  je14 = (l1 +  
+  je21 = 0;
+  je22 = 1;
+  je23 = r0x*cos(theta0) + (l1 + r1)*cos(q01 + theta0 +q1) + l2*cos(q01 + theta0 + q1 + q2) + r2*cos(q01 + theta0 +  
+    q1 + q2) + l3*cos(q01 + theta0 + q1 + q2 + q3) + r3*cos(q01 + theta0 + q1 + q2 + q3) + (-1)*r0y*sin(theta0);
+  je24 = (l1 +  
     r1)*cos(q01 + theta0 + q1) + (l2 + r2)*cos(q01 + theta0 + q1 + q2) 
     + (l3 + r3)*cos(q01 + theta0 + q1 + q2 + q3);
-  je15 = (l2 + r2)*cos( 
+  je25 = (l2 + r2)*cos( 
     q01 + theta0 + q1 + q2) + (l3 + r3)*cos(q01 + theta0 + q1 +  
     q2 + q3);
-  je16 = (l3 + r3)*cos(q01 + theta0 + q1 + q2 + q3);
+  je26 = (l3 + r3)*cos(q01 + theta0 + q1 + q2 + q3);
 
-  je11 = 0;
-  je12 = 0;
-  je13 = 1;
-  je14 = 1;
-  je15 = 1;
-  je16 = 1;
+  je31 = 0;
+  je32 = 0;
+  je33 = 1;
+  je34 = 1;
+  je35 = 1;
+  je36 = 1;
 
   std::cout<<"theta0 is: "<<theta0<<std::endl;
   std::cout<<"theta0dot is: "<<theta0dot<<std::endl; 
@@ -544,19 +540,22 @@ void controller(){
   // std::cout<<"jac1.innverse is: "<<jac1.inverse()<<std::endl;
 
   // Step 1: Compute A'^-1 (inverse of the transpose of A)
-  Eigen::HouseholderQR<Eigen::MatrixXd> qr(jac1.transpose());
-  Eigen::MatrixXd jac1_inv_T = qr.solve(Eigen::MatrixXd::Identity(6,6)); // A'^-1
-  std::cout<<"jac1_inv_T is: "<<jac1_inv_T<<std::endl;
+  // Eigen::HouseholderQR<Eigen::MatrixXd> qr(jac1.transpose());
+  // Eigen::MatrixXd jac1_inv_T = qr.solve(Eigen::MatrixXd::Identity(6,6)); // A'^-1
+  // std::cout<<"jac1_inv_T is: "<<jac1_inv_T<<std::endl;
 
-  // Step 2: Compute A^-1 using QR decomposition
-  Eigen::HouseholderQR<Eigen::Matrix<double, 6, 6>> qr_A(jac1);
-  Eigen::Matrix<double, 6, 6> jac1_inv = qr_A.solve(Eigen::Matrix<double, 6, 6>::Identity()); // A^-1
-  std::cout<<"jac1_inv is: "<<jac1_inv<<std::endl;
+  // // Step 2: Compute A^-1 using QR decomposition
+  // Eigen::HouseholderQR<Eigen::Matrix<double, 6, 6>> qr_A(jac1);
+  // Eigen::Matrix<double, 6, 6> jac1_inv = qr_A.solve(Eigen::Matrix<double, 6, 6>::Identity()); // A^-1
+  // std::cout<<"jac1_inv is: "<<jac1_inv<<std::endl;
 
   // Step 3: Compute A'^-1 * B * A^-1
-  hstar = jac1_inv_T * h * jac1_inv;
+  // hstar = jac1_inv_T * h * jac1_inv;
   
-  // hstar = (jac1.transpose()).inverse()*h*jac1.inverse();
+  hstar = (jac1.transpose()).inverse()*h*jac1.inverse();
+
+  
+
   std::cout <<"hstar is: "<<hstar<<std::endl;
 
 
