@@ -1,0 +1,293 @@
+clc
+clear all
+
+% ------------------------------------------------------------------------------------------------------------------------------
+CASE = 1;
+% --------------------------------------------------------------------------------------------------
+%                              User's choice 1: Motion duration
+% --------------------------------------------------------------------------------------------------
+t_free = 500;
+
+% --------------------------------------------------------------------------------------------------
+%                       User's choice 2: Choose Experiment/Excitation
+% --------------------------------------------------------------------------------------------------
+
+% m0 spacecraft mass
+% m1 first link mass
+% m2 second link mass
+% M system total mass 
+% I0 SC moment of inertia
+% I1 first link moment of inertia
+% I2 second link moment of inertia
+% r0x the x-component of the vector r0_0
+% r0y the y-component of the vector r0_0
+     %r0 is the vector from spacraft CM to the first joint
+     %r0_0 is the vector r0 expressed in the spacecraft frame
+% l1 distanse from the first link CM to the first joint
+% r1 distanse from the first link CM to the second joint
+% l2 %distanse from the second link CM to the second joint
+%
+error1=0;%-0.2;
+error=0;
+    
+% Chaser Space Robot's inertial parameters
+
+if CASE==1   
+
+m0=840.7;
+m1=12.1;
+m2=11.7;
+m3=5.3;%1014.5;
+
+l1=1.9;
+l2=1.73;
+l3=0.2; 
+
+r0=1.4;
+
+q01=pi/2;
+
+q01_deg=q01*(180/pi);
+
+
+
+r1=0.168;
+r2=0.168;
+r3=0.18;
+
+I0=591.4;
+I1=17.27;
+I2=14.10;
+I3=10.5;%1941.7;
+
+elseif CASE==2
+
+m0=53;
+m1=0.2314;
+m2=0.1;
+m3=0.046;
+
+
+l1=0.185;
+l2=0.143;
+l3=0.0411;
+
+q01=pi/2;
+q01_deg=q01*(180/pi);
+
+r0=0.1645;
+
+
+r1=0.185;
+r2=0.143;
+r3=0.0261;
+
+I0=2.1837;
+I1=6.81*10^(-3);%!!
+I2=1.4866*10^(-5);%!!
+I3=1.2287*10^(-5);%!!
+
+end
+
+r0x=r0*cos(q01)
+r0y=r0*sin(q01)
+
+M=m0+m1+m2+m3;
+%
+mt=m0;%100;%100;
+%
+%
+%
+m0_est=(1+error)*m0;
+m1_est=(1+error)*m1;
+m2_est=(1+error)*m2;
+m3_est=(1+error)*m3;
+
+l1_est=(1+error)*l1;
+l2_est=(1+error)*l2;
+l3_est=(1+error)*l3;
+
+r0_est=(1+error1)*r0;
+r1_est=(1+error)*r1;
+r2_est=(1+error)*r2;
+r3_est=(1+error)*r3;
+
+q01_est=(1+error)*q01;
+
+r0x_est=r0_est*cos(q01_est);
+r0y_est=r0_est*sin(q01_est);
+
+I0_est=(1+error)*I0;
+I1_est=(1+error)*I1;
+I2_est=(1+error)*I2;
+I3_est=(1+error)*I3;
+
+M_est=m0_est+m1_est+m2_est+m3_est;
+
+mt_est=(1+0)*mt;
+% --------------------------------------------------------------------------------------------------
+%                             User's choice 3: Initial conditions
+% --------------------------------------------------------------------------------------------------
+q=zeros(6,1); %initial generalized coordinates for Chaser base and arm joints
+qDot=zeros(6,1); %initial generalized speeds for Chaser base and arm joints
+%
+theta0_in=0;
+
+theta0des_in=5*(pi/180);
+%
+q1_in=45*(pi/180);%(pi/4)-5*(pi/180);
+q2_in=-(180-45)*(pi/180);
+% 
+q3_in=pi/2+5*(pi/180);%pi/4-q1_in-q2_in;
+%
+q(3)=theta0_in;
+q(4)=q1_in;
+q(5)=q2_in;
+q(6)=q3_in;
+%
+q1_in_deg=q1_in*(180/pi);
+q2_in_deg=q2_in*(180/pi);
+q3_in_deg=q3_in*(180/pi);
+% q1_fin=5.194*(pi/180);
+% q2_fin=146.924*(pi/180);
+% q3_fin=pi/4-q1_fin-q2_fin;
+% %
+% %
+% q_joint_fin=[q1_fin;q2_fin;q3_fin];
+%
+% qE = [0; (l1+r1)*cos(q1_in-pi/4)+(l2+r2)*cos(q1_in-(pi/4)+q2_in)+(l3pr+r3pr)*cos(q1_in+q2_in+q3_in-pi/4); pi/2];%initial generalized coordinates for End-endeffector x-, y-position and orientation
+
+
+rb=[0;0];
+
+%
+r0_0=[r0x;r0y];
+
+r1_1=[r1;0];
+l1_1=[-l1;0];
+
+r2_2=[r2;0];
+l2_2=[-l2;0];
+%
+r3_3=[r3;0];
+l3_3=[-l3;0];
+%
+% q1=q(1);
+% q2=q(2);
+% q3=q(3);
+%
+R0=[cos(theta0_in) -sin(theta0_in);
+      sin(theta0_in) cos(theta0_in)];
+%
+R1=[cos(q1_in+q01) -sin(q1_in+q01);
+      sin(q1_in+q01) cos(q1_in+q01)];
+%
+R2=[cos(q2_in) -sin(q2_in);
+      sin(q2_in) cos(q2_in)];
+%
+R3=[cos(q3_in) -sin(q3_in);
+      sin(q3_in) cos(q3_in)];
+%
+rE=rb+R0*r0_0+R0*R1*(r1_1-l1_1)+...
+      R0*R1*R2*(r2_2-l2_2)+R0*R1*R2*R3*(r3_3-l3_3)
+%
+thetaE=theta0_in+q1_in+q2_in+q3_in+q01
+
+qE_in = [rE;thetaE];
+%collected initial conditions to be input in slx
+
+init_cond=[q;qDot;qE_in];
+
+
+e_in=0.1*[0.1;0.15;5*(pi/180)];
+% --------------------------------------------------------------------------------------------------
+ke=10^6;
+be=0;%10^4;
+l0=0.001;%0.0001;%0.01;
+%
+ke_est=(1+0)*ke;
+
+be_est=(1+error)*be;
+
+%collected parameters to be input in slx
+%model=[m0;m1;m2;m3;M;l1;l2;l3;r0x;r0y;r1;r2;r3;I0;I1;I2;I3;q01;ke;be;mt];
+model=[m0;m1;m2;m3;l1;l2;l3;r0x;r0y;r1;r2;I0;I1;I2;I3;r3;q01;ke;be;mt];
+%
+model_est=[m0_est;m1_est;m2_est;m3_est;l1_est;l2_est;l3_est;r0x_est;r0y_est;r1_est;r2_est;I0_est;I1_est;I2_est;I3_est;r3_est;q01_est;ke_est;be_est;mt_est];
+%
+yE_cont=rE(2)+0.5;%0.5;%+0.75;%0.1 CASE2;
+
+yt_in=yE_cont+l0;%+0.1
+
+% yt_in=yE_cont-0.1
+
+eb_in=[0;0;sin(theta0_in);cos(theta0_in)];
+
+ebdes_in=[0;0;sin(theta0_in);cos(theta0des_in)];
+
+ee_in=[0;0;sin(thetaE);cos(thetaE)];
+
+eedes_in=[0;0;sin(thetaE);cos(thetaE)];
+
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+Fd=0.1;%0.01;%0.01;%0.000001;
+%
+kdf=1;%100;
+%
+% First Case - Desire Free-Phace Response
+z_free=1;%0.7;
+
+ts_f=0.2*t_free;%50;
+
+wn_free=6/ts_f
+
+mdf=kdf/wn_free^2;
+
+bdf=2*z_free*wn_free*mdf;
+
+Mdf=mdf*eye(4)
+
+Bdf=bdf*eye(4)
+
+Kdf=kdf*eye(4)
+
+z_contact=z_free*sqrt(kdf/(kdf+ke))
+wn_contact=wn_free*sqrt((kdf+ke)/kdf)
+% 
+% z_contact_star=z_contact*sqrt((Ktot(1,1))/(Ke_star(1,1)+Kd(1,1)));
+% wn_contact_star=wn_contact*sqrt((Ktot(1,1))/(Ke_star(1,1)+Kd(1,1)));
+
+% %
+% % Second Case - Desired Contact - Phase Response
+% 
+kdc=100;%0.1;
+%
+z_contact=1;%1;
+%
+ts_cont=30;
+wn_contact=6/ts_cont
+%
+%
+mdc=(kdc+ke)/wn_contact^2
+%
+bdc=2*z_contact*wn_contact*mdc-be;
+%
+Mdc=mdc*eye(4);
+%
+Bdc=bdc*eye(4);
+%
+Kdc=kdc*eye(4);
+%
+
+z_free=z_contact*sqrt((kdf+ke)/kdf)
+wn_free=wn_contact*sqrt(kdf/(kdf+ke))
+%
+% v=0.00000001;%0.00000001; 
+v=0.5*Fd/(mdc*wn_contact*z_contact)
+
+
+e_ss=Fd/(kdc+ke);
+
+Fext_ss=ke*e_ss

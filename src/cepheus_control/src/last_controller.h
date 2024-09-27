@@ -539,11 +539,24 @@ void controller(){
   //std::cout<<"jac1dot check "<<std::endl;
   std::cout <<"jac1dot is: "<<jac1dot<<std::endl;
 
-  std::cout<<"jac1.transpose().inverse() is: "<<(jac1.transpose()).inverse()<<std::endl;
+  // std::cout<<"jac1.transpose().inverse() is: "<<(jac1.transpose()).inverse()<<std::endl;
   std::cout<<"h is: "<<h<<std::endl;
-  std::cout<<"jac1.innverse is: "<<jac1.inverse()<<std::endl;
+  // std::cout<<"jac1.innverse is: "<<jac1.inverse()<<std::endl;
+
+  // Step 1: Compute A'^-1 (inverse of the transpose of A)
+  Eigen::HouseholderQR<Eigen::MatrixXd> qr(jac1.transpose());
+  Eigen::MatrixXd jac1_inv_T = qr.solve(Eigen::MatrixXd::Identity(6,6)); // A'^-1
+  std::cout<<"jac1_inv_T is: "<<jac1_inv_T<<std::endl;
+
+  // Step 2: Compute A^-1 using QR decomposition
+  Eigen::HouseholderQR<Eigen::Matrix<double, 6, 6>> qr_A(jac1);
+  Eigen::Matrix<double, 6, 6> jac1_inv = qr_A.solve(Eigen::Matrix<double, 6, 6>::Identity()); // A^-1
+  std::cout<<"jac1_inv is: "<<jac1_inv<<std::endl;
+
+  // Step 3: Compute A'^-1 * B * A^-1
+  hstar = jac1_inv_T * h * jac1_inv;
   
-  hstar = (jac1.transpose()).inverse()*h*jac1.inverse();
+  // hstar = (jac1.transpose()).inverse()*h*jac1.inverse();
   std::cout <<"hstar is: "<<hstar<<std::endl;
 
 
