@@ -4,7 +4,7 @@
 
 
 void finaltrajectories(double t){
-   double s,sdot, sdotdot;
+    double s,sdot, sdotdot;
 
     s = a0 + a1*t + a2*pow(t,2) + a3*pow(t,3) + a4*pow(t,4) + a5*pow(t,5);
     sdot = a1 + 2*a2*t + 3*a3*pow(t,2) + 4*a4*pow(t,3) + 5*a5*pow(t,4);
@@ -15,6 +15,8 @@ void finaltrajectories(double t){
     double xstepc, ystepc, thstepc, theta0stepc;
     double xstepdotc, ystepdotc, thstepdotc, theta0stepdotc;
     double xstepdotdotc, ystepdotdotc, thstepdotdotc, theta0stepdotdotc;
+    double a11 = pow(10,20);
+    double a22 = pow(10,-20);
 
 
     xstepfr = xE_in + s*(xt_in - xE_in);
@@ -25,12 +27,12 @@ void finaltrajectories(double t){
     xstepdotfr = sdot*(xt_in-xE_in);
     ystepdotfr = sdot*(yt_in - yE_in);
     thstepdotfr = sdot*(thetat_in - thetaE_in);
-    theta0stepdotfr = theta0in + sdot*(theta0fin - theta0in);
+    theta0stepdotfr =  sdot*(theta0fin - theta0in);
 
     xstepdotdotfr = sdotdot*(xt_in-xE_in);
     ystepdotdotfr = sdotdot*(yt_in - yE_in);
     thstepdotdotfr = sdotdot*(thetat_in - thetaE_in);
-    theta0stepdotdotfr = theta0in + sdotdot*(theta0fin - theta0in);
+    theta0stepdotdotfr =  sdotdot*(theta0fin - theta0in);
 
     xstepc = xt_in;
     ystepc = yt_in;
@@ -47,21 +49,21 @@ void finaltrajectories(double t){
     thstepdotdotc = 0;
     theta0stepdotdotc = 0;
 
-    xstep = xstepfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+xstepc*(abs(fext(0))/(abs(fext(0))+a2));
-    xstepdot = xstepdotfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+xstepdotc*(abs(fext(0))/(abs(fext(0))+a2));
-    xstepdotdot = xstepdotdotfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+xstepdotdotc*(abs(fext(0))/(abs(fext(0))+a2));
+    xstep = xstepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+xstepc*(abs(fext(0))/(abs(fext(0))+a22));
+    xstepdot = xstepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+xstepdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    xstepdotdot = xstepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+xstepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
 
-    ystep = ystepfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+ystepc*(abs(fext(0))/(abs(fext(0))+a2));
-    ystepdot = ystepdotfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+ystepdotc*(abs(fext(0))/(abs(fext(0))+a2));
-    ystepdotdot = ystepdotdotfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+ystepdotdotc*(abs(fext(0))/(abs(fext(0))+a2));
+    ystep = ystepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+ystepc*(abs(fext(0))/(abs(fext(0))+a22));
+    ystepdot = ystepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+ystepdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    ystepdotdot = ystepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+ystepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
 
-    thstep = thstepfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+thstepc*(abs(fext(0))/(abs(fext(0))+a2));
-    thstepdot = thstepdotfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+thstepdotc*(abs(fext(0))/(abs(fext(0))+a2));
-    thstepdotdot = thstepdotdotfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+thstepdotdotc*(abs(fext(0))/(abs(fext(0))+a2));
+    thstep = thstepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+thstepc*(abs(fext(0))/(abs(fext(0))+a22));
+    thstepdot = thstepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+thstepdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    thstepdotdot = thstepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+thstepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
 
-    theta0step = theta0stepfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+theta0stepc*(abs(fext(0))/(abs(fext(0))+a2));
-    theta0stepdot = theta0stepdotfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+theta0stepdotc*(abs(fext(0))/(abs(fext(0))+a2));
-    theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+theta0stepdotdotc*(abs(fext(0))/(abs(fext(0))+a2));
+    theta0step = theta0stepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepc*(abs(fext(0))/(abs(fext(0))+a22));
+    theta0stepdot = theta0stepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
 
 
 }
@@ -150,8 +152,8 @@ void controller(){
   double p17=m3*l3*r0y;
   double p18=(l1+r1)*m3*l3;
   double p19=(l2+r2)*m3*l3;
-  double a1 = pow(10,20);
-  double a2 = pow(10,-20);
+  double a11 = pow(10,20);
+  double a22 = pow(10,-20);
   double z_free=1;
   double ts_f=0.2*t_free;
   double wn_free=6/ts_f;
@@ -334,7 +336,10 @@ void controller(){
   je36 = 1;
 
   std::cout<<"theta0 is: "<<theta0<<std::endl;
+  std::cout<<"theta0step is: "<<theta0step<<std::endl;
   std::cout<<"theta0dot is: "<<theta0dot<<std::endl; 
+  std::cout<<"theta0stepdot is: "<<theta0stepdot<<std::endl;
+
   std::cout<<"r0x is: "<<r0x<<std::endl;
   std::cout<<"r0y is: "<<r0y<<std::endl;
   std::cout<<"l1 is: "<<l1<<std::endl;
@@ -350,7 +355,8 @@ void controller(){
   std::cout<<"q1dot is: "<<q1dot<<std::endl;
   std::cout<<"q2dot is: "<<q2dot<<std::endl;
   std::cout<<"q3dot is: "<<q3dot<<std::endl;
-
+  
+ 
 
 
 
@@ -586,6 +592,7 @@ void controller(){
               jstar(5,2), jstar(5,3), jstar(5,4), jstar(5,5);
 
   //std::cout<<"j22star check "<<std::endl;
+  std::cout<<"j22star is: "<<j22star<<std::endl;
 
 
 
@@ -598,13 +605,14 @@ void controller(){
             hstar(1,0), hstar(1,1);
 
   //std::cout<<"h11star check "<<std::endl;
+  std::cout<<"h11star is: "<<h11star<<std::endl;
 
   
   h12star << hstar(0,2), hstar(0,3), hstar(0,4), hstar(0,5),
             hstar(1,2), hstar(1,3), hstar(1,4), hstar(1,5);
 
   //std::cout<<"h12star check "<<std::endl;
-
+  std::cout<<"h12star is: "<<h12star<<std::endl;
   
   h21star << hstar(2,0), hstar(2,1),
               hstar(3,0), hstar(3,1),
@@ -612,6 +620,7 @@ void controller(){
               hstar(5,0), hstar(5,1);
 
   //std::cout<<"h21star check "<<std::endl;
+  std::cout<<"h21star is: "<<h21star<<std::endl;
 
   
   h22star << hstar(2,2), hstar(2,3), hstar(2,4), hstar(2,5),
@@ -620,19 +629,23 @@ void controller(){
               hstar(5,2), hstar(5,3), hstar(5,4), hstar(5,5);
 
   //std::cout<<"h22star check "<<std::endl;
-
+  std::cout<<"h22star is: "<<h22star<<std::endl;
 
   hbar = h22star - h21star*h11star*h12star;
+  std::cout<<"hbar is: "<<hbar<<std::endl;
+
 
   c1star << cstar(0), cstar(1);
+  std::cout<<"c1star is: "<<c1star<<std::endl;
 
   //std::cout<<"c1star check "<<std::endl;
 
   c2star << cstar(2), cstar(3), cstar(4), cstar(5);
-
+  std::cout<<"c2star is: "<<c2star<<std::endl;
   //std::cout<<"c2star check "<<std::endl;
 
   cbar=c2star-h21star*(h11star.inverse())*c1star;
+  std::cout<<"cbar is: "<<cbar<<std::endl;
 
   je11star << jestar(0,0), jestar(0,1),
               jestar(1,0), jestar(1,1);
@@ -659,31 +672,38 @@ void controller(){
 // Jebar=[Je21star-H21star*inv(H11star)*Je11star Je22star-H21star*inv(H11star)*Je12star);
 
 Eigen::MatrixXd jbar=j22star-h21star*(h11star.inverse())*j12star;
+std::cout<<"jabr is: "<<jbar<<std::endl;
 
 jebar << je21star-h21star*(h11star.inverse())*je11star, je22star-h21star*(h11star.inverse())*je12star;
 //std::cout<<"jebar check "<<std::endl;
+std::cout<<"jebar is: "<<jebar<<std::endl;
 
 
 // Qext=[0;0;Fext;0); na to ftiakso
 
 qe << 0, fext(0), 0;  //den eimai sigouros gia afto
+std::cout<<"qe is: "<<qe<<std::endl;
 //std::cout<<"qe check "<<std::endl;
 
 
-Eigen::MatrixXd kd=kd_f*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+kd_c*(abs(fext(0))/(abs(fext(0))+a2));
+Eigen::MatrixXd kd=kd_f*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+kd_c*(abs(fext(0))/(abs(fext(0))+a22));
+std::cout<<"kd is: "<<kd<<std::endl;
 //std::cout<<"kd check "<<std::endl;
 
 
-Eigen::MatrixXd md=md_f*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+md_c*(abs(fext(0))/(abs(fext(0))+a2));
+Eigen::MatrixXd md=md_f*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+md_c*(abs(fext(0))/(abs(fext(0))+a22));
+std::cout<<"md is :"<<md<<std::endl;
 //std::cout<<"md check "<<std::endl;
 
 
-Eigen::MatrixXd bd=bd_f*(abs(1-abs(fext(0))/a1)/(1+a1*abs(fext(0))))+bd_c*(abs(fext(0))/(abs(fext(0))+a2));
+Eigen::MatrixXd bd=bd_f*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+bd_c*(abs(fext(0))/(abs(fext(0))+a22));
+std::cout<<"bd is: "<<bd<<std::endl;
 //std::cout<<"bd check "<<std::endl;
 
 
 
-fdes << 0, 0, fd*abs(fext(0))/(abs(fext(0))+a2), 0;
+fdes << 0, 0, fd*abs(fext(0))/(abs(fext(0))+a22), 0;
+std::cout<<"fes is: "<<fdes<<std::endl;
 //std::cout<<"fdes check "<<std::endl;
 
 
@@ -693,17 +713,23 @@ xdotdot_des<< theta0stepdotdot, xstepdotdot, ystepdotdot, thstepdotdot;
 
 
 Eigen::VectorXd error(4);
-error << theta0 - theta0step, ee_x - xstep, ee_y - ystep, thetach - thstep;
+error << (theta0 - theta0step), (ee_x - xstep), (ee_y - ystep), (thetach - thstep);
+std::cout<<"error is: "<<error<<std::endl;
 //std::cout<<"error check "<<std::endl;
 
 Eigen::VectorXd error_dot(4);
-error_dot << theta0dot - theta0stepdot, xeedot(0) - xstepdot, xeedot(1) - ystepdot, xeedot(2) - thstepdot;
+error_dot << (theta0dot - theta0stepdot), (xeedot(0) - xstepdot), (xeedot(1) - ystepdot), (xeedot(2) - thstepdot);
 //std::cout<<"error_dot check "<<std::endl;
+std::cout<<"error_dot  is: "<<error_dot<<std::endl;
+
 
 Eigen::VectorXd qext(4);
 qext << 0, 0, fext(0), 0;
+std::cout<<"qext is: "<<qext<<std::endl;
+
 Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-kd*error-bd*error_dot-qext + fdes); 
 //std::cout<<"u check "<<std::endl;
+std::cout<<"u is: "<<u<<std::endl;
 
 
 
@@ -729,7 +755,7 @@ std::cout<<"tau is:  "<<tau<<std::endl;
 
 
 
-
+tau = tau/100;
 
 base_wrench.force.x = 0;  //fx;
 base_wrench.force.y = 0;  //fy;
@@ -738,6 +764,7 @@ base_wrench.torque.z = tau(0);//ns;
 msg_LS.data = tau(1);
 msg_LE.data = tau(2);
 msg_LW.data = tau(3);
+
 
 std::cout<<"/////////////////"<<std::endl;
 }

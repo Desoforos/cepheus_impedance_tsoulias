@@ -189,12 +189,13 @@ int main(int argc, char **argv) {
 			// msg_LS.data = qact(3);
 			// msg_LE.data = qact(4);
 			// msg_LW.data = qact(5);
+            // RW_torque_pub.publish(msg_RW);
 
-            // base_force_pub.publish(base_wrench);
-            // // RW_torque_pub.publish(msg_RW);
-            // LS_torque_pub.publish(msg_LS);
-            // LE_torque_pub.publish(msg_LE);
-            // LW_torque_pub.publish(msg_LW);
+
+            base_force_pub.publish(base_wrench);
+            LS_torque_pub.publish(msg_LS);
+            LE_torque_pub.publish(msg_LE);
+            LW_torque_pub.publish(msg_LW);
 
             // xd_x_pub.publish(msg_xd_x);
             // xd_y_pub.publish(msg_xd_y);
