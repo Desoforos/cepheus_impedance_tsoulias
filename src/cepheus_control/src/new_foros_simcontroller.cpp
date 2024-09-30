@@ -197,15 +197,15 @@ int main(int argc, char **argv) {
             LE_torque_pub.publish(msg_LE);
             LW_torque_pub.publish(msg_LW);
 
-            // xd_x_pub.publish(msg_xd_x);
-            // xd_y_pub.publish(msg_xd_y);
-            // xd_theta_pub.publish(msg_xd_theta);
-            // xt_x_pub.publish(msg_xt_x);
-            // xt_y_pub.publish(msg_xt_y);
-            // xt_theta_pub.publish(msg_xt_theta);
-            // xee_x_pub.publish(msg_xee_x);
-            // xee_y_pub.publish(msg_xee_y);
-            // xee_theta_pub.publish(msg_xee_theta);
+            xd_x_pub.publish(msg_xd_x);
+            xd_y_pub.publish(msg_xd_y);
+            xd_theta_pub.publish(msg_xd_theta);
+            xt_x_pub.publish(msg_xt_x);
+            xt_y_pub.publish(msg_xt_y);
+            xt_theta_pub.publish(msg_xt_theta);
+            xee_x_pub.publish(msg_xee_x);
+            xee_y_pub.publish(msg_xee_y);
+            xee_theta_pub.publish(msg_xee_theta);
 
             base_wrench.force.x = 0.0;
             base_wrench.force.y = 0.0;
@@ -217,9 +217,9 @@ int main(int argc, char **argv) {
 	        msg_LS.data = 0.0;
 	        msg_LE.data = 0.0;
 	        msg_LW.data = 0.0; 
-            msg_xt_x.data = 0.0;
-            msg_xt_y.data = 0.0;
-            msg_xt_theta.data = 0.0;
+            // msg_xt_x.data = 0.0;
+            // msg_xt_y.data = 0.0;
+            // msg_xt_theta.data = 0.0;
             msg_xd_x.data = msg_xd_y.data = msg_xd_theta.data = 0.0;
 
         }

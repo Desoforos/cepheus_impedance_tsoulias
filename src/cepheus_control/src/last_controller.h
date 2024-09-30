@@ -15,8 +15,8 @@ void finaltrajectories(double t){
     double xstepc, ystepc, thstepc, theta0stepc;
     double xstepdotc, ystepdotc, thstepdotc, theta0stepdotc;
     double xstepdotdotc, ystepdotdotc, thstepdotdotc, theta0stepdotdotc;
-    double a11 = pow(10,20);
-    double a22 = pow(10,-20);
+    double a11 = pow(10,7);
+    double a22 = pow(10,-7);
 
 
     xstepfr = xE_in + s*(xt_in - xE_in);
@@ -49,21 +49,58 @@ void finaltrajectories(double t){
     thstepdotdotc = 0;
     theta0stepdotdotc = 0;
 
-    xstep = xstepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+xstepc*(abs(fext(0))/(abs(fext(0))+a22));
-    xstepdot = xstepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+xstepdotc*(abs(fext(0))/(abs(fext(0))+a22));
-    xstepdotdot = xstepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+xstepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    // xstep = xstepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+xstepc*(abs(fext(0))/(abs(fext(0))+a22));
+    // xstepdot = xstepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+xstepdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    // xstepdotdot = xstepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+xstepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
 
-    ystep = ystepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+ystepc*(abs(fext(0))/(abs(fext(0))+a22));
-    ystepdot = ystepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+ystepdotc*(abs(fext(0))/(abs(fext(0))+a22));
-    ystepdotdot = ystepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+ystepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    // ystep = ystepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+ystepc*(abs(fext(0))/(abs(fext(0))+a22));
+    // ystepdot = ystepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+ystepdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    // ystepdotdot = ystepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+ystepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
 
-    thstep = thstepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+thstepc*(abs(fext(0))/(abs(fext(0))+a22));
-    thstepdot = thstepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+thstepdotc*(abs(fext(0))/(abs(fext(0))+a22));
-    thstepdotdot = thstepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+thstepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    // thstep = thstepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+thstepc*(abs(fext(0))/(abs(fext(0))+a22));
+    // thstepdot = thstepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+thstepdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    // thstepdotdot = thstepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+thstepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
 
-    theta0step = theta0stepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepc*(abs(fext(0))/(abs(fext(0))+a22));
-    theta0stepdot = theta0stepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotc*(abs(fext(0))/(abs(fext(0))+a22));
-    theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    // theta0step = theta0stepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepc*(abs(fext(0))/(abs(fext(0))+a22));
+    // theta0stepdot = theta0stepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    // theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
+
+    if(abs(fext(0)<0.5)){
+      xstep = xstepfr;
+      ystep = ystepfr;
+      thstep = thstepfr;
+      theta0step = theta0stepfr;
+
+      xstepdot = xstepdotfr;
+      ystepdot = ystepdotfr;
+      thstepdot = thstepdotfr;
+      theta0stepdot = theta0stepdotfr;
+
+      xstepdotdot = xstepdotdotfr;
+      ystepdotdot = ystepdotdotfr;
+      thstepdotdot = thstepdotdotfr;
+      theta0stepdotdot = theta0stepdotdotfr;
+    }
+    else{
+      xstep = xstepc;
+      ystep = ystepc;
+      thstep = thstepc;
+      theta0step = theta0stepc;
+
+      xstepdot = xstepdotc;
+      ystepdot = ystepdotc;
+      thstepdot = thstepdotc;
+      theta0stepdot = theta0stepdotc;
+
+      xstepdotdot = xstepdotdotc;
+      ystepdotdot = ystepdotdotc;
+      thstepdotdot = thstepdotdotc;
+      theta0stepdotdot = theta0stepdotdotc;
+    }
+
+    msg_xd_x.data = xstep;
+    msg_xd_y.data = ystep;
+    msg_xd_theta.data = thstep;
 
 
 }
@@ -755,7 +792,7 @@ std::cout<<"tau is:  "<<tau<<std::endl;
 
 
 
-tau = tau/100;
+// tau = tau/100;
 
 base_wrench.force.x = 0;  //fx;
 base_wrench.force.y = 0;  //fy;

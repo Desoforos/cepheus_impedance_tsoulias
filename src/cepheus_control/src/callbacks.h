@@ -85,9 +85,9 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 		theta0in = theta0;
 		theta0fin = theta0;
 		firstTime = false;
-		// msg_xt_x.data = xt_in;
-    	// msg_xt_y.data = yt_in;
-    	// msg_xt_theta.data = thetat_in;
+		msg_xt_x.data = xt_in;
+    	msg_xt_y.data = yt_in;
+    	msg_xt_theta.data = thetat_in;
 		ROS_INFO("[callbacks]: First positions have been recorded (xE_in etc). \n");
 	}
 }
