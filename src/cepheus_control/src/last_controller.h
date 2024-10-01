@@ -808,12 +808,18 @@ std::cout<<"tau is:  "<<tau<<std::endl;
 
 
 // tau = tau/100;
+double errorth0, errorth0dot;
+
+errorth0 = theta0step -theta0;
+errorth0dot = theta0stepdot - theta0dot;
+double ns = kprop*errorth0 + kder*errorth0dot;
 
 base_wrench.force.x = 0;  //fx;
 base_wrench.force.y = 0;  //fy;
 base_wrench.torque.z = tau(0);//ns;
 
-msg_RW.data = tau(0); 
+// msg_RW.data = tau(0); 
+msg_RW.data = ns;
 msg_LS.data = tau(1);
 msg_LE.data = tau(2);
 msg_LW.data = tau(3);

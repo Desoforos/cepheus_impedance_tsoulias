@@ -191,7 +191,7 @@ int main(int argc, char **argv) {
 			// msg_LW.data = qact(5);
 
 
-            RW_torque_pub.publish(msg_RW);
+            // RW_torque_pub.publish(msg_RW);
 
             // base_force_pub.publish(base_wrench);
             LS_torque_pub.publish(msg_LS);
