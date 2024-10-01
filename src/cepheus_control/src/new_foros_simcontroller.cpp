@@ -189,10 +189,11 @@ int main(int argc, char **argv) {
 			// msg_LS.data = qact(3);
 			// msg_LE.data = qact(4);
 			// msg_LW.data = qact(5);
-            // RW_torque_pub.publish(msg_RW);
 
 
-            base_force_pub.publish(base_wrench);
+            RW_torque_pub.publish(msg_RW);
+
+            // base_force_pub.publish(base_wrench);
             LS_torque_pub.publish(msg_LS);
             LE_torque_pub.publish(msg_LE);
             LW_torque_pub.publish(msg_LW);
@@ -213,7 +214,7 @@ int main(int argc, char **argv) {
             base_wrench.torque.x = 0.0;
             base_wrench.torque.y = 0.0;
             base_wrench.torque.z = 0.0;
-            msg_RW.data = 0.0; //to bazo anapoda bas kai
+            msg_RW.data = 0.0; 
 	        msg_LS.data = 0.0;
 	        msg_LE.data = 0.0;
 	        msg_LW.data = 0.0; 

@@ -98,6 +98,21 @@ void finaltrajectories(double t){
       theta0stepdotdot = theta0stepdotdotc;
     }
 
+    xstep = xstepfr;
+    ystep = ystepfr;
+    thstep = thstepfr;
+    theta0step = theta0stepfr;
+
+    xstepdot = xstepdotfr;
+    ystepdot = ystepdotfr;
+    thstepdot = thstepdotfr;
+    theta0stepdot = theta0stepdotfr;
+
+    xstepdotdot = xstepdotdotfr;
+    ystepdotdot = ystepdotdotfr;
+    thstepdotdot = thstepdotdotfr;
+    theta0stepdotdot = theta0stepdotdotfr;
+
     msg_xd_x.data = xstep;
     msg_xd_y.data = ystep;
     msg_xd_theta.data = thstep;
@@ -797,7 +812,8 @@ std::cout<<"tau is:  "<<tau<<std::endl;
 base_wrench.force.x = 0;  //fx;
 base_wrench.force.y = 0;  //fy;
 base_wrench.torque.z = tau(0);//ns;
-// msg_RW.data = qact(2); //to bazo anapoda bas kai
+
+msg_RW.data = tau(0); 
 msg_LS.data = tau(1);
 msg_LE.data = tau(2);
 msg_LW.data = tau(3);

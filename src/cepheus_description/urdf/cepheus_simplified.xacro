@@ -201,7 +201,7 @@
 			</geometry>
 		</collision>
 	</link>
-	<!-- <joint name="reaction_wheel_joint" type="continuous">
+	<joint name="reaction_wheel_joint" type="continuous">
 		<parent link="cepheus_base"/>
 		<child link="reaction_wheel"/>
 		<origin xyz="0.065 0 0.03815" rpy="0 0 0"/>
@@ -219,7 +219,7 @@
 		</visual>
 		<inertial>
 			<origin xyz="0 0 0.025" rpy="0 0 0" />
-			<mass value="0.1"/>
+			<mass value="1"/>
 			<inertia
 				ixx="0.0001"
 				ixy="0.0001"
@@ -228,12 +228,12 @@
 				iyz="0.0001"
 				izz="0.000197" />
 		</inertial>
-	</link> -->
+	</link>
 	<gazebo reference="cepheus_base">
 		<mu1>0</mu1>
 		<mu2>0</mu2>
 	</gazebo>
-	<!-- <transmission name="tran1">
+	<transmission name="tran1">
 		<type>
 			transmission_interface/SimpleTransmission</type>
 		<joint name="reaction_wheel_joint">
@@ -243,7 +243,7 @@
 			<hardwareInterface>EffortJointInterface</hardwareInterface>
 			<mechanicalReduction>1</mechanicalReduction>
 		</actuator>
-	</transmission> -->
+	</transmission>
 	<joint name="left_shoulder_joint" type="revolute">
 		<origin
 			xyz="0.1425 -0.08225 0.05875"
