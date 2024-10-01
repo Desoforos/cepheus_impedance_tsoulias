@@ -45,7 +45,7 @@ In the real robot, it shall be the topics that the cepheus_interface reads.
 
 int main(int argc, char **argv) {
 
-    
+    int count = 0;
     bool hasbegun = false;
     bool paramsinit = false;
 
@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
                 ros::spinOnce();
                 // ros::Duration(2).sleep();
                 ROS_INFO("[new_foros_simcontroller]: Initializing parameters... \n");
-                initialiseParameters();
+                initialiseParametersNEW();
                 calculateTrajecotryPolynomials(tf);
                 paramsinit = true;
                 ROS_INFO("[new_foros_simcontroller]: Parameters have been initialized. \n");
@@ -179,7 +179,8 @@ int main(int argc, char **argv) {
             finaltrajectories(dur_time); //apo last_controller.h
             // basePDcontroll();  //ena apo ta dyo tha exo anoikto
             // calculateQ();
-            controller(); //apo last_controller.h
+            controller(count); //apo last_controller.h
+            count++;
 
 
             // base_wrench.force.x = qact(0);  //fx;
@@ -193,7 +194,7 @@ int main(int argc, char **argv) {
 
             // RW_torque_pub.publish(msg_RW);
 
-            // base_force_pub.publish(base_wrench);
+            base_force_pub.publish(base_wrench);
             LS_torque_pub.publish(msg_LS);
             LE_torque_pub.publish(msg_LE);
             LW_torque_pub.publish(msg_LW);

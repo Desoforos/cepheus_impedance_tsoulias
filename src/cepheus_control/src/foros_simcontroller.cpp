@@ -167,7 +167,7 @@ int main(int argc, char **argv) {
                 ros::spinOnce();
                 // ros::Duration(2).sleep();
                 ROS_INFO("[foros_simcontroller]: Initializing parameters... \n");
-                initialiseParameters();
+                initialiseParametersNEW();
                 paramsinit = true;
                 ROS_INFO("[foros_simcontroller]: Parameters have been initialized. \n");
                 //continue;

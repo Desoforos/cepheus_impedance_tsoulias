@@ -23,7 +23,7 @@ void inverseKinematics(){
 }
 */
 
-void initialiseParameters(){//initialise constant parameters
+void initialiseParametersNEW(){//initialise constant parameters
     // l0 = 0.01; 
     // m0 = 13.3; // OXIapo pinaka 5.1 impedance thesis(not anymore 400), tora apo peleq
     // r0x = 1;
@@ -159,7 +159,7 @@ void initialiseParameters(){//initialise constant parameters
 
 
 
-    ROS_INFO("[initParams]: Double parameters have been set. \n");
+    // ROS_INFO("[initParams]: Double parameters have been set. \n");
     
     // itzz = 0.067; //allo afto oxi tou kosta
 
@@ -244,70 +244,70 @@ void initialiseParameters(){//initialise constant parameters
     // e << 0, 0, 0, 0, 0, 0;
     // edot << 0, 0, 0, 0, 0, 0;
     // edotdot << 0, 0, 0, 0, 0, 0;
-    a_x << 0, 0, 0, 0, 0, 0;
-    a_y << 0, 0, 0, 0, 0, 0;
-    a_theta << 0, 0, 0, 0, 0, 0;
-    // qact << 0, 0, 0, 0, 0, 0;
+    // a_x << 0, 0, 0, 0, 0, 0;
+    // a_y << 0, 0, 0, 0, 0, 0;
+    // a_theta << 0, 0, 0, 0, 0, 0;
+    // // qact << 0, 0, 0, 0, 0, 0;
 
-    md << md_e(0,0) , md_e(0,1), md_e(0,2) , 0, 0, 0,
-          md_e(1,0), md_e(1,1), md_e(1,2) , 0, 0, 0,
-          md_e(2,0), md_e(2,1), md_e(2,2), 0, 0, 0,
-          0         , 0        , 0       ,md_b(0,0), md_b(0,1), md_b(0,2),
-          0         , 0        , 0       ,md_b(1,0), md_b(1,1), md_b(1,2),
-          0         , 0        , 0       ,md_b(2,0), md_b(2,1), md_b(2,2);
+    // md << md_e(0,0) , md_e(0,1), md_e(0,2) , 0, 0, 0,
+    //       md_e(1,0), md_e(1,1), md_e(1,2) , 0, 0, 0,
+    //       md_e(2,0), md_e(2,1), md_e(2,2), 0, 0, 0,
+    //       0         , 0        , 0       ,md_b(0,0), md_b(0,1), md_b(0,2),
+    //       0         , 0        , 0       ,md_b(1,0), md_b(1,1), md_b(1,2),
+    //       0         , 0        , 0       ,md_b(2,0), md_b(2,1), md_b(2,2);
     
-    ROS_INFO("[initParams]: Md has been set. \n");
+    // ROS_INFO("[initParams]: Md has been set. \n");
 
 
 
     
-    bd_e = 2*z_cont*wn_cont*md_e -i3; //anti gia Be ebala i3
+    // bd_e = 2*z_cont*wn_cont*md_e -i3; //anti gia Be ebala i3
 
-    bd_b = 2*z_cont*wn_cont*md_b;
+    // bd_b = 2*z_cont*wn_cont*md_b;
     // bd.topLeftCorner(3,3) = bd_e;
     // bd.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
     // bd.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
     // bd.bottomRightCorner(3,3) = bd_b;
 
-    bd << bd_e(0,0) , bd_e(0,1), bd_e(0,2) , 0, 0, 0,
-          bd_e(1,0), bd_e(1,1), bd_e(1,2) , 0, 0, 0,
-          bd_e(2,0), bd_e(2,1), bd_e(2,2), 0, 0, 0,
-          0         , 0        , 0       ,bd_b(0,0), bd_b(0,1), bd_b(0,2),
-          0         , 0        , 0       ,bd_b(1,0), bd_b(1,1), bd_b(1,2),
-          0         , 0        , 0       ,bd_b(2,0), bd_b(2,1), bd_b(2,2);
+    // bd << bd_e(0,0) , bd_e(0,1), bd_e(0,2) , 0, 0, 0,
+    //       bd_e(1,0), bd_e(1,1), bd_e(1,2) , 0, 0, 0,
+    //       bd_e(2,0), bd_e(2,1), bd_e(2,2), 0, 0, 0,
+    //       0         , 0        , 0       ,bd_b(0,0), bd_b(0,1), bd_b(0,2),
+    //       0         , 0        , 0       ,bd_b(1,0), bd_b(1,1), bd_b(1,2),
+    //       0         , 0        , 0       ,bd_b(2,0), bd_b(2,1), bd_b(2,2);
 
-    ROS_INFO("[initParams]: Bd has been set. \n");
+    // ROS_INFO("[initParams]: Bd has been set. \n");
 
-    kd_e = wn_cont*wn_cont*md_e - ke_star;
-    kd_b = wn_cont*wn_cont*md_b; 
+    // kd_e = wn_cont*wn_cont*md_e - ke_star;
+    // kd_b = wn_cont*wn_cont*md_b; 
     // kd.topLeftCorner(3,3) = kd_e;
     // kd.topRightCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
     // kd.bottomLeftCorner(3,3) = Eigen::MatrixXd::Zero(3,3);
     // kd.bottomRightCorner(3,3) = kd_b;
 
-    kd << kd_e(0,0) , kd_e(0,1), kd_e(0,2) , 0, 0, 0,
-          kd_e(1,0), kd_e(1,1), kd_e(1,2) , 0, 0, 0,
-          kd_e(2,0), kd_e(2,1), kd_e(2,2), 0, 0, 0,
-          0         , 0        , 0       ,kd_b(0,0), kd_b(0,1), kd_b(0,2),
-          0         , 0        , 0       ,kd_b(1,0), kd_b(1,1), kd_b(1,2),
-          0         , 0        , 0       ,kd_b(2,0), kd_b(2,1), kd_b(2,2); 
+    // kd << kd_e(0,0) , kd_e(0,1), kd_e(0,2) , 0, 0, 0,
+    //       kd_e(1,0), kd_e(1,1), kd_e(1,2) , 0, 0, 0,
+    //       kd_e(2,0), kd_e(2,1), kd_e(2,2), 0, 0, 0,
+    //       0         , 0        , 0       ,kd_b(0,0), kd_b(0,1), kd_b(0,2),
+    //       0         , 0        , 0       ,kd_b(1,0), kd_b(1,1), kd_b(1,2),
+    //       0         , 0        , 0       ,kd_b(2,0), kd_b(2,1), kd_b(2,2); 
 
-    ROS_INFO("[initParams]: Kd has been set. \n"); 
+    // ROS_INFO("[initParams]: Kd has been set. \n"); 
 
     // jb.leftCols(3) = Eigen::MatrixXd::Identity(3,3);
     // jb.rightCols(3) = Eigen::MatrixXd::Zero(3,3);
-    jb << 1, 0, 0, 0, 0, 0,
-          0, 1, 0, 0, 0, 0,
-          0, 0, 1, 0, 0, 0;
+    // jb << 1, 0, 0, 0, 0, 0,
+    //       0, 1, 0, 0, 0, 0,
+    //       0, 0, 1, 0, 0, 0;
 
     // jbdot = Eigen::MatrixXd::Zero(3,6);
 
 
-    fdes << 100, 0, 0; //apo ta liga poy einai edo
+    // fdes << 100, 0, 0; //apo ta liga poy einai edo
 
 
-    v =  0.01*(fdes(0)*z_cont)/(md_e(0,0)*wn_cont); 
-    ROS_INFO("[initParams]:v has been set. \n");
+    // v =  0.01*(fdes(0)*z_cont)/(md_e(0,0)*wn_cont); 
+    // ROS_INFO("[initParams]:v has been set. \n");
     
     // xd << 0, 0, 0; //ta arxikopoihsa sto variables.h
     // xfd << 0, 0, 0;
@@ -315,12 +315,12 @@ void initialiseParameters(){//initialise constant parameters
 
     // v =  (fdes(0)*z_contact)/(md_e(0,0)*wn_contact);  einai palio den to theloume
 
-    sdotfin_x = v/(xE_contact-xE_in);
+    // sdotfin_x = v/(xE_contact-xE_in);
     
     //mono afta ta arxikopoio edo
-    b1_x << sin_x, sdotin_x, sdotdotin_x, sfin_x, sdotfin_x, sdotdotfin_x;
-    b1_y <<sin_y, sdotin_y, sdotdotin_y, sfin_y, sdotfin_y, sdotdotfin_y;
-    b1_theta << sin_theta, sdotin_theta, sdotdotin_theta, sfin_theta, sdotfin_theta, sdotdotfin_theta;
+    // b1_x << sin_x, sdotin_x, sdotdotin_x, sfin_x, sdotfin_x, sdotdotfin_x;
+    // b1_y <<sin_y, sdotin_y, sdotdotin_y, sfin_y, sdotfin_y, sdotdotfin_y;
+    // b1_theta << sin_theta, sdotin_theta, sdotdotin_theta, sfin_theta, sdotfin_theta, sdotdotfin_theta;
 
     /*Ta efera apo desired trajectory, afou ypologizontai mono mia fora*/
     // a_matrix << 1, t0, pow(t0,2), pow(t0,3), pow(t0,4), pow(t0,5),
@@ -330,69 +330,69 @@ void initialiseParameters(){//initialise constant parameters
     //             0, 1, 2*t_free, 3*pow(t_free,2), 4*pow(t_free,3), 5*pow(t_free,4),
     //             0, 0, 2, 6*t_free, 12*pow(t_free,2), 20*pow(t_free,3) ;
 
-    a_matrix(0,0) = 1;
-    a_matrix(0,1) = t0;
-    a_matrix(0,2) = pow(t0,2);
-    a_matrix(0,3) = pow(t0,3);
-    a_matrix(0,4) = pow(t0,4);
-    a_matrix(0,5) = pow(t0,5);
-    ///////
-    a_matrix(1,0) = 0;
-    a_matrix(1,1) = 1;
-    a_matrix(1,2) = 2*t0;
-    a_matrix(1,3) = 3*pow(t0,2);
-    a_matrix(1,4) = 4*pow(t0,3);
-    a_matrix(1,5) = 5*pow(t0,4);
-    ///////
-    a_matrix(2,0) = 0;
-    a_matrix(2,1) = 0;
-    a_matrix(2,2) = 2;
-    a_matrix(2,3) = 6*t0;
-    a_matrix(2,4) = 12*pow(t0,2);
-    a_matrix(2,5) = 20*pow(t0,3);
-    //////
-    a_matrix(3,0) = 1;
-    a_matrix(3,1) = t_free;
-    a_matrix(3,2) = pow(t_free,2);
-    a_matrix(3,3) = pow(t_free,3);
-    a_matrix(3,4) = pow(t_free,4);
-    a_matrix(3,5) = pow(t_free,5);
-    //////
-    a_matrix(4,0) = 0;
-    a_matrix(4,1) = 1;
-    a_matrix(4,2) = 2*t_free;
-    a_matrix(4,3) = 3*pow(t_free,2);
-    a_matrix(4,4) = 4*pow(t_free,3);
-    a_matrix(4,5) = 5*pow(t_free,4);
-    ////////
-    a_matrix(5,0) = 0;
-    a_matrix(5,1) = 0;
-    a_matrix(5,2) = 2;
-    a_matrix(5,3) = 6*t_free;
-    a_matrix(5,4) = 12*pow(t_free,2);
-    a_matrix(5,5) = 20*pow(t_free,3);
+    // a_matrix(0,0) = 1;
+    // a_matrix(0,1) = t0;
+    // a_matrix(0,2) = pow(t0,2);
+    // a_matrix(0,3) = pow(t0,3);
+    // a_matrix(0,4) = pow(t0,4);
+    // a_matrix(0,5) = pow(t0,5);
+    // ///////
+    // a_matrix(1,0) = 0;
+    // a_matrix(1,1) = 1;
+    // a_matrix(1,2) = 2*t0;
+    // a_matrix(1,3) = 3*pow(t0,2);
+    // a_matrix(1,4) = 4*pow(t0,3);
+    // a_matrix(1,5) = 5*pow(t0,4);
+    // ///////
+    // a_matrix(2,0) = 0;
+    // a_matrix(2,1) = 0;
+    // a_matrix(2,2) = 2;
+    // a_matrix(2,3) = 6*t0;
+    // a_matrix(2,4) = 12*pow(t0,2);
+    // a_matrix(2,5) = 20*pow(t0,3);
+    // //////
+    // a_matrix(3,0) = 1;
+    // a_matrix(3,1) = t_free;
+    // a_matrix(3,2) = pow(t_free,2);
+    // a_matrix(3,3) = pow(t_free,3);
+    // a_matrix(3,4) = pow(t_free,4);
+    // a_matrix(3,5) = pow(t_free,5);
+    // //////
+    // a_matrix(4,0) = 0;
+    // a_matrix(4,1) = 1;
+    // a_matrix(4,2) = 2*t_free;
+    // a_matrix(4,3) = 3*pow(t_free,2);
+    // a_matrix(4,4) = 4*pow(t_free,3);
+    // a_matrix(4,5) = 5*pow(t_free,4);
+    // ////////
+    // a_matrix(5,0) = 0;
+    // a_matrix(5,1) = 0;
+    // a_matrix(5,2) = 2;
+    // a_matrix(5,3) = 6*t_free;
+    // a_matrix(5,4) = 12*pow(t_free,2);
+    // a_matrix(5,5) = 20*pow(t_free,3);
 
-    a_x = a_matrix.inverse()*b1_x; //computeInverseAndDetWithCheck()
-    a_y = a_matrix.inverse()*b1_y;
-    a_theta = a_matrix.inverse()*b1_theta;
-    a0x = a_x(0);
-    a1x = a_x(1);
-    a2x = a_x(2);
-    a3x = a_x(3);
-    a4x = a_x(4);
-    a5x = a_x(5);
-    a0y = a_y(0);
-    a1y = a_y(1);
-    a2y = a_y(2);
-    a3y = a_y(3);
-    a4y = a_y(4);
-    a5y = a_y(5);
-    a0t = a_theta(0);
-    a1t = a_theta(1);
-    a2t = a_theta(2);
-    a3t = a_theta(3);
-    a4t = a_theta(4);
-    a5t = a_theta(5);
+    // a_x = a_matrix.inverse()*b1_x; //computeInverseAndDetWithCheck()
+    // a_y = a_matrix.inverse()*b1_y;
+    // a_theta = a_matrix.inverse()*b1_theta;
+    // a0x = a_x(0);
+    // a1x = a_x(1);
+    // a2x = a_x(2);
+    // a3x = a_x(3);
+    // a4x = a_x(4);
+    // a5x = a_x(5);
+    // a0y = a_y(0);
+    // a1y = a_y(1);
+    // a2y = a_y(2);
+    // a3y = a_y(3);
+    // a4y = a_y(4);
+    // a5y = a_y(5);
+    // a0t = a_theta(0);
+    // a1t = a_theta(1);
+    // a2t = a_theta(2);
+    // a3t = a_theta(3);
+    // a4t = a_theta(4);
+    // a5t = a_theta(5);
     /*telos prosthikis apo desired trajectory*/
 }
 

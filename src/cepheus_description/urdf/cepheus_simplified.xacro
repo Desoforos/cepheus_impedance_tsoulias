@@ -204,7 +204,8 @@
 	<joint name="reaction_wheel_joint" type="continuous">
 		<parent link="cepheus_base"/>
 		<child link="reaction_wheel"/>
-		<origin xyz="0.065 0 0.03815" rpy="0 0 0"/>
+		<!-- <origin xyz="0.065 0 0.03815" rpy="0 0 0"/> -->
+		<origin xyz="0 0 0.03815" rpy="0 0 0 "/>
 		<axis xyz="0 0 1" />
 	</joint>
 	<link name="reaction_wheel">
