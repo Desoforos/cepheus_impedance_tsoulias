@@ -81,28 +81,7 @@ void filter(){
 }
 }
 
-void calculateTrajecotryPolynomials(double tf){
-    Eigen::MatrixXd eq_matrix(3,3);
-    Eigen::VectorXd eq_bscale(3);
-    double ts = 0.1*tf;
-    double wn = 6/ts;
-    kprop_mb = wn*wn;
-    kder_mb = 2*wn; //ta vgala tha ta vro monos mou
-    
-    
-    eq_matrix << pow(tf,3), pow(tf,4), pow(tf,5),
-                3*pow(tf,2), 4*pow(tf,3), 5*pow(tf,4),
-                6*tf, 12*pow(tf,2), 20*pow(tf,3); 
-    
-    eq_bscale << 1 , 0, 0;
 
-    Eigen::VectorXd res = eq_matrix.colPivHouseholderQr().solve(eq_bscale);
-
-    a0 = a1 = a2 = 0; //from paper calculations, for t0 = 0
-    a3 = res(0);
-    a4 = res(1);
-    a5 = res(2);
-}
 
 void baseTrajectory(double t, double tf){
     double s,sdot, sdotdot;

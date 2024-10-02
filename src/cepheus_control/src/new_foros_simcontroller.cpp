@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
                 ros::spinOnce();
                 // ros::Duration(2).sleep();
                 ROS_INFO("[new_foros_simcontroller]: Initializing parameters... \n");
-                initialiseParametersNEW();
+                initialiseParametersNew();
                 calculateTrajecotryPolynomials(tf);
                 paramsinit = true;
                 ROS_INFO("[new_foros_simcontroller]: Parameters have been initialized. \n");
@@ -179,7 +179,7 @@ int main(int argc, char **argv) {
             finaltrajectories(dur_time); //apo last_controller.h
             // basePDcontroll();  //ena apo ta dyo tha exo anoikto
             // calculateQ();
-            controller(count); //apo last_controller.h
+            controller(count,tf,dur_time); //apo last_controller.h
             count++;
 
 
@@ -194,10 +194,10 @@ int main(int argc, char **argv) {
 
             // RW_torque_pub.publish(msg_RW);
 
-            base_force_pub.publish(base_wrench);
-            LS_torque_pub.publish(msg_LS);
-            LE_torque_pub.publish(msg_LE);
-            LW_torque_pub.publish(msg_LW);
+            // base_force_pub.publish(base_wrench);
+            // LS_torque_pub.publish(msg_LS);
+            // LE_torque_pub.publish(msg_LE);
+            // LW_torque_pub.publish(msg_LW);
 
             xd_x_pub.publish(msg_xd_x);
             xd_y_pub.publish(msg_xd_y);

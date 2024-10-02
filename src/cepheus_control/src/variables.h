@@ -178,7 +178,7 @@ Eigen::Vector3d rEddotdot(0,0,0);// =  Eigen::VectorXd::Zero(3);
 
 // double a1 = 1000; //for xd anti gia 10000
 // double a2 = 0.001; //anti gia 0.0001
-double t0 =0 , t_free =15; //anti gia 200
+double t0 =0 , t_free; //anti gia 200
 double z_free = 1;
 double ts_free = 0.1*t_free;
 double wn_free = 6/ts_free;

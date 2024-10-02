@@ -23,7 +23,7 @@ void inverseKinematics(){
 }
 */
 
-void initialiseParametersNEW(){//initialise constant parameters
+void initialiseParametersOLD(){//initialise constant parameters
     // l0 = 0.01; 
     // m0 = 13.3; // OXIapo pinaka 5.1 impedance thesis(not anymore 400), tora apo peleq
     // r0x = 1;
