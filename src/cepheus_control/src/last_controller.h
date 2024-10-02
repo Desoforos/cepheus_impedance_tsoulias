@@ -171,20 +171,20 @@ void finaltrajectories(double t){
     theta0stepdotdot = theta0stepdotdotfr;
 
 //////////////////////
-    xstep = 1;
-    ystep = 1;
-    thstep = 1;
-    theta0step = 1;
+    // xstep = 1;
+    // ystep = 1;
+    // thstep = 1;
+    // theta0step = 1;
 
-    xstepdot = 1;
-    ystepdot = 1;
-    thstepdot = 1;
-    theta0stepdot = 1;
+    // xstepdot = 1;
+    // ystepdot = 1;
+    // thstepdot = 1;
+    // theta0stepdot = 1;
 
-    xstepdotdot = 1;
-    ystepdotdot = 1;
-    thstepdotdot = 1;
-    theta0stepdotdot = 1;
+    // xstepdotdot = 1;
+    // ystepdotdot = 1;
+    // thstepdotdot = 1;
+    // theta0stepdotdot = 1;
 
     msg_xd_x.data = xstep;
     msg_xd_y.data = ystep;
@@ -264,7 +264,7 @@ void controller(int count, double tf, double t){
   double p3=(m1+m2+m3)*r0y;
   double p4=(m1+m2+m3)*l1+(m2+m3)*r1;
   double p5=(m2+m3)*l2+m3*r2;
-  double p6=i0zz+(m1+m2+m3)*(r0x*r0x+r0y*r0y);
+  double p6=ibzz+(m1+m2+m3)*(r0x*r0x+r0y*r0y);
   double p7=i1zz+(m1+m2+m3)*l1*l1+2*(m2+m3)*l1*r1+(m2+m3)*r1*r1;
   double p8=i2zz+(m2+m3)*l2*l2+2*m3*l2*r2+m3*r2*r2;
   double p9=i3zz+m3*l3*l3;
@@ -278,6 +278,7 @@ void controller(int count, double tf, double t){
   double p17=m3*l3*r0y;
   double p18=(l1+r1)*m3*l3;
   double p19=(l2+r2)*m3*l3;
+
   double a11 = pow(10,20);
   double a22 = pow(10,-20);
   double z_free=1;
@@ -307,27 +308,27 @@ void controller(int count, double tf, double t){
 
 
   /* APATH THA TO ALLAKSO*/
-  ee_x = 0.706577;
-  ee_y = -0.263787;
-  thetach = 0.866966;
-  xeedot(0) = 0.000382186;
-  xeedot(1) = 0.000174835;
-  xeedot(2) = -0.000288378;
-  xt_in  =0.787303;
-  yt_in  =0.163512;
-  thetat_in = 0.777124;
-  theta0 = -0.462226;
-  theta0dot = -0.000288378;
-  xc0 = -0.0100868;
-  yc0 = -0.00505269;
-  xc0dot = 0.000724746;
-  yc0dot = 0.000651179;
-  q1 = -0.742835;
-  q2 = 1.05601;
-  q3 = 0.529251;
-  q1dot = -1.359*pow(10,-11);
-  q2dot = -2.75252*pow(10,-6);
-  q3dot = -2.78264*pow(10,-13);
+  // ee_x = 0.706577;
+  // ee_y = -0.263787;
+  // thetach = 0.866966;
+  // xeedot(0) = 0.000382186;
+  // xeedot(1) = 0.000174835;
+  // xeedot(2) = -0.000288378;
+  // xt_in  =0.787303;
+  // yt_in  =0.163512;
+  // thetat_in = 0.777124;
+  // theta0 = -0.462226;
+  // theta0dot = -0.000288378;
+  // xc0 = -0.0100868;
+  // yc0 = -0.00505269;
+  // xc0dot = 0.000724746;
+  // yc0dot = 0.000651179;
+  // q1 = -0.742835;
+  // q2 = 1.05601;
+  // q3 = 0.529251;
+  // q1dot = -1.359*pow(10,-11);
+  // q2dot = -2.75252*pow(10,-6);
+  // q3dot = -2.78264*pow(10,-13);
 
 
 
@@ -360,7 +361,7 @@ void controller(int count, double tf, double t){
 
   h31 = (-1)*p3*cos(theta0) + (-1)* p2*sin(theta0)+(-1)*p4*sin(q1 + theta0)+(-1)*p5*sin(q1 + q2 + theta0) + (-1)*p15*sin(q1 + q2 + q3 + theta0);
   h32 = p2*cos(theta0) + p4*cos(q1 + theta0) + p5*cos(q1 + q2 + theta0) + p15*cos(q1 + q2 + q3 + theta0) + (-1)*p3*sin(theta0);
-  h33 = p6 + p7 + p8 + p9 + 2*p10*cos(q1) + 2*p12*cos(q2) + 2*p13*cos(q1 + q2) + 2*p19*cos(q3) +2*p18*cos(q2 + q3) + 2*p16*cos(q1 + q2 + q3) + 2*p11*sin(q1) + 2*p14* sin(q1 + q2) + 2*p17*sin(q1 + q2 + q3);
+  h33 = p6 + p7 + p8 + p9 + 2*p10*cos(q1) + 2*p12*cos(q2) + 2*p13*cos(q1 + q2) + 2*p19*cos(q3) + 2*p18*cos(q2 + q3) + 2*p16*cos(q1 + q2 + q3) + 2*p11*sin(q1) + 2*p14*sin(q1 + q2) + 2*p17*sin(q1 + q2 + q3);
   h34 = p7 + p8 + p9 + p10*cos(q1) + 2*p12*cos(q2)+p13*cos(q1 + q2) + 2*p19*cos(q3) + 2*p18*cos(q2 + q3) + p16* cos(q1 + q2 + q3) + p11*sin(q1) + p14*sin(q1 + q2) + p17*sin(q1 + q2 + q3);
   h35 = p8 + p9 + p12*cos(q2) + p13*cos(q1 + q2) + 2*p19*cos(q3) + p18*cos(q2 + q3) + p16*cos(q1 + q2 + q3) + p14*sin(q1 + q2) + p17*sin(q1 + q2 + q3);
   h36 = p9 + p19*cos(q3) + p18*cos(q2 + q3) + p16*cos(q1 + q2 + q3) + p17*sin(q1 + q2 + q3);
@@ -679,7 +680,7 @@ void controller(int count, double tf, double t){
 
 
 
-  hstar = (jac1.transpose()).inverse()*h*jac1.inverse();
+  hstar = (jac1.transpose()).inverse()*h*(jac1.inverse());
 
   
 
@@ -861,7 +862,7 @@ base_wrench.force.x = 0;  //fx;
 base_wrench.force.y = 0;  //fy;
 base_wrench.torque.z = tau(0);//ns;
 
-msg_RW.data = tau(0); 
+msg_RW.data = -tau(0); 
 // msg_RW.data = ns;
 msg_LS.data = tau(1);
 msg_LE.data = tau(2);
@@ -875,80 +876,82 @@ if(count%100 == 0){
   std::cout<<"ystep is: "<<ystep<<std::endl;
   std::cout<<"thstep is: "<<thstep<<std::endl;
 
-  std::cout<<"md is: "<<md<<std::endl;
-  std::cout<<"kd is: "<<kd<<std::endl;
-  std::cout<<"bd is: "<<bd<<std::endl;
+  // std::cout<<"md is: "<<md<<std::endl;
+  // std::cout<<"kd is: "<<kd<<std::endl;
+  // std::cout<<"bd is: "<<bd<<std::endl;
 
-  std::cout<<" ee x is: "<<ee_x<<std::endl;
-	std::cout<<" ee y is: "<<ee_y<<std::endl;
-	std::cout<<" ee theta is: "<<thetach<<std::endl;
-  std::cout<<"eex dot is: "<<xeedot(0)<<std::endl;
-  std::cout<<"eey dot is: "<<xeedot(1)<<std::endl;
-  std::cout<<"eetheta dot is: "<<xeedot(2)<<std::endl;
+  // std::cout<<" ee x is: "<<ee_x<<std::endl;
+	// std::cout<<" ee y is: "<<ee_y<<std::endl;
+	// std::cout<<" ee theta is: "<<thetach<<std::endl;
+  // std::cout<<"eex dot is: "<<xeedot(0)<<std::endl;
+  // std::cout<<"eey dot is: "<<xeedot(1)<<std::endl;
+  // std::cout<<"eetheta dot is: "<<xeedot(2)<<std::endl;
 
-  std::cout<<"xt_in is: "<<xt_in<<std::endl;
-  std::cout<<"yt_in is: "<<yt_in<<std::endl;
-  std::cout<<"thetat_in is: "<<thetat_in<<std::endl;
+  // std::cout<<"xt_in is: "<<xt_in<<std::endl;
+  // std::cout<<"yt_in is: "<<yt_in<<std::endl;
+  // std::cout<<"thetat_in is: "<<thetat_in<<std::endl;
 
 
-  std::cout<<"theta0 is: "<<theta0<<std::endl;
-  std::cout<<"theta0dot is: "<<theta0dot<<std::endl;
-  std::cout<<"xc0 is: "<<xc0<<std::endl;
-  std::cout<<"yc0 is: "<<yc0<<std::endl; 
-  std::cout<<"xc0dot is: "<<xc0dot<<std::endl;
-  std::cout<<"yc0dot is: "<<yc0dot<<std::endl;
+  // std::cout<<"theta0 is: "<<theta0<<std::endl;
+  // std::cout<<"theta0dot is: "<<theta0dot<<std::endl;
+  // std::cout<<"xc0 is: "<<xc0<<std::endl;
+  // std::cout<<"yc0 is: "<<yc0<<std::endl; 
+  // std::cout<<"xc0dot is: "<<xc0dot<<std::endl;
+  // std::cout<<"yc0dot is: "<<yc0dot<<std::endl;
 
-  std::cout<<" q1 is: "<<q1<<std::endl;
-  std::cout<<" q2 is: "<<q2<<std::endl;
-  std::cout<<" q3 is: "<<q3<<std::endl;
-  std::cout<<" q1dot is: "<<q1dot<<std::endl;
-  std::cout<<" q2dot is: "<<q2dot<<std::endl;
-  std::cout<<" q3dot is: "<<q3dot<<std::endl;
+  // std::cout<<" q1 is: "<<q1<<std::endl;
+  // std::cout<<" q2 is: "<<q2<<std::endl;
+  // std::cout<<" q3 is: "<<q3<<std::endl;
+  // std::cout<<" q1dot is: "<<q1dot<<std::endl;
+  // std::cout<<" q2dot is: "<<q2dot<<std::endl;
+  // std::cout<<" q3dot is: "<<q3dot<<std::endl;
+
+  std::cout<<"error is: "<<error<<std::endl;
+  std::cout<<"errordot is: "<<error_dot<<std::endl;
 
   std::cout<<"rw torque is:  "<<tau(0)<<" Nm. "<< std::endl;
   std::cout<<"q1 torque is:  "<<tau(1)<<" Nm. "<< std::endl;
   std::cout<<"q2 torque is:  "<<tau(2)<<" Nm. "<< std::endl;
   std::cout<<"q3 torque is:  "<<tau(3)<<" Nm. "<< std::endl;
-  std::cout<<"error is: "<<error<<std::endl;
-  std::cout<<"errordot is: "<<error_dot<<std::endl;
 
-  std::cout<<"h is: "<<h<<std::endl;
-  std::cout<<"c is: "<<c<<std::endl;
-  std::cout<<"je is: "<<je<<std::endl;
-  std::cout<<"jedot is: "<<jedot<<std::endl;
 
-  std::cout <<"jvw is: "<<jvw<<std::endl;
-  std::cout <<"jvq is: "<<jvq<<std::endl;
-  std::cout <<"jac1 is: "<<jac1<<std::endl;
-  std::cout <<"jac1dot is: "<<jac1dot<<std::endl;
-  std::cout <<"hstar is: "<<hstar<<std::endl;
-  std::cout <<"v1 is: "<<v1<<std::endl;
-  std::cout<<"cstar is: "<<cstar<<std::endl;
-  std::cout<<"jstar is: "<<jstar<<std::endl;
-  std::cout<<"jestar is: "<<jestar<<std::endl;
-  std::cout<<"hbar is: "<<hbar<<std::endl;
-  std::cout<<"cbar is: "<<cbar<<std::endl;
-  std::cout<<"jbar is: "<<jbar<<std::endl;
-  std::cout<<"jebar is: "<<jebar<<std::endl;
-  std::cout<<"fes is: "<<fdes<<std::endl;
-  std::cout<<"xdotdot_des is:  "<<xdotdot_des<<std::endl;
-  std::cout<<"qext is: "<<qext<<std::endl;
-  std::cout<<"u is: "<<u<<std::endl;
-  std::cout<<"qbar is: "<<qbar<<std::endl;
+  // std::cout<<"h is: "<<h<<std::endl;
+  // std::cout<<"c is: "<<c<<std::endl;
+  // std::cout<<"je is: "<<je<<std::endl;
+  // std::cout<<"jedot is: "<<jedot<<std::endl;
 
-  std::cout<<"***STARS*****"<<std::endl;
-  std::cout<<"j12star is:"<<j12star<<std::endl;
-  std::cout<<"j22star is:"<<j22star<<std::endl;
-  std::cout<<"h11star is:"<<h11star<<std::endl;
-  std::cout<<"h12star is:"<<h12star<<std::endl;
-  std::cout<<"h21star is:"<<h21star<<std::endl;
-  std::cout<<"h22star is:"<<h22star<<std::endl;
-  std::cout<<"c1star is:"<<c1star<<std::endl;
-  std::cout<<"c2star is:"<<c2star<<std::endl;
-  std::cout<<"je11star is:"<<je11star<<std::endl;
-  std::cout<<"je12star is:"<<je12star<<std::endl;
-  std::cout<<"je21star is:"<<je21star<<std::endl;
-  std::cout<<"je22star is:"<<je22star<<std::endl; 
+  // std::cout <<"jvw is: "<<jvw<<std::endl;
+  // std::cout <<"jvq is: "<<jvq<<std::endl;
+  // std::cout <<"jac1 is: "<<jac1<<std::endl;
+  // std::cout <<"jac1dot is: "<<jac1dot<<std::endl;
+  // std::cout <<"hstar is: "<<hstar<<std::endl;
+  // std::cout <<"v1 is: "<<v1<<std::endl;
+  // std::cout<<"cstar is: "<<cstar<<std::endl;
+  // std::cout<<"jstar is: "<<jstar<<std::endl;
+  // std::cout<<"jestar is: "<<jestar<<std::endl;
+  // std::cout<<"hbar is: "<<hbar<<std::endl;
+  // std::cout<<"cbar is: "<<cbar<<std::endl;
+  // std::cout<<"jbar is: "<<jbar<<std::endl;
+  // std::cout<<"jebar is: "<<jebar<<std::endl;
+  // std::cout<<"fes is: "<<fdes<<std::endl;
+  // std::cout<<"xdotdot_des is:  "<<xdotdot_des<<std::endl;
+  // std::cout<<"qext is: "<<qext<<std::endl;
+  // std::cout<<"u is: "<<u<<std::endl;
+  // std::cout<<"qbar is: "<<qbar<<std::endl;
+
+  // std::cout<<"***STARS*****"<<std::endl;
+  // std::cout<<"j12star is:"<<j12star<<std::endl;
+  // std::cout<<"j22star is:"<<j22star<<std::endl;
+  // std::cout<<"h11star is:"<<h11star<<std::endl;
+  // std::cout<<"h12star is:"<<h12star<<std::endl;
+  // std::cout<<"h21star is:"<<h21star<<std::endl;
+  // std::cout<<"h22star is:"<<h22star<<std::endl;
+  // std::cout<<"c1star is:"<<c1star<<std::endl;
+  // std::cout<<"c2star is:"<<c2star<<std::endl;
+  // std::cout<<"je11star is:"<<je11star<<std::endl;
+  // std::cout<<"je12star is:"<<je12star<<std::endl;
+  // std::cout<<"je21star is:"<<je21star<<std::endl;
+  // std::cout<<"je22star is:"<<je22star<<std::endl; 
 
  
 

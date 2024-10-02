@@ -194,10 +194,10 @@ int main(int argc, char **argv) {
 
             // RW_torque_pub.publish(msg_RW);
 
-            // base_force_pub.publish(base_wrench);
-            // LS_torque_pub.publish(msg_LS);
-            // LE_torque_pub.publish(msg_LE);
-            // LW_torque_pub.publish(msg_LW);
+            base_force_pub.publish(base_wrench);
+            LS_torque_pub.publish(msg_LS);
+            LE_torque_pub.publish(msg_LE);
+            LW_torque_pub.publish(msg_LW);
 
             xd_x_pub.publish(msg_xd_x);
             xd_y_pub.publish(msg_xd_y);
@@ -209,20 +209,20 @@ int main(int argc, char **argv) {
             xee_y_pub.publish(msg_xee_y);
             xee_theta_pub.publish(msg_xee_theta);
 
-            base_wrench.force.x = 0.0;
-            base_wrench.force.y = 0.0;
-            base_wrench.force.z = 0.0;
-            base_wrench.torque.x = 0.0;
-            base_wrench.torque.y = 0.0;
-            base_wrench.torque.z = 0.0;
-            msg_RW.data = 0.0; 
-	        msg_LS.data = 0.0;
-	        msg_LE.data = 0.0;
-	        msg_LW.data = 0.0; 
+            // base_wrench.force.x = 0.0;
+            // base_wrench.force.y = 0.0;
+            // base_wrench.force.z = 0.0;
+            // base_wrench.torque.x = 0.0;
+            // base_wrench.torque.y = 0.0;
+            // base_wrench.torque.z = 0.0;
+            // msg_RW.data = 0.0; 
+	        // msg_LS.data = 0.0;
+	        // msg_LE.data = 0.0;
+	        // msg_LW.data = 0.0; 
             // msg_xt_x.data = 0.0;
             // msg_xt_y.data = 0.0;
             // msg_xt_theta.data = 0.0;
-            msg_xd_x.data = msg_xd_y.data = msg_xd_theta.data = 0.0;
+            // msg_xd_x.data = msg_xd_y.data = msg_xd_theta.data = 0.0;
 
         }
 		if(reachedTarget){ //na ftiakso to reachedGoal kalytera gia na teleionei to peirama, na ftiakso xrono
