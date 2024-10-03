@@ -115,10 +115,12 @@
       <geometry>
         <box size="0.09 0.09 0.09"/>
       </geometry>
+	  <origin xyz="0.045 0 0" rpy="0 0 0" />
     </collision>
     <inertial>
       <mass value="1.0"/>
       <inertia ixx="0.00135" ixy="0" ixz="0" iyy="0.00135" iyz="0" izz="0.00135"/>
+	  <origin xyz="0.045 0 0" rpy="0 0 0" />
     </inertial>
   </link>
   <gazebo reference="base_link">

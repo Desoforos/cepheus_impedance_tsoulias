@@ -193,6 +193,12 @@ int main(int argc, char **argv) {
 
 
             // RW_torque_pub.publish(msg_RW);
+            
+            base_wrench.force.x = 0.0;
+            base_wrench.force.y = 0.0;
+            base_wrench.force.z = 0.0;
+            base_wrench.torque.x = 0.0;
+            base_wrench.torque.y = 0.0;
 
             base_force_pub.publish(base_wrench);
             LS_torque_pub.publish(msg_LS);

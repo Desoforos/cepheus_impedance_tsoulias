@@ -110,7 +110,7 @@ void jointStatesCallback(const sensor_msgs::JointState::ConstPtr& msg){
 		if(msg->name[i] == "left_shoulder_joint"){
 			q1 = msg->position[i];
 			q1dot = msg->velocity[i];
-			q1 = q1 + q01;
+			q1 = q1; //evgala to +q01 giati to evala stous ypologismous
 		}
 		else if(msg->name[i] == "left_elbow_joint"){
 			q2 = msg->position[i];

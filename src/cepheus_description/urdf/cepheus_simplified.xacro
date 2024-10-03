@@ -90,7 +90,7 @@
 	<transmission name="lin1">
 		<type>transmission_interface/SimpleTransmission</type>
 		<joint name="p1_joint">
-			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<hardwareInterface>EffortJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="lin_motor1">
 			<hardwareInterface>EffortJointInterface</hardwareInterface>
@@ -142,7 +142,7 @@
 	<transmission name="lin2">
 		<type>transmission_interface/SimpleTransmission</type>
 		<joint name="p2_joint">
-			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<hardwareInterface>EffortJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="lin_motor2">
 			<hardwareInterface>EffortJointInterface</hardwareInterface>
@@ -154,12 +154,13 @@
 		<parent link="p2"/>
 		<origin rpy="0 0 0" xyz="0 0 0"/>
 		<child link="cepheus_base"/>
+		<dynamics damping="${joint_damping}" friction="${joint_friction}"/>
 	</joint>
 	<transmission name="tran1">
 		<type>
 			transmission_interface/SimpleTransmission</type>
 		<joint name="r_joint">
-			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<hardwareInterface>EffortJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor1">
 			<hardwareInterface>EffortJointInterface</hardwareInterface>
@@ -207,6 +208,7 @@
 		<!-- <origin xyz="0.065 0 0.03815" rpy="0 0 0"/> -->
 		<origin xyz="0 0 0.03815" rpy="0 0 0 "/>
 		<axis xyz="0 0 1" />
+		<dynamics damping="${joint_damping}" friction="${joint_friction}"/>
 	</joint>
 	<link name="reaction_wheel">
 		<visual>
@@ -238,7 +240,7 @@
 		<type>
 			transmission_interface/SimpleTransmission</type>
 		<joint name="reaction_wheel_joint">
-			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<hardwareInterface>EffortJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor1">
 			<hardwareInterface>EffortJointInterface</hardwareInterface>
@@ -299,7 +301,7 @@
 	<transmission name="tran2">
 		<type>transmission_interface/SimpleTransmission</type>
 		<joint name="left_shoulder_joint">
-			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<hardwareInterface>EffortJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor2">
 			<hardwareInterface>EffortJointInterface</hardwareInterface>
@@ -360,7 +362,7 @@
 	<transmission name="tran3">
 		<type>transmission_interface/SimpleTransmission</type>
 		<joint name="left_elbow_joint">
-			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<hardwareInterface>EffortJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor3">
 			<hardwareInterface>EffortJointInterface</hardwareInterface>
@@ -421,7 +423,7 @@
 	<transmission name="tran4">
 		<type>transmission_interface/SimpleTransmission</type>
 		<joint name="left_wrist_joint">
-			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<hardwareInterface>EffortJointInterface</hardwareInterface>
 		</joint>
 		<actuator name="motor4">
 			<hardwareInterface>EffortJointInterface</hardwareInterface>

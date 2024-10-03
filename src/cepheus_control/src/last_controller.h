@@ -11,7 +11,8 @@ void initialiseParametersNew(){
     m1 = 0.2314;
     l1 = r1 = 0.185;
     m2 = 0.1;
-    l2 = r2 = 0.143;
+    // l2 = r2 = 0.143;
+    l2 = r2 = 0.184;
     m3 = 0.046;
     l3 = r3 = 0.0411;
     mt = 1;
@@ -858,8 +859,8 @@ errorth0 = theta0step -theta0;
 errorth0dot = theta0stepdot - theta0dot;
 double ns = kprop*errorth0 + kder*errorth0dot;
 
-base_wrench.force.x = 0;  //fx;
-base_wrench.force.y = 0;  //fy;
+// base_wrench.force.x = 0;  //fx;
+// base_wrench.force.y = 0;  //fy;
 base_wrench.torque.z = tau(0);//ns;
 
 msg_RW.data = -tau(0); 
