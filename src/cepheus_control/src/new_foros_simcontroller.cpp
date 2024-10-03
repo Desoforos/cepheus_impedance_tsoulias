@@ -157,10 +157,10 @@ int main(int argc, char **argv) {
                 t_beg  = ros::Time::now(); //initialize starting moment
             }
             if(!paramsinit){
+                initialiseParametersNew();
                 ros::spinOnce();
                 // ros::Duration(2).sleep();
                 ROS_INFO("[new_foros_simcontroller]: Initializing parameters... \n");
-                initialiseParametersNew();
                 calculateTrajecotryPolynomials(tf);
                 paramsinit = true;
                 ROS_INFO("[new_foros_simcontroller]: Parameters have been initialized. \n");
@@ -193,7 +193,7 @@ int main(int argc, char **argv) {
 
 
             // RW_torque_pub.publish(msg_RW);
-            
+
             base_wrench.force.x = 0.0;
             base_wrench.force.y = 0.0;
             base_wrench.force.z = 0.0;

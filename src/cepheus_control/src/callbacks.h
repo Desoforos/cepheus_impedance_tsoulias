@@ -8,8 +8,8 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 	for(i=0; i<msg->name.size(); i++){
 		//  ROS_INFO("[Gazebo Callback] Link Name: %s", msg->name[i]);
 		if(msg->name[i] == "cepheus::left_grip"){
-			ee_x = msg->pose[i].position.x;//left grip pose[6]
-    		ee_y = msg->pose[i].position.y;
+			ee_x = msg->pose[i].position.x +(l3+r3)*cos(q1+q2+q3);//left grip pose[6]
+    		ee_y = msg->pose[i].position.y + (l3+r3)*sin(q1+q2+q3);
 			tf::Quaternion qee( //for angle of ee
 				msg->pose[i].orientation.x,
 				msg->pose[i].orientation.y,
@@ -25,9 +25,9 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 			xeedot(0) = msg->twist[i].linear.x;
 			xeedot(1) = msg->twist[i].linear.y;
 			xeedot(2) = msg->twist[i].angular.z;
-			msg_xee_x.data = xee(0);
-			msg_xee_y.data = xee(1);
-			msg_xee_theta.data = xee(2);
+			// msg_xee_x.data = xee(0);
+			// msg_xee_y.data = xee(1);
+			// msg_xee_theta.data = xee(2);
 			// std::cout<<"[Gazebo callback] ee x is: "<<ee_x<<std::endl;
 			// std::cout<<"[Gazebo callback] ee y is: "<<ee_y<<std::endl;
 			// std::cout<<"[Gazebo callback] ee theta is: "<<thetach<<std::endl;
@@ -47,6 +47,9 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 			double rollring, pitchring, yawring;
 			mring.getRPY(rollring, pitchring, yawring);
 			thetat = yawring; //angle of target
+			// msg_xt_x.data = xt;
+			// msg_xt_y.data = yt;
+			// msg_xt_theta.data = thetat;
 		}
 		if(msg->name[i] == "cepheus::cepheus_base"){
 			xc0 = msg->pose[i].position.x; //pose of base
@@ -85,9 +88,9 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 		theta0in = theta0;
 		theta0fin = theta0;
 		firstTime = false;
-		msg_xt_x.data = xt_in;
-    	msg_xt_y.data = yt_in;
-    	msg_xt_theta.data = thetat_in;
+		// msg_xt_x.data = xt_in;
+    	// msg_xt_y.data = yt_in;
+    	// msg_xt_theta.data = thetat_in;
 		ROS_INFO("[callbacks]: First positions have been recorded (xE_in etc). \n");
 	}
 }
@@ -110,7 +113,7 @@ void jointStatesCallback(const sensor_msgs::JointState::ConstPtr& msg){
 		if(msg->name[i] == "left_shoulder_joint"){
 			q1 = msg->position[i];
 			q1dot = msg->velocity[i];
-			q1 = q1; //evgala to +q01 giati to evala stous ypologismous
+			// q1 = q1; //evgala to +q01 giati to evala stous ypologismous
 		}
 		else if(msg->name[i] == "left_elbow_joint"){
 			q2 = msg->position[i];

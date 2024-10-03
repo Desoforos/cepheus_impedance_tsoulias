@@ -141,11 +141,11 @@ ${catkin_INCLUDE_DIRS}
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(cepheus_controller_node src/cepheus_controller.cpp)
+# add_executable(cepheus_controller_node src/cepheus_controller.cpp)
 
-add_executable(foros_simcontroller_node src/foros_simcontroller.cpp) #nikiforos new
+# add_executable(foros_simcontroller_node src/foros_simcontroller.cpp) #nikiforos new
 # add_executable(eross_control_node src/eross_control.cpp) #nikiforos, took from eros
-add_executable(foros_user_node src/foros_user.cpp)
+# add_executable(foros_user_node src/foros_user.cpp)
 add_executable(testsetter_node src/testsetter.cpp)
 add_executable(new_foros_simcontroller_node src/new_foros_simcontroller.cpp)
 
@@ -162,9 +162,9 @@ add_executable(new_foros_simcontroller_node src/new_foros_simcontroller.cpp)
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(foros_user_node ${catkin_LIBRARIES}  )
-target_link_libraries(cepheus_controller_node ${catkin_LIBRARIES}  )
-target_link_libraries(foros_simcontroller_node ${catkin_LIBRARIES}  ) #nikiforos
+# target_link_libraries(foros_user_node ${catkin_LIBRARIES}  )
+# target_link_libraries(cepheus_controller_node ${catkin_LIBRARIES}  )
+# target_link_libraries(foros_simcontroller_node ${catkin_LIBRARIES}  ) #nikiforos
 target_link_libraries(testsetter_node ${catkin_LIBRARIES}  ) #nikiforos
 target_link_libraries(new_foros_simcontroller_node ${catkin_LIBRARIES} ) #nikiforos
 

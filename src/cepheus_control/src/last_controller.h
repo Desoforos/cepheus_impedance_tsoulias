@@ -15,7 +15,7 @@ void initialiseParametersNew(){
     l2 = r2 = 0.184;
     m3 = 0.046;
     l3 = r3 = 0.0411;
-    mt = 1;
+    mt = 10; //kyriolektika axristo
     q01 = -0.5236;
     s01 = 0.5;
     s02 = 0.2;
@@ -123,7 +123,7 @@ void finaltrajectories(double t){
     // theta0stepdot = theta0stepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotc*(abs(fext(0))/(abs(fext(0))+a22));
     // theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
 
-    if(abs(fext(0)<0.5)){
+    if(abs(fext(0))<0.5){
       xstep = xstepfr;
       ystep = ystepfr;
       thstep = thstepfr;
@@ -156,20 +156,20 @@ void finaltrajectories(double t){
       theta0stepdotdot = theta0stepdotdotc;
     }
 
-    xstep = xstepfr;
-    ystep = ystepfr;
-    thstep = thstepfr;
-    theta0step = theta0stepfr;
+    // xstep = xstepfr;
+    // ystep = ystepfr;
+    // thstep = thstepfr;
+    // theta0step = theta0stepfr;
 
-    xstepdot = xstepdotfr;
-    ystepdot = ystepdotfr;
-    thstepdot = thstepdotfr;
-    theta0stepdot = theta0stepdotfr;
+    // xstepdot = xstepdotfr;
+    // ystepdot = ystepdotfr;
+    // thstepdot = thstepdotfr;
+    // theta0stepdot = theta0stepdotfr;
 
-    xstepdotdot = xstepdotdotfr;
-    ystepdotdot = ystepdotdotfr;
-    thstepdotdot = thstepdotdotfr;
-    theta0stepdotdot = theta0stepdotdotfr;
+    // xstepdotdot = xstepdotdotfr;
+    // ystepdotdot = ystepdotdotfr;
+    // thstepdotdot = thstepdotdotfr;
+    // theta0stepdotdot = theta0stepdotdotfr;
 
 //////////////////////
     // xstep = 1;
@@ -191,13 +191,22 @@ void finaltrajectories(double t){
     msg_xd_y.data = ystep;
     msg_xd_theta.data = thstep;
 
+    msg_xt_x.data = xt;
+    msg_xt_y.data = yt;
+    msg_xt_theta.data = thetat;
+
+    msg_xee_x.data = xee(0);
+    msg_xee_y.data = xee(1);
+    msg_xee_theta.data = xee(2);
+
 
 }
 
 
 
 void controller(int count, double tf, double t){
-  fext(0) = 0;
+  // fext(0) = 0;
+
 
     /*Jacobian coefficients*/
   double j13, j14, j15, j16, j23, j24, j25, j26;
@@ -294,7 +303,7 @@ void controller(int count, double tf, double t){
   double ke = pow(10,6);
   double z_contact=z_free*sqrt(kdf/(kdf+ke));
   double wn_contact=wn_free*sqrt((kdf+ke)/kdf);
-  double fd = 0.1;
+  double fd = 2;
   double kdc = 100;
   double mdc=(kdc+ke)/pow(wn_contact,2);
   double be = 0;
@@ -813,13 +822,26 @@ Eigen::MatrixXd bd=bd_f*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+bd_c*(abs
 ////std::cout<<"bd check "<<std::endl;
 
 /*NA TO BGALO META!!!!!*/
-kd = kd_f;
-md = md_f;
-bd = bd_f;
+// kd = kd_f;
+// md = md_f;
+// bd = bd_f;
 /* MHN TO KSEXASEIS!!!!!*/
 
+if(abs(fext(0))<0.5){
+  bd = bd_f;
+  kd = kd_f;
+  md = md_f;
+  fdes << 0, 0, 0, 0;
+}
+else{
+  bd = bd_c;
+  kd = kd_c;
+  md = md_c;
+  fdes << 0, 0, fd, 0;
+}
 
-fdes << 0, 0, fd*abs(fext(0))/(abs(fext(0))+a22), 0;
+
+// fdes << 0, 0, fd*abs(fext(0))/(abs(fext(0))+a22), 0;
 
 ////std::cout<<"fdes check "<<std::endl;
 
@@ -907,6 +929,8 @@ if(count%100 == 0){
   // std::cout<<" q2dot is: "<<q2dot<<std::endl;
   // std::cout<<" q3dot is: "<<q3dot<<std::endl;
 
+  std::cout<<"fextx is: "<<fext(0)<<" N"<<std::endl;
+
   std::cout<<"error is: "<<error<<std::endl;
   std::cout<<"errordot is: "<<error_dot<<std::endl;
 
@@ -960,6 +984,7 @@ if(count%100 == 0){
 
 
   std::cout<<"/////////////////"<<std::endl;
+  std::cout<<" "<<std::endl;
 }
 
 }

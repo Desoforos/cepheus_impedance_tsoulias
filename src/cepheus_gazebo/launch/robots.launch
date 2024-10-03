@@ -4,6 +4,7 @@
 		<arg name="gui" value="true"/>
 		<arg name="paused" value="true"/>
 	</include>
+	<!-- <param name="/use_sim_time" value="true"/> -->
 	<group ns="cepheus">
 		<include file="$(find cepheus_gazebo)/launch/cepheus.launch" pass_all_args="true"/> 
 	</group>

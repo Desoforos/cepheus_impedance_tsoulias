@@ -39,9 +39,9 @@
 		<param name="port" value="$(arg port)"/>
 	</node> -->
 	<node
-		name="foros_simcontroller"  
+		name="new_foros_simcontroller"  
 		pkg="cepheus_control"
-		type="foros_simcontroller_node"
+		type="new_foros_simcontroller_node"
 		output="screen"
 		required="true"
 		if="$(arg controller)">
