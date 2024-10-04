@@ -25,7 +25,7 @@
 	<!-- gia sygkrish me simscape 29/7 -->
 	<xacro:property name="arm_length" value="0.37" />
 	<xacro:property name="forearm_length" value="0.368" />
-	<xacro:property name="gripper_length" value="0.0822" />
+	<xacro:property name="gripper_length" value="0.0411" />
 	<xacro:property name="base_mass" value="53" />
 	<xacro:property name="arm_mass" value="0.2314" />
 	<xacro:property name="forearm_mass" value="0.1" />
@@ -33,7 +33,7 @@
 	<xacro:property name="base_inertia" value="2.1837" />
 	<xacro:property name="arm_inertia" value="0.0068" />
 	<xacro:property name="forearm_inertia" value="${1.487/100000}" />
-	<xacro:property name="gripper_inertia" value="${1.2287/100000}" />
+	<xacro:property name="gripper_inertia" value="${9.61/100000}" />
 	<xacro:property name="joint_damping" value="0.001" />
 	<xacro:property name="joint_friction" value="0.001" />
 
@@ -444,7 +444,7 @@
 			<noise>
           		<type>gaussian</type>
           		<mean>0.0</mean>
-          		<stddev>0.003</stddev> <!-- change this to simulate noise --> 
+          		<stddev>0.0003</stddev> <!-- change this to simulate noise --> 
         	</noise>
 		</plugin>
 	</gazebo>

@@ -14,8 +14,8 @@ void initialiseParametersNew(){
     // l2 = r2 = 0.143;
     l2 = r2 = 0.184;
     m3 = 0.046;
-    l3 = r3 = 0.0411;
-    mt = 10; //kyriolektika axristo
+    l3 = r3 = 0.0411/2;
+    mt = 20; //kyriolektika axristo
     q01 = -0.5236;
     s01 = 0.5;
     s02 = 0.2;
@@ -303,7 +303,7 @@ void controller(int count, double tf, double t){
   double ke = pow(10,6);
   double z_contact=z_free*sqrt(kdf/(kdf+ke));
   double wn_contact=wn_free*sqrt((kdf+ke)/kdf);
-  double fd = 2;
+  double fd = 1;
   double kdc = 100;
   double mdc=(kdc+ke)/pow(wn_contact,2);
   double be = 0;

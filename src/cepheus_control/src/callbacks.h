@@ -8,8 +8,6 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 	for(i=0; i<msg->name.size(); i++){
 		//  ROS_INFO("[Gazebo Callback] Link Name: %s", msg->name[i]);
 		if(msg->name[i] == "cepheus::left_grip"){
-			ee_x = msg->pose[i].position.x +(l3+r3)*cos(q1+q2+q3);//left grip pose[6]
-    		ee_y = msg->pose[i].position.y + (l3+r3)*sin(q1+q2+q3);
 			tf::Quaternion qee( //for angle of ee
 				msg->pose[i].orientation.x,
 				msg->pose[i].orientation.y,
@@ -19,6 +17,8 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
     		double rollee, pitchee, yawee;
 			m_ee.getRPY(rollee, pitchee, yawee);
 			thetach = yawee; //angle of chaser(ee)
+			ee_x = msg->pose[i].position.x; // + (l3+r3)*cos(thetach);// +(l3+r3)*cos(q1+q2+q3);//left grip pose[6]
+    		ee_y = msg->pose[i].position.y; // + (l3+r3)*sin(thetach);// + (l3+r3)*sin(q1+q2+q3);
 			xee(0) = ee_x;
 			xee(1) = ee_y;
 			xee(2) = thetach;
