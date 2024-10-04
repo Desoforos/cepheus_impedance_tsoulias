@@ -23,7 +23,7 @@ void initialiseParametersNew(){
     ibzz = 2.1837;
     i1zz = 0.0068;
     i2zz = 1.487/100000;
-    i3zz = 1.2287/100000;
+    i3zz = 9.61/100000;
 
 
 
@@ -61,7 +61,7 @@ void calculateTrajecotryPolynomials(double tf){
 }
 
 
-void finaltrajectories(double t){
+void finaltrajectories(double t,double tf){
     double s,sdot, sdotdot;
 
     s = a0 + a1*t + a2*pow(t,2) + a3*pow(t,3) + a4*pow(t,4) + a5*pow(t,5);
@@ -76,30 +76,47 @@ void finaltrajectories(double t){
     double a11 = pow(10,7);
     double a22 = pow(10,-7);
 
+    if(t<=tf){
+      xstepfr = xE_in + s*(xt_in - xE_in);
+      ystepfr = yE_in + s*(yt_in - yE_in);
+      thstepfr = thetaE_in + s*(thetat_in - thetaE_in);
+      theta0stepfr = theta0in + s*(theta0fin - theta0in);
 
-    xstepfr = xE_in + s*(xt_in - xE_in);
-    ystepfr = yE_in + s*(yt_in - yE_in);
-    thstepfr = thetaE_in + s*(thetat_in - thetaE_in);
-    theta0stepfr = theta0in + s*(theta0fin - theta0in);
+      xstepdotfr = sdot*(xt_in-xE_in);
+      ystepdotfr = sdot*(yt_in - yE_in);
+      thstepdotfr = sdot*(thetat_in - thetaE_in);
+      theta0stepdotfr =  sdot*(theta0fin - theta0in);
 
-    xstepdotfr = sdot*(xt_in-xE_in);
-    ystepdotfr = sdot*(yt_in - yE_in);
-    thstepdotfr = sdot*(thetat_in - thetaE_in);
-    theta0stepdotfr =  sdot*(theta0fin - theta0in);
+      xstepdotdotfr = sdotdot*(xt_in-xE_in);
+      ystepdotdotfr = sdotdot*(yt_in - yE_in);
+      thstepdotdotfr = sdotdot*(thetat_in - thetaE_in);
+      theta0stepdotdotfr =  sdotdot*(theta0fin - theta0in);
+    }
+    else{
+      xstepfr = xt_in;
+      ystepfr = yt_in;
+      thstepfr = thetat_in;
+      theta0stepfr = theta0fin;
 
-    xstepdotdotfr = sdotdot*(xt_in-xE_in);
-    ystepdotdotfr = sdotdot*(yt_in - yE_in);
-    thstepdotdotfr = sdotdot*(thetat_in - thetaE_in);
-    theta0stepdotdotfr =  sdotdot*(theta0fin - theta0in);
+      xstepdotfr = 0;
+      ystepdotfr = 0;
+      thstepdotfr = 0;
+      theta0stepdotfr = 0;
 
-    xstepc = xt_in;
-    ystepc = yt_in;
-    thstepc = thetat_in;
+      xstepdotdotfr = 0;
+      ystepdotdotfr = 0;
+      thstepdotdotfr = 0;
+      theta0stepdotdotfr = 0;
+    }
+
+    xstepc = xt;
+    ystepc = yt;
+    thstepc = thetat;
     theta0stepc = theta0fin;
 
-    xstepdotc = 0;
-    ystepdotc = 0;
-    thstepdotc = 0;
+    xstepdotc = xtdot;
+    ystepdotc = ytdot;
+    thstepdotc = thetatdot;
     theta0stepdotc = 0;
 
     xstepdotdotc = 0;
@@ -156,20 +173,20 @@ void finaltrajectories(double t){
       theta0stepdotdot = theta0stepdotdotc;
     }
 
-    // xstep = xstepfr;
-    // ystep = ystepfr;
-    // thstep = thstepfr;
-    // theta0step = theta0stepfr;
+    xstep = xstepfr;
+    ystep = ystepfr;
+    thstep = thstepfr;
+    theta0step = theta0stepfr;
 
-    // xstepdot = xstepdotfr;
-    // ystepdot = ystepdotfr;
-    // thstepdot = thstepdotfr;
-    // theta0stepdot = theta0stepdotfr;
+    xstepdot = xstepdotfr;
+    ystepdot = ystepdotfr;
+    thstepdot = thstepdotfr;
+    theta0stepdot = theta0stepdotfr;
 
-    // xstepdotdot = xstepdotdotfr;
-    // ystepdotdot = ystepdotdotfr;
-    // thstepdotdot = thstepdotdotfr;
-    // theta0stepdotdot = theta0stepdotdotfr;
+    xstepdotdot = xstepdotdotfr;
+    ystepdotdot = ystepdotdotfr;
+    thstepdotdot = thstepdotdotfr;
+    theta0stepdotdot = theta0stepdotdotfr;
 
 //////////////////////
     // xstep = 1;
@@ -821,25 +838,26 @@ Eigen::MatrixXd bd=bd_f*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+bd_c*(abs
 //std::cout<<"bd is: "<<bd<<std::endl;
 ////std::cout<<"bd check "<<std::endl;
 
+
+
+// if(abs(fext(0))<0.5){
+//   bd = bd_f;
+//   kd = kd_f;
+//   md = md_f;
+//   fdes << 0, 0, 0, 0;
+// }
+// else{
+//   bd = bd_c;
+//   kd = kd_c;
+//   md = md_c;
+//   fdes << 0, 0, fd, 0;
+// }
 /*NA TO BGALO META!!!!!*/
-// kd = kd_f;
-// md = md_f;
-// bd = bd_f;
+kd = kd_f;
+md = md_f;
+bd = bd_f;
+fdes << 0, 0, 0, 0;
 /* MHN TO KSEXASEIS!!!!!*/
-
-if(abs(fext(0))<0.5){
-  bd = bd_f;
-  kd = kd_f;
-  md = md_f;
-  fdes << 0, 0, 0, 0;
-}
-else{
-  bd = bd_c;
-  kd = kd_c;
-  md = md_c;
-  fdes << 0, 0, fd, 0;
-}
-
 
 // fdes << 0, 0, fd*abs(fext(0))/(abs(fext(0))+a22), 0;
 

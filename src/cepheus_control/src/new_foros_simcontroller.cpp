@@ -176,7 +176,7 @@ int main(int argc, char **argv) {
             //desiredTrajectory(dur_time); 
             // calculateMatrices(); //den xreiazetai pleon einai mesa sto controler()
             // baseTrajectory(dur_time,tf);
-            finaltrajectories(dur_time); //apo last_controller.h
+            finaltrajectories(dur_time,tf); //apo last_controller.h
             // basePDcontroll();  //ena apo ta dyo tha exo anoikto
             // calculateQ();
             controller(count,tf,dur_time); //apo last_controller.h

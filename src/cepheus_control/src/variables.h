@@ -182,8 +182,8 @@ double t0 =0 , t_free; //anti gia 200
 double z_free = 1;
 double ts_free = 0.1*t_free;
 double wn_free = 6/ts_free;
-double z_contact;
-double wn_contact;
+//double z_contact;
+//double wn_contact;
 double thetaE_in; //=30*(M_PI/180);
 
 double v;
