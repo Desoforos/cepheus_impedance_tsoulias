@@ -17,6 +17,10 @@
 #include "define.h"
 #include "geometry_msgs/Wrench.h"
 #include <geometry_msgs/WrenchStamped.h>
+#include <rosbag/bag.h>
+#include <rosbag/view.h>
+#include <string>
+
 
 #define DESIRED_VEL 40  // RW_qdot_des [rad/s]
 #define NUM_OF_MEASUREMENTS 1000

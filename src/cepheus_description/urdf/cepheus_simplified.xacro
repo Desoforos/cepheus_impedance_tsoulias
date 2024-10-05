@@ -34,8 +34,10 @@
 	<xacro:property name="arm_inertia" value="0.0068" />
 	<xacro:property name="forearm_inertia" value="${1.487/100000}" />
 	<xacro:property name="gripper_inertia" value="${9.61/100000}" />
-	<xacro:property name="joint_damping" value="0.01" />
-	<xacro:property name="joint_friction" value="0.01" />
+	<xacro:property name="joint_damping" value="0.00001" />
+	<xacro:property name="joint_friction" value="0.00001" />
+	<xacro:property name="joint_limit" value="3.14" />
+
 
 
 
@@ -255,8 +257,8 @@
 		<child link="left_arm" />
 		<axis xyz="0 0 1" />
 		<limit
-			lower="-3.14"
-			upper="3.14"
+			lower="${-joint_limit}"
+			upper="${joint_limit}"
 			effort="20"
 			velocity="20" />
 		<dynamics
@@ -316,8 +318,8 @@
 		<child link="left_forearm" />
 		<axis xyz="0 0 1" />
 		<limit
-			lower="-3.14"
-			upper="3.14"
+			lower="${-joint_limit}"
+			upper="${joint_limit}"
 			effort="20"
 			velocity="20" />
 		<dynamics
@@ -377,8 +379,8 @@
 		<child link="left_grip" />
 		<axis xyz="0 0 1" />
 		<limit
-			lower="-3.14"
-			upper="3.14"
+			lower="${-joint_limit}"
+			upper="${joint_limit}"
 			effort="20"
 			velocity="20" />
 		<dynamics
@@ -420,6 +422,32 @@
 			<origin xyz="${gripper_length/2} 0 0" rpy="0 0 0"/>
 		</xacro:inertial_box> -->
 	</link> 
+	<joint name="final_joint" type="revolute">
+		<parent link="left_grip"/>
+		<child link="final_link"/>
+		<origin
+			xyz="${gripper_length} 0 0"
+			rpy="0 0 0 " />
+		<axis xyz="0 1 0"/>
+		<limit lower="-1" upper="1" effort="10" velocity="10000"/>
+		<dynamics damping="1" friction="1"/>
+	</joint>
+	<link name="final_link">
+		<inertial>
+			<origin
+				xyz="0.0 0.0 0.0"
+				rpy="0.0 0.0 0.0" />
+			<mass value="0.0001" />
+			<inertia
+				ixx="1e-6"
+				ixy="0.00001"
+				ixz="0.00001"
+				iyy="1e-6"
+				iyz="0.00001"
+				izz="1e-6" />
+		</inertial>
+	</link>
+
 	<transmission name="tran4">
 		<type>transmission_interface/SimpleTransmission</type>
 		<joint name="left_wrist_joint">

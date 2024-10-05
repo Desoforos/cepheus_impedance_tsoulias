@@ -48,6 +48,7 @@ int main(int argc, char **argv) {
     int count = 0;
     bool hasbegun = false;
     bool paramsinit = false;
+    bool record = false;
 
     /* ros init */
     ros::init(argc, argv, "new_foros_simcontroller_node");
@@ -128,6 +129,21 @@ int main(int argc, char **argv) {
     start_movement = false;
     firstTime = true;
 
+    rosbag::Bag bag;
+    std::string path = "/home/desoforos/cepheus_impedance_tsoulias/rosbags/" ;
+    std::string bag_file_name;
+
+    ROS_INFO("[new_foros_simcontroller]: You want to record to a bag? Press Y for yes, anything else for no. \n");
+
+    std::cin>>command;
+    if(command == 'Y'){
+        record = true;
+        ROS_INFO("[new_foros_simcontroller]: Please provide the name of the bag (dont put .bag). \n");
+        std::cin >>  bag_file_name;
+        bag.open(path + bag_file_name + ".bag", rosbag::bagmode::Write);
+    }
+    
+
     ROS_INFO("[new_foros_simcontroller]: Please provide the tf before proceeding. \n");
 
     std::cin>>tf;
@@ -199,6 +215,7 @@ int main(int argc, char **argv) {
             base_wrench.force.z = 0.0;
             base_wrench.torque.x = 0.0;
             base_wrench.torque.y = 0.0;
+            msg_fextx.data = fext(0);
 
             base_force_pub.publish(base_wrench);
             LS_torque_pub.publish(msg_LS);
@@ -214,6 +231,28 @@ int main(int argc, char **argv) {
             xee_x_pub.publish(msg_xee_x);
             xee_y_pub.publish(msg_xee_y);
             xee_theta_pub.publish(msg_xee_theta);
+
+            if(record){
+
+                bag.write("/cepheus/xt_x", ros::Time::now(), msg_xt_x);
+                bag.write("/cepheus/xd_x", ros::Time::now(), msg_xd_x);
+                bag.write("/cepheus/xee_x", ros::Time::now(), msg_xee_x);
+
+                bag.write("/cepheus/xt_y", ros::Time::now(), msg_xt_y);
+                bag.write("/cepheus/xd_y", ros::Time::now(), msg_xd_y);
+                bag.write("/cepheus/xee_y", ros::Time::now(), msg_xee_y);      
+
+                bag.write("/cepheus/xt_theta", ros::Time::now(), msg_xt_theta);
+                bag.write("/cepheus/xd_theta", ros::Time::now(), msg_xd_theta);
+                bag.write("/cepheus/xee_theta", ros::Time::now(), msg_xee_theta);   
+
+                bag.write("/cepheus/ft_sensor_topic", ros::Time::now(), msg_fextx);      
+
+                if(dur_time > 50){
+                    bag.close();
+                    record = false;
+                }
+            }
 
             // base_wrench.force.x = 0.0;
             // base_wrench.force.y = 0.0;
