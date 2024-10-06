@@ -10,6 +10,7 @@ add_compile_options(-std=c++11)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+	rospy
 	rosbag
 	roscpp
 	std_msgs
@@ -100,6 +101,8 @@ find_package(Eigen3 REQUIRED)
 #   cfg/DynReconf1.cfg
 #   cfg/DynReconf2.cfg
 # )
+
+catkin_python_setup() #gia to python plotter
 
 ###################################
 ## catkin specific configuration ##
@@ -225,3 +228,12 @@ target_link_libraries(new_foros_simcontroller_node ${catkin_LIBRARIES} ) #nikifo
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+install(PROGRAMS
+  src/real_time_plotter.py   # Assuming you placed the script in a "scripts" folder
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+) #gia to python plotter
+
+
+
+
