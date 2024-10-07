@@ -54,8 +54,10 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "new_foros_simcontroller_node");
     ros::NodeHandle nh;
     ros::Time curr_time, t_beg;
+    ros::Duration dur_time;
+    double secs;
     // ros::Duration dur_time; //duration of movement
-    double dur_time;
+    //double dur_time;
     double tf; //time of movement before reaching target
 
     /* Create publishers */
@@ -186,16 +188,18 @@ int main(int argc, char **argv) {
             }
             ros::spinOnce();
             curr_time = ros::Time::now();
-		    dur_time = curr_time.toSec() - t_beg.toSec();
+		    dur_time = curr_time - t_beg;
+            secs = dur_time.sec + dur_time.nsec * pow(10, -9);
+
  
             // diagnostics();
             //desiredTrajectory(dur_time); 
             // calculateMatrices(); //den xreiazetai pleon einai mesa sto controler()
             // baseTrajectory(dur_time,tf);
-            finaltrajectories(dur_time,tf); //apo last_controller.h
+            finaltrajectories(secs,tf); //apo last_controller.h
             // basePDcontroll();  //ena apo ta dyo tha exo anoikto
             // calculateQ();
-            controller(count,tf,dur_time); //apo last_controller.h
+            controller(count,tf,secs); //apo last_controller.h
             count++;
 
 
@@ -248,7 +252,7 @@ int main(int argc, char **argv) {
 
                 bag.write("/cepheus/ft_sensor_topic", ros::Time::now(), msg_fextx);      
 
-                if(dur_time > 50){
+                if(dur_time.toSec() > 50){
                     bag.close();
                     record = false;
                 }

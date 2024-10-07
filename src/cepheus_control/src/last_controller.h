@@ -140,38 +140,38 @@ void finaltrajectories(double t,double tf){
     // theta0stepdot = theta0stepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotc*(abs(fext(0))/(abs(fext(0))+a22));
     // theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
 
-    if(abs(fext(0))<0.5){
-      xstep = xstepfr;
-      ystep = ystepfr;
-      thstep = thstepfr;
-      theta0step = theta0stepfr;
+    // if(abs(fext(0))<0.5){ //tha to ksananikso afto fysika
+    //   xstep = xstepfr;
+    //   ystep = ystepfr;
+    //   thstep = thstepfr;
+    //   theta0step = theta0stepfr;
 
-      xstepdot = xstepdotfr;
-      ystepdot = ystepdotfr;
-      thstepdot = thstepdotfr;
-      theta0stepdot = theta0stepdotfr;
+    //   xstepdot = xstepdotfr;
+    //   ystepdot = ystepdotfr;
+    //   thstepdot = thstepdotfr;
+    //   theta0stepdot = theta0stepdotfr;
 
-      xstepdotdot = xstepdotdotfr;
-      ystepdotdot = ystepdotdotfr;
-      thstepdotdot = thstepdotdotfr;
-      theta0stepdotdot = theta0stepdotdotfr;
-    }
-    else{
-      xstep = xstepc;
-      ystep = ystepc;
-      thstep = thstepc;
-      theta0step = theta0stepc;
+    //   xstepdotdot = xstepdotdotfr;
+    //   ystepdotdot = ystepdotdotfr;
+    //   thstepdotdot = thstepdotdotfr;
+    //   theta0stepdotdot = theta0stepdotdotfr;
+    // }
+    // else{
+    //   xstep = xstepc;
+    //   ystep = ystepc;
+    //   thstep = thstepc;
+    //   theta0step = theta0stepc;
 
-      xstepdot = xstepdotc;
-      ystepdot = ystepdotc;
-      thstepdot = thstepdotc;
-      theta0stepdot = theta0stepdotc;
+    //   xstepdot = xstepdotc;
+    //   ystepdot = ystepdotc;
+    //   thstepdot = thstepdotc;
+    //   theta0stepdot = theta0stepdotc;
 
-      xstepdotdot = xstepdotdotc;
-      ystepdotdot = ystepdotdotc;
-      thstepdotdot = thstepdotdotc;
-      theta0stepdotdot = theta0stepdotdotc;
-    }
+    //   xstepdotdot = xstepdotdotc;
+    //   ystepdotdot = ystepdotdotc;
+    //   thstepdotdot = thstepdotdotc;
+    //   theta0stepdotdot = theta0stepdotdotc;
+    // }
 
     xstep = xstepfr;
     ystep = ystepfr;
