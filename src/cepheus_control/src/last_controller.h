@@ -824,17 +824,19 @@ qe << 0, fext(0), 0;  //den eimai sigouros gia afto
 
 //borei na xreiazetai if-else
 
-Eigen::MatrixXd kd=kd_f*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+kd_c*(abs(fext(0))/(abs(fext(0))+a22));
+//tha ta anoikso meta tora ta kleino gia free space mono
+
+// Eigen::MatrixXd kd=kd_f*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+kd_c*(abs(fext(0))/(abs(fext(0))+a22));
 //std::cout<<"kd is: "<<kd<<std::endl;
 ////std::cout<<"kd check "<<std::endl;
 
 
-Eigen::MatrixXd md=md_f*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+md_c*(abs(fext(0))/(abs(fext(0))+a22));
+// Eigen::MatrixXd md=md_f*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+md_c*(abs(fext(0))/(abs(fext(0))+a22));
 //std::cout<<"md is :"<<md<<std::endl;
 ////std::cout<<"md check "<<std::endl;
 
 
-Eigen::MatrixXd bd=bd_f*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+bd_c*(abs(fext(0))/(abs(fext(0))+a22));
+// Eigen::MatrixXd bd=bd_f*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+bd_c*(abs(fext(0))/(abs(fext(0))+a22));
 //std::cout<<"bd is: "<<bd<<std::endl;
 ////std::cout<<"bd check "<<std::endl;
 
@@ -853,9 +855,9 @@ Eigen::MatrixXd bd=bd_f*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+bd_c*(abs
 //   fdes << 0, 0, fd, 0;
 // }
 /*NA TO BGALO META!!!!!*/
-kd = kd_f;
-md = md_f;
-bd = bd_f;
+Eigen::MatrixXd kd = kd_f;
+Eigen::MatrixXd md = md_f;
+Eigen::MatrixXd bd = bd_f;
 fdes << 0, 0, 0, 0;
 /* MHN TO KSEXASEIS!!!!!*/
 

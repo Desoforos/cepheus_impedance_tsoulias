@@ -252,7 +252,7 @@ int main(int argc, char **argv) {
 
                 bag.write("/cepheus/ft_sensor_topic", ros::Time::now(), msg_fextx);      
 
-                if(dur_time.toSec() > 50){
+                if(secs > 50){
                     bag.close();
                     record = false;
                 }

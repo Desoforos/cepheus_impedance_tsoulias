@@ -224,7 +224,7 @@
 		</visual>
 		<inertial>
 			<origin xyz="0 0 0.025" rpy="0 0 0" />
-			<mass value="1"/>
+			<mass value="0.001"/>
 			<inertia
 				ixx="0.0001"
 				ixy="0.0001"
