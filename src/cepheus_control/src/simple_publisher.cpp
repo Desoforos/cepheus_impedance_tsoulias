@@ -7,6 +7,7 @@ int main(int argc, char **argv) {
     /* ros init */
     ros::init(argc, argv, "simple_publisher_node");
     ros::NodeHandle nh;
+    ros::Rate loop_rate(100); //100hz
 
     ros::Publisher LW_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_wrist_effort_controller/command", 100);
     double torque;
@@ -19,6 +20,7 @@ int main(int argc, char **argv) {
 
     LW_torque_pub.publish(msg_LW);
     ros::spinOnce();
+    loop_rate.sleep();
     msg_LW.data = 0;
     LW_torque_pub.publish(msg_LW);
     ros::spinOnce();
