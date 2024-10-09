@@ -152,6 +152,10 @@ ${catkin_INCLUDE_DIRS}
 # add_executable(foros_user_node src/foros_user.cpp)
 add_executable(testsetter_node src/testsetter.cpp)
 add_executable(new_foros_simcontroller_node src/new_foros_simcontroller.cpp)
+add_executable(simple_publisher_node src/simple_publisher.cpp)
+add_executable(simple_recorder_node src/simple_recorder.cpp)
+
+
 
 
 
@@ -171,7 +175,8 @@ add_executable(new_foros_simcontroller_node src/new_foros_simcontroller.cpp)
 # target_link_libraries(foros_simcontroller_node ${catkin_LIBRARIES}  ) #nikiforos
 target_link_libraries(testsetter_node ${catkin_LIBRARIES}  ) #nikiforos
 target_link_libraries(new_foros_simcontroller_node ${catkin_LIBRARIES} ) #nikiforos
-
+target_link_libraries(simple_publisher_node ${catkin_LIBRARIES} )
+target_link_libraries(simple_recorder_node ${catkin_LIBRARIES} )
 
 # target_link_libraries(eross_control_node ${catkin_LIBRARIES}  _ros) #nikiforos, took from eros
 #############

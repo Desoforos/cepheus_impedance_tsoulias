@@ -14,7 +14,8 @@ void initialiseParametersNew(){
     // l2 = r2 = 0.143;
     l2 = r2 = 0.184;
     m3 = 0.046;
-    l3 = r3 = 0.0411/2;
+    // l3 = r3 = 0.0411/2;
+    l3 = r3 = 0.0411;
     mt = 20; //kyriolektika axristo
     q01 = -0.5236;
     s01 = 0.5;
@@ -23,7 +24,8 @@ void initialiseParametersNew(){
     ibzz = 2.1837;
     i1zz = 0.0068;
     i2zz = 1.487/100000;
-    i3zz = 9.61/100000;
+    // i3zz = 9.61/100000;
+    i3zz = 1.2287/100000;
 
 
 
@@ -140,53 +142,53 @@ void finaltrajectories(double t,double tf){
     // theta0stepdot = theta0stepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotc*(abs(fext(0))/(abs(fext(0))+a22));
     // theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
 
-    // if(abs(fext(0))<0.5){ //tha to ksananikso afto fysika
-    //   xstep = xstepfr;
-    //   ystep = ystepfr;
-    //   thstep = thstepfr;
-    //   theta0step = theta0stepfr;
+    if(abs(fext(0))<0.5){ //tha to ksananikso afto fysika
+      xstep = xstepfr;
+      ystep = ystepfr;
+      thstep = thstepfr;
+      theta0step = theta0stepfr;
 
-    //   xstepdot = xstepdotfr;
-    //   ystepdot = ystepdotfr;
-    //   thstepdot = thstepdotfr;
-    //   theta0stepdot = theta0stepdotfr;
+      xstepdot = xstepdotfr;
+      ystepdot = ystepdotfr;
+      thstepdot = thstepdotfr;
+      theta0stepdot = theta0stepdotfr;
 
-    //   xstepdotdot = xstepdotdotfr;
-    //   ystepdotdot = ystepdotdotfr;
-    //   thstepdotdot = thstepdotdotfr;
-    //   theta0stepdotdot = theta0stepdotdotfr;
-    // }
-    // else{
-    //   xstep = xstepc;
-    //   ystep = ystepc;
-    //   thstep = thstepc;
-    //   theta0step = theta0stepc;
+      xstepdotdot = xstepdotdotfr;
+      ystepdotdot = ystepdotdotfr;
+      thstepdotdot = thstepdotdotfr;
+      theta0stepdotdot = theta0stepdotdotfr;
+    }
+    else{
+      xstep = xstepc;
+      ystep = ystepc;
+      thstep = thstepc;
+      theta0step = theta0stepc;
 
-    //   xstepdot = xstepdotc;
-    //   ystepdot = ystepdotc;
-    //   thstepdot = thstepdotc;
-    //   theta0stepdot = theta0stepdotc;
+      xstepdot = xstepdotc;
+      ystepdot = ystepdotc;
+      thstepdot = thstepdotc;
+      theta0stepdot = theta0stepdotc;
 
-    //   xstepdotdot = xstepdotdotc;
-    //   ystepdotdot = ystepdotdotc;
-    //   thstepdotdot = thstepdotdotc;
-    //   theta0stepdotdot = theta0stepdotdotc;
-    // }
+      xstepdotdot = xstepdotdotc;
+      ystepdotdot = ystepdotdotc;
+      thstepdotdot = thstepdotdotc;
+      theta0stepdotdot = theta0stepdotdotc;
+    }
 
-    xstep = xstepfr;
-    ystep = ystepfr;
-    thstep = thstepfr;
-    theta0step = theta0stepfr;
+    // xstep = xstepfr;
+    // ystep = ystepfr;
+    // thstep = thstepfr;
+    // theta0step = theta0stepfr;
 
-    xstepdot = xstepdotfr;
-    ystepdot = ystepdotfr;
-    thstepdot = thstepdotfr;
-    theta0stepdot = theta0stepdotfr;
+    // xstepdot = xstepdotfr;
+    // ystepdot = ystepdotfr;
+    // thstepdot = thstepdotfr;
+    // theta0stepdot = theta0stepdotfr;
 
-    xstepdotdot = xstepdotdotfr;
-    ystepdotdot = ystepdotdotfr;
-    thstepdotdot = thstepdotdotfr;
-    theta0stepdotdot = theta0stepdotdotfr;
+    // xstepdotdot = xstepdotdotfr;
+    // ystepdotdot = ystepdotdotfr;
+    // thstepdotdot = thstepdotdotfr;
+    // theta0stepdotdot = theta0stepdotdotfr;
 
 //////////////////////
     // xstep = 1;
@@ -842,23 +844,23 @@ qe << 0, fext(0), 0;  //den eimai sigouros gia afto
 
 
 
-// if(abs(fext(0))<0.5){
-//   bd = bd_f;
-//   kd = kd_f;
-//   md = md_f;
-//   fdes << 0, 0, 0, 0;
-// }
-// else{
-//   bd = bd_c;
-//   kd = kd_c;
-//   md = md_c;
-//   fdes << 0, 0, fd, 0;
-// }
+if(abs(fext(0))<0.5){
+  bd = bd_f;
+  kd = kd_f;
+  md = md_f;
+  fdes << 0, 0, 0, 0;
+}
+else{
+  bd = bd_c;
+  kd = kd_c;
+  md = md_c;
+  fdes << 0, 0, fd, 0;
+}
 /*NA TO BGALO META!!!!!*/
-Eigen::MatrixXd kd = kd_f;
-Eigen::MatrixXd md = md_f;
-Eigen::MatrixXd bd = bd_f;
-fdes << 0, 0, 0, 0;
+// Eigen::MatrixXd kd = kd_f;
+// Eigen::MatrixXd md = md_f;
+// Eigen::MatrixXd bd = bd_f;
+// fdes << 0, 0, 0, 0;
 /* MHN TO KSEXASEIS!!!!!*/
 
 // fdes << 0, 0, fd*abs(fext(0))/(abs(fext(0))+a22), 0;

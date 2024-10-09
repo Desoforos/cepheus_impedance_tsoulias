@@ -21,6 +21,13 @@ In the real robot, it shall be the topics that the cepheus_interface reads.
 #define VEL_FILTER 0.05
 #define TORQUE_LIMIT 0.00000001
 
+bool shutdown_requested = false;
+
+void sigintHandler(int sig) {
+    ROS_INFO("Shutdown request received. Performing cleanup tasks...");
+    shutdown_requested = true;  // Set flag for graceful shutdown
+}
+
 
 
 
@@ -53,6 +60,8 @@ int main(int argc, char **argv) {
     /* ros init */
     ros::init(argc, argv, "new_foros_simcontroller_node");
     ros::NodeHandle nh;
+    signal(SIGINT, sigintHandler);
+
     ros::Time curr_time, t_beg;
     ros::Duration dur_time;
     double secs;
@@ -153,7 +162,7 @@ int main(int argc, char **argv) {
 
 
 
-    while(ros::ok()){
+    while(ros::ok() && !shutdown_requested){
         //ros::spinOnce(); //once it spins it will read the current rw, le, ls and the callbacks will update the values q1,q2,q3 and the velocities
         //now we update the errors and we recalculate the desired efforts to publish as msg_LE,msg_LS
 
@@ -250,12 +259,16 @@ int main(int argc, char **argv) {
                 bag.write("/cepheus/xd_theta", ros::Time::now(), msg_xd_theta);
                 bag.write("/cepheus/xee_theta", ros::Time::now(), msg_xee_theta);   
 
-                bag.write("/cepheus/ft_sensor_topic", ros::Time::now(), msg_fextx);      
+                bag.write("/cepheus/ft_sensor_topic", ros::Time::now(), msg_fextx);
 
-                if(secs > 50){
+               
+
+
+                if(shutdown_requested){
                     bag.close();
                     record = false;
                 }
+                
             }
 
             // base_wrench.force.x = 0.0;
