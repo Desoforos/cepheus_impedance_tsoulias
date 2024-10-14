@@ -124,12 +124,14 @@ int main(int argc, char **argv) {
     /* Create subscribers */
     // ros::Subscriber RW_velocity_sub = nh.subscribe<sensor_msgs::JointState>("/cepheus/joint_states", 1, velocityCheckCallback);
     // ros::Subscriber position_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states", 1, positionCheckCallback);
-	ros::Subscriber joint_states_sub = nh.subscribe<sensor_msgs::JointState>("/cepheus/joint_states",100,jointStatesCallback);
+	
+    // ros::Subscriber joint_states_sub = nh.subscribe<sensor_msgs::JointState>("/cepheus/joint_states",100,jointStatesCallback); //tha to anoikso
 
     //ros::Subscriber ee_target_pos_sub = nh.subscribe<geometry_msgs::Pose>("/cepheus/ee_target_pos", 1, ee_target_posCallback);
     //ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 1, lsPosCallback);
     ros::Subscriber force_sub = nh.subscribe("/cepheus/ft_sensor_topic", 100, forceCallback);
-    ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",100,gazeboposCallback);
+    
+    // ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",100,gazeboposCallback);     //tha to anoikso
     
     //ros::Rate loop_rate(frequency);
     ros::Rate loop_rate(100); //100Hz
@@ -219,8 +221,8 @@ int main(int argc, char **argv) {
 			// msg_LS.data = qact(3);
 			// msg_LE.data = qact(4);
 			// msg_LW.data = qact(5);
-            std::cout<<"thetach is: "<<thetach<<std::endl;
-            std::cout<<"theta0+q1+q2+q3 is: "<<(theta0+q1+q2+q3)<<std::endl;
+            // std::cout<<"thetach is: "<<thetach<<std::endl;
+            // std::cout<<"theta0+q1+q2+q3 is: "<<(theta0+q1+q2+q3)<<std::endl;
 
 
             // RW_torque_pub.publish(msg_RW);
@@ -232,10 +234,10 @@ int main(int argc, char **argv) {
             base_wrench.torque.y = 0.0;
             msg_fextx.data = fext(0);
 
-            base_force_pub.publish(base_wrench);
-            LS_torque_pub.publish(msg_LS);
-            LE_torque_pub.publish(msg_LE);
-            LW_torque_pub.publish(msg_LW);
+            // base_force_pub.publish(base_wrench);
+            // LS_torque_pub.publish(msg_LS);
+            // LE_torque_pub.publish(msg_LE);
+            // LW_torque_pub.publish(msg_LW);
 
             xd_x_pub.publish(msg_xd_x);
             xd_y_pub.publish(msg_xd_y);

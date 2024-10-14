@@ -42,6 +42,30 @@ void initialiseParametersNew(){
     x3 = l3+r3;
 
     M=m0+m1+m2+m3;
+
+    // GIA TO PEIRAMA
+    /* APATH THA TO ALLAKSO*/
+    ee_x = 0.706577;
+    ee_y = -0.263787;
+    thetach = 0.866966;
+    xeedot(0) = 0.000382186;
+    xeedot(1) = 0.000174835;
+    xeedot(2) = -0.000288378;
+    xt_in  =0.787303;
+    yt_in  =0.163512;
+    thetat_in = 0.777124;
+    theta0 = -0.462226;
+    theta0dot = -0.000288378;
+    xc0 = -0.0100868;
+    yc0 = -0.00505269;
+    xc0dot = 0.000724746;
+    yc0dot = 0.000651179;
+    q1 = -0.742835;
+    q2 = 1.05601;
+    q3 = 0.529251;
+    q1dot = -1.359*pow(10,-11);
+    q2dot = -2.75252*pow(10,-6);
+    q3dot = -2.78264*pow(10,-13);
 }
 
 void calculateTrajecotryPolynomials(double tf){
@@ -180,20 +204,21 @@ void finaltrajectories(double t,double tf){
       theta0stepdotdot = theta0stepdotdotc;
     }
 
-    // xstep = xstepfr;
-    // ystep = ystepfr;
-    // thstep = thstepfr;
-    // theta0step = theta0stepfr;
+  // gia peirama me kosta 14/10
+    xstep = xstepfr;
+    ystep = ystepfr;
+    thstep = thstepfr;
+    theta0step = theta0stepfr;
 
-    // xstepdot = xstepdotfr;
-    // ystepdot = ystepdotfr;
-    // thstepdot = thstepdotfr;
-    // theta0stepdot = theta0stepdotfr;
+    xstepdot = xstepdotfr;
+    ystepdot = ystepdotfr;
+    thstepdot = thstepdotfr;
+    theta0stepdot = theta0stepdotfr;
 
-    // xstepdotdot = xstepdotdotfr;
-    // ystepdotdot = ystepdotdotfr;
-    // thstepdotdot = thstepdotdotfr;
-    // theta0stepdotdot = theta0stepdotdotfr;
+    xstepdotdot = xstepdotdotfr;
+    ystepdotdot = ystepdotdotfr;
+    thstepdotdot = thstepdotdotfr;
+    theta0stepdotdot = theta0stepdotdotfr;
 
 //////////////////////
     // xstep = 1;
