@@ -219,6 +219,8 @@ int main(int argc, char **argv) {
 			// msg_LS.data = qact(3);
 			// msg_LE.data = qact(4);
 			// msg_LW.data = qact(5);
+            std::cout<<"thetach is: "<<thetach<<std::endl;
+            std::cout<<"theta0+q1+q2+q3 is: "<<(theta0+q1+q2+q3)<<std::endl;
 
 
             // RW_torque_pub.publish(msg_RW);

@@ -21,9 +21,9 @@ int main(int argc, char **argv) {
     LW_torque_pub.publish(msg_LW);
     ros::spinOnce();
     loop_rate.sleep();
-    msg_LW.data = 0;
-    LW_torque_pub.publish(msg_LW);
-    ros::spinOnce();
+    // msg_LW.data = 0; //den theloume kroustikh theloyme synexh roph
+    // LW_torque_pub.publish(msg_LW);
+    // ros::spinOnce();
 
 
     return 0;

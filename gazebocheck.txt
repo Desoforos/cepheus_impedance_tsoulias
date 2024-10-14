@@ -1,0 +1,1413 @@
+name: "cepheus"
+id: 10
+is_static: false
+pose {
+  position {
+    x: 0.0011878264605162609
+    y: 1.2738842788306787e-08
+    z: 5.9320366513013957e-10
+  }
+  orientation {
+    x: -6.9244746134005646e-10
+    y: 1.256649451797557e-09
+    z: -4.1060022070655365e-09
+    w: 1
+  }
+}
+joint {
+  name: "cepheus::p1_joint"
+  id: 34
+  angle: 0.0011878264605161548
+  type: PRISMATIC
+  parent: "world"
+  parent_id: 0
+  child: "cepheus::p1"
+  child_id: 11
+  pose {
+    position {
+      x: 0
+      y: 0
+      z: 0
+    }
+    orientation {
+      x: 0
+      y: 0
+      z: 0
+      w: 1
+    }
+  }
+  axis1 {
+    xyz {
+      x: 1
+      y: 0
+      z: 0
+    }
+    limit_lower: -100
+    limit_upper: 100
+    limit_effort: 1000
+    limit_velocity: 10000
+    damping: 1
+    friction: 1
+    use_parent_model_frame: false
+    xyz_expressed_in: ""
+  }
+}
+joint {
+  name: "cepheus::p2_joint"
+  id: 35
+  angle: -0.00054153633912457
+  type: PRISMATIC
+  parent: "cepheus::p1"
+  parent_id: 11
+  child: "cepheus::p2"
+  child_id: 12
+  pose {
+    position {
+      x: 0
+      y: 0
+      z: 0
+    }
+    orientation {
+      x: 0
+      y: 0
+      z: 0
+      w: 1
+    }
+  }
+  axis1 {
+    xyz {
+      x: 0
+      y: 1
+      z: 0
+    }
+    limit_lower: -100
+    limit_upper: 100
+    limit_effort: 1000
+    limit_velocity: 10000
+    damping: 1
+    friction: 1
+    use_parent_model_frame: false
+    xyz_expressed_in: ""
+  }
+}
+joint {
+  name: "cepheus::r_joint"
+  id: 36
+  angle: 0.00026299725003742225
+  type: REVOLUTE
+  parent: "cepheus::p2"
+  parent_id: 12
+  child: "cepheus::cepheus_base"
+  child_id: 13
+  pose {
+    position {
+      x: 0
+      y: 0
+      z: 0
+    }
+    orientation {
+      x: 0
+      y: 0
+      z: 0
+      w: 1
+    }
+  }
+  axis1 {
+    xyz {
+      x: 0
+      y: 0
+      z: 1
+    }
+    limit_lower: -1e+16
+    limit_upper: 1e+16
+    limit_effort: -1
+    limit_velocity: -1
+    damping: 1
+    friction: 1
+    use_parent_model_frame: false
+    xyz_expressed_in: ""
+  }
+}
+joint {
+  name: "cepheus::left_shoulder_joint"
+  id: 37
+  angle: 0.00024057141736744114
+  type: REVOLUTE
+  parent: "cepheus::cepheus_base"
+  parent_id: 13
+  child: "cepheus::left_arm"
+  child_id: 18
+  pose {
+    position {
+      x: 0
+      y: 0
+      z: 0
+    }
+    orientation {
+      x: 0
+      y: 0
+      z: 0
+      w: 1
+    }
+  }
+  axis1 {
+    xyz {
+      x: 0
+      y: 0
+      z: 1
+    }
+    limit_lower: -3.14
+    limit_upper: 3.14
+    limit_effort: 20
+    limit_velocity: 20
+    damping: 1
+    friction: 1
+    use_parent_model_frame: false
+    xyz_expressed_in: ""
+  }
+}
+joint {
+  name: "cepheus::left_elbow_joint"
+  id: 38
+  angle: 1.956987753981565e-05
+  type: REVOLUTE
+  parent: "cepheus::left_arm"
+  parent_id: 18
+  child: "cepheus::left_forearm"
+  child_id: 23
+  pose {
+    position {
+      x: 0
+      y: 0
+      z: 0
+    }
+    orientation {
+      x: 0
+      y: 0
+      z: 0
+      w: 1
+    }
+  }
+  axis1 {
+    xyz {
+      x: 0
+      y: 0
+      z: 1
+    }
+    limit_lower: -3.14
+    limit_upper: 3.14
+    limit_effort: 20
+    limit_velocity: 20
+    damping: 1
+    friction: 1
+    use_parent_model_frame: false
+    xyz_expressed_in: ""
+  }
+}
+joint {
+  name: "cepheus::left_wrist_joint"
+  id: 39
+  angle: -0.00040360716422327414
+  type: REVOLUTE
+  parent: "cepheus::left_forearm"
+  parent_id: 23
+  child: "cepheus::left_grip"
+  child_id: 28
+  pose {
+    position {
+      x: 0
+      y: 0
+      z: 0
+    }
+    orientation {
+      x: 0
+      y: 0
+      z: 0
+      w: 1
+    }
+  }
+  axis1 {
+    xyz {
+      x: 0
+      y: 0
+      z: 1
+    }
+    limit_lower: -3.14
+    limit_upper: 3.14
+    limit_effort: 20
+    limit_velocity: 20
+    damping: 0.001
+    friction: 0.001
+    use_parent_model_frame: false
+    xyz_expressed_in: ""
+  }
+}
+joint {
+  name: "cepheus::final_joint"
+  id: 40
+  angle: -0.01670371676427429
+  type: REVOLUTE
+  parent: "cepheus::left_grip"
+  parent_id: 28
+  child: "cepheus::final_link"
+  child_id: 33
+  pose {
+    position {
+      x: -5.5511151231257827e-17
+      y: 0
+      z: 0
+    }
+    orientation {
+      x: 0
+      y: 0
+      z: 0
+      w: 1
+    }
+  }
+  axis1 {
+    xyz {
+      x: 0
+      y: 1
+      z: 0
+    }
+    limit_lower: -1
+    limit_upper: 1
+    limit_effort: 10
+    limit_velocity: 10000
+    damping: 1
+    friction: 1
+    use_parent_model_frame: false
+    xyz_expressed_in: ""
+  }
+}
+link {
+  id: 11
+  name: "cepheus::p1"
+  self_collide: false
+  gravity: true
+  kinematic: false
+  enabled: true
+  inertial {
+    mass: 0.01
+    pose {
+      position {
+        x: 0
+        y: 0
+        z: 0
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    ixx: 0.01
+    ixy: 0.0001
+    ixz: 0.0001
+    iyy: 0.01
+    iyz: 0.0001
+    izz: 0.01
+  }
+  pose {
+    position {
+      x: 0
+      y: 0
+      z: 0
+    }
+    orientation {
+      x: 0
+      y: 0
+      z: 0
+      w: 1
+    }
+  }
+  visual {
+    name: "cepheus::p1"
+    id: 11
+    parent_name: "cepheus"
+    parent_id: 10
+    pose {
+      position {
+        x: 0
+        y: 0
+        z: 0
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    type: LINK
+  }
+  canonical: true
+  enable_wind: false
+}
+link {
+  id: 12
+  name: "cepheus::p2"
+  self_collide: false
+  gravity: true
+  kinematic: false
+  enabled: true
+  inertial {
+    mass: 0.01
+    pose {
+      position {
+        x: 0
+        y: 0
+        z: 0
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    ixx: 0.01
+    ixy: 0.0001
+    ixz: 0.0001
+    iyy: 0.01
+    iyz: 0.0001
+    izz: 0.01
+  }
+  pose {
+    position {
+      x: -2.2650748627435236e-06
+      y: -0.00054153633916669182
+      z: -8.5998080939360584e-10
+    }
+    orientation {
+      x: 1.9879370519647624e-09
+      y: -2.3173854354202545e-09
+      z: 9.2988474072609554e-09
+      w: 1
+    }
+  }
+  visual {
+    name: "cepheus::p2"
+    id: 12
+    parent_name: "cepheus"
+    parent_id: 10
+    pose {
+      position {
+        x: -2.2650748627435236e-06
+        y: -0.00054153633916669182
+        z: -8.5998080939360584e-10
+      }
+      orientation {
+        x: 1.9879370519647624e-09
+        y: -2.3173854354202545e-09
+        z: 9.2988474072609554e-09
+        w: 1
+      }
+    }
+    type: LINK
+  }
+  enable_wind: false
+}
+link {
+  id: 13
+  name: "cepheus::cepheus_base"
+  self_collide: false
+  gravity: true
+  kinematic: false
+  enabled: true
+  inertial {
+    mass: 53
+    pose {
+      position {
+        x: 0.0024
+        y: 0.02937
+        z: 0.15711
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    ixx: 1e-06
+    ixy: 1e-06
+    ixz: 1e-06
+    iyy: 1e-06
+    iyz: 1e-06
+    izz: 1.06
+  }
+  pose {
+    position {
+      x: -5.5016790419080971e-06
+      y: -0.00054158167100714738
+      z: -2.8293232860832e-10
+    }
+    orientation {
+      x: -1.2867407444022292e-09
+      y: 6.9205421199296569e-10
+      z: 0.00013150792341205762
+      w: 0.999999991352833
+    }
+  }
+  visual {
+    name: "cepheus::cepheus_base"
+    id: 13
+    parent_name: "cepheus"
+    parent_id: 10
+    pose {
+      position {
+        x: -5.5016790419080971e-06
+        y: -0.00054158167100714738
+        z: -2.8293232860832e-10
+      }
+      orientation {
+        x: -1.2867407444022292e-09
+        y: 6.9205421199296569e-10
+        z: 0.00013150792341205762
+        w: 0.999999991352833
+      }
+    }
+    type: LINK
+  }
+  visual {
+    name: "cepheus::cepheus_base::cepheus_base_visual"
+    id: 14
+    parent_name: "cepheus::cepheus_base"
+    parent_id: 13
+    pose {
+      position {
+        x: 0
+        y: 0
+        z: 0.215
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    geometry {
+      type: CYLINDER
+      cylinder {
+        radius: 0.2
+        length: 0.43
+      }
+    }
+    material {
+      script {
+        uri: "file://media/materials/scripts/gazebo.material"
+        name: "Gazebo/White"
+      }
+    }
+    is_static: false
+    scale {
+      x: 1
+      y: 1
+      z: 1
+    }
+    type: VISUAL
+  }
+  collision {
+    id: 15
+    name: "cepheus::cepheus_base::cepheus_base_collision"
+    laser_retro: 0
+    pose {
+      position {
+        x: 0
+        y: 0
+        z: 0.215
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    geometry {
+      type: CYLINDER
+      cylinder {
+        radius: 0.2
+        length: 0.43
+      }
+    }
+    surface {
+      friction {
+        mu: 1
+        mu2: 1
+        fdir1 {
+          x: 0
+          y: 0
+          z: 0
+        }
+        slip1: 0
+        slip2: 0
+        torsional {
+          coefficient: 1
+          use_patch_radius: true
+          patch_radius: 0
+          surface_radius: 0
+          ode {
+            slip: 0
+          }
+        }
+      }
+      restitution_coefficient: 0
+      bounce_threshold: 100000
+      soft_cfm: 0
+      soft_erp: 0.2
+      kp: 1000000000000
+      kd: 1
+      max_vel: 0.01
+      min_depth: 0
+      collide_without_contact: false
+      collide_without_contact_bitmask: 1
+      collide_bitmask: 65535
+      elastic_modulus: 0
+    }
+    visual {
+      name: "cepheus::cepheus_base::cepheus_base_collision"
+      id: 15
+      parent_name: "cepheus::cepheus_base"
+      parent_id: 13
+      pose {
+        position {
+          x: 0
+          y: 0
+          z: 0.215
+        }
+        orientation {
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+        }
+      }
+      type: COLLISION
+    }
+    visual {
+      name: "cepheus::cepheus_base::cepheus_base_collision__COLLISION_VISUAL__"
+      id: 16
+      parent_name: "cepheus::cepheus_base"
+      parent_id: 13
+      cast_shadows: false
+      pose {
+        position {
+          x: 0
+          y: 0
+          z: 0.215
+        }
+        orientation {
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+        }
+      }
+      geometry {
+        type: CYLINDER
+        cylinder {
+          radius: 0.2
+          length: 0.43
+        }
+      }
+      material {
+        script {
+          uri: "file://media/materials/scripts/gazebo.material"
+          name: "Gazebo/OrangeTransparent"
+        }
+      }
+      is_static: false
+      type: COLLISION
+    }
+  }
+  enable_wind: false
+}
+link {
+  id: 18
+  name: "cepheus::left_arm"
+  self_collide: false
+  gravity: true
+  kinematic: false
+  enabled: true
+  inertial {
+    mass: 0.2314
+    pose {
+      position {
+        x: 0.185
+        y: 0
+        z: 0
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    ixx: 0.0001
+    ixy: 0.0001
+    ixz: 0.0001
+    iyy: 0.0001
+    iyz: 0.0001
+    izz: 0.0026476
+  }
+  pose {
+    position {
+      x: 0.1425161281513157
+      y: -0.082754095906001829
+      z: 0.058749998383587125
+    }
+    orientation {
+      x: 3.7123049065167472e-09
+      y: -1.9769335753666863e-09
+      z: 0.00025179362968088149
+      w: 0.99999996829998361
+    }
+  }
+  visual {
+    name: "cepheus::left_arm"
+    id: 18
+    parent_name: "cepheus"
+    parent_id: 10
+    pose {
+      position {
+        x: 0.1425161281513157
+        y: -0.082754095906001829
+        z: 0.058749998383587125
+      }
+      orientation {
+        x: 3.7123049065167472e-09
+        y: -1.9769335753666863e-09
+        z: 0.00025179362968088149
+        w: 0.99999996829998361
+      }
+    }
+    type: LINK
+  }
+  visual {
+    name: "cepheus::left_arm::left_arm_visual"
+    id: 19
+    parent_name: "cepheus::left_arm"
+    parent_id: 18
+    pose {
+      position {
+        x: 0.185
+        y: 0
+        z: 0
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    geometry {
+      type: BOX
+      box {
+        size {
+          x: 0.37
+          y: 0.02
+          z: 0.02
+        }
+      }
+    }
+    material {
+      script {
+        uri: "file://media/materials/scripts/gazebo.material"
+        name: "Gazebo/Blue"
+      }
+    }
+    is_static: false
+    scale {
+      x: 1
+      y: 1
+      z: 1
+    }
+    type: VISUAL
+  }
+  collision {
+    id: 20
+    name: "cepheus::left_arm::left_arm_collision"
+    laser_retro: 0
+    pose {
+      position {
+        x: 0.185
+        y: 0
+        z: 0
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    geometry {
+      type: BOX
+      box {
+        size {
+          x: 0.37
+          y: 0.02
+          z: 0.02
+        }
+      }
+    }
+    surface {
+      friction {
+        mu: 1
+        mu2: 1
+        fdir1 {
+          x: 0
+          y: 0
+          z: 0
+        }
+        slip1: 0
+        slip2: 0
+        torsional {
+          coefficient: 1
+          use_patch_radius: true
+          patch_radius: 0
+          surface_radius: 0
+          ode {
+            slip: 0
+          }
+        }
+      }
+      restitution_coefficient: 0
+      bounce_threshold: 100000
+      soft_cfm: 0
+      soft_erp: 0.2
+      kp: 1000000000000
+      kd: 1
+      max_vel: 0.01
+      min_depth: 0
+      collide_without_contact: false
+      collide_without_contact_bitmask: 1
+      collide_bitmask: 65535
+      elastic_modulus: 0
+    }
+    visual {
+      name: "cepheus::left_arm::left_arm_collision"
+      id: 20
+      parent_name: "cepheus::left_arm"
+      parent_id: 18
+      pose {
+        position {
+          x: 0.185
+          y: 0
+          z: 0
+        }
+        orientation {
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+        }
+      }
+      type: COLLISION
+    }
+    visual {
+      name: "cepheus::left_arm::left_arm_collision__COLLISION_VISUAL__"
+      id: 21
+      parent_name: "cepheus::left_arm"
+      parent_id: 18
+      cast_shadows: false
+      pose {
+        position {
+          x: 0.185
+          y: 0
+          z: 0
+        }
+        orientation {
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+        }
+      }
+      geometry {
+        type: BOX
+        box {
+          size {
+            x: 0.37
+            y: 0.02
+            z: 0.02
+          }
+        }
+      }
+      material {
+        script {
+          uri: "file://media/materials/scripts/gazebo.material"
+          name: "Gazebo/OrangeTransparent"
+        }
+      }
+      is_static: false
+      type: COLLISION
+    }
+  }
+  enable_wind: false
+}
+link {
+  id: 23
+  name: "cepheus::left_forearm"
+  self_collide: false
+  gravity: true
+  kinematic: false
+  enabled: true
+  inertial {
+    mass: 0.1
+    pose {
+      position {
+        x: 0.184
+        y: 0
+        z: 0
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    ixx: 1e-05
+    ixy: 1e-05
+    ixz: 1e-05
+    iyy: 1e-05
+    iyz: 1e-05
+    izz: 0.0011318
+  }
+  pose {
+    position {
+      x: 0.51251608126789994
+      y: -0.082567767467409667
+      z: 0.058749997745348323
+    }
+    orientation {
+      x: 5.4863752187652671e-09
+      y: -3.1377382338334512e-09
+      z: 0.00026157856789862835
+      w: 0.999999965788326
+    }
+  }
+  visual {
+    name: "cepheus::left_forearm"
+    id: 23
+    parent_name: "cepheus"
+    parent_id: 10
+    pose {
+      position {
+        x: 0.51251608126789994
+        y: -0.082567767467409667
+        z: 0.058749997745348323
+      }
+      orientation {
+        x: 5.4863752187652671e-09
+        y: -3.1377382338334512e-09
+        z: 0.00026157856789862835
+        w: 0.999999965788326
+      }
+    }
+    type: LINK
+  }
+  visual {
+    name: "cepheus::left_forearm::left_forearm_visual"
+    id: 24
+    parent_name: "cepheus::left_forearm"
+    parent_id: 23
+    pose {
+      position {
+        x: 0.184
+        y: 0
+        z: 0
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    geometry {
+      type: BOX
+      box {
+        size {
+          x: 0.368
+          y: 0.02
+          z: 0.02
+        }
+      }
+    }
+    material {
+      script {
+        uri: "file://media/materials/scripts/gazebo.material"
+        name: "Gazebo/Yellow"
+      }
+    }
+    is_static: false
+    scale {
+      x: 1
+      y: 1
+      z: 1
+    }
+    type: VISUAL
+  }
+  collision {
+    id: 25
+    name: "cepheus::left_forearm::left_forearm_collision"
+    laser_retro: 0
+    pose {
+      position {
+        x: 0.184
+        y: 0
+        z: 0
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    geometry {
+      type: BOX
+      box {
+        size {
+          x: 0.368
+          y: 0.02
+          z: 0.02
+        }
+      }
+    }
+    surface {
+      friction {
+        mu: 1
+        mu2: 1
+        fdir1 {
+          x: 0
+          y: 0
+          z: 0
+        }
+        slip1: 0
+        slip2: 0
+        torsional {
+          coefficient: 1
+          use_patch_radius: true
+          patch_radius: 0
+          surface_radius: 0
+          ode {
+            slip: 0
+          }
+        }
+      }
+      restitution_coefficient: 0
+      bounce_threshold: 100000
+      soft_cfm: 0
+      soft_erp: 0.2
+      kp: 1000000000000
+      kd: 1
+      max_vel: 0.01
+      min_depth: 0
+      collide_without_contact: false
+      collide_without_contact_bitmask: 1
+      collide_bitmask: 65535
+      elastic_modulus: 0
+    }
+    visual {
+      name: "cepheus::left_forearm::left_forearm_collision"
+      id: 25
+      parent_name: "cepheus::left_forearm"
+      parent_id: 23
+      pose {
+        position {
+          x: 0.184
+          y: 0
+          z: 0
+        }
+        orientation {
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+        }
+      }
+      type: COLLISION
+    }
+    visual {
+      name: "cepheus::left_forearm::left_forearm_collision__COLLISION_VISUAL__"
+      id: 26
+      parent_name: "cepheus::left_forearm"
+      parent_id: 23
+      cast_shadows: false
+      pose {
+        position {
+          x: 0.184
+          y: 0
+          z: 0
+        }
+        orientation {
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+        }
+      }
+      geometry {
+        type: BOX
+        box {
+          size {
+            x: 0.368
+            y: 0.02
+            z: 0.02
+          }
+        }
+      }
+      material {
+        script {
+          uri: "file://media/materials/scripts/gazebo.material"
+          name: "Gazebo/OrangeTransparent"
+        }
+      }
+      is_static: false
+      type: COLLISION
+    }
+  }
+  enable_wind: false
+}
+link {
+  id: 28
+  name: "cepheus::left_grip"
+  self_collide: false
+  gravity: true
+  kinematic: false
+  enabled: true
+  inertial {
+    mass: 0.046
+    pose {
+      position {
+        x: 0.0411
+        y: 0
+        z: 0
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    ixx: 1e-06
+    ixy: 1e-06
+    ixz: 1e-06
+    iyy: 1e-06
+    iyz: 1e-06
+    izz: 2.73e-05
+  }
+  pose {
+    position {
+      x: 0.88051603090665176
+      y: -0.082375244383356028
+      z: 0.0587499979327465
+    }
+    orientation {
+      x: 6.7932811112311658e-09
+      y: -4.0763538631775619e-09
+      z: 5.9774988740809042e-05
+      w: 0.99999999821347541
+    }
+  }
+  visual {
+    name: "cepheus::left_grip"
+    id: 28
+    parent_name: "cepheus"
+    parent_id: 10
+    pose {
+      position {
+        x: 0.88051603090665176
+        y: -0.082375244383356028
+        z: 0.0587499979327465
+      }
+      orientation {
+        x: 6.7932811112311658e-09
+        y: -4.0763538631775619e-09
+        z: 5.9774988740809042e-05
+        w: 0.99999999821347541
+      }
+    }
+    type: LINK
+  }
+  visual {
+    name: "cepheus::left_grip::left_grip_visual"
+    id: 29
+    parent_name: "cepheus::left_grip"
+    parent_id: 28
+    pose {
+      position {
+        x: 0.0411
+        y: 0
+        z: 0
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    geometry {
+      type: BOX
+      box {
+        size {
+          x: 0.0822
+          y: 0.02
+          z: 0.02
+        }
+      }
+    }
+    material {
+      script {
+        uri: "file://media/materials/scripts/gazebo.material"
+        name: "Gazebo/Grey"
+      }
+    }
+    is_static: false
+    scale {
+      x: 1
+      y: 1
+      z: 1
+    }
+    type: VISUAL
+  }
+  collision {
+    id: 30
+    name: "cepheus::left_grip::left_grip_collision"
+    laser_retro: 0
+    pose {
+      position {
+        x: 0.0411
+        y: 0
+        z: 0
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    geometry {
+      type: BOX
+      box {
+        size {
+          x: 0.0822
+          y: 0.02
+          z: 0.02
+        }
+      }
+    }
+    surface {
+      friction {
+        mu: 1
+        mu2: 1
+        fdir1 {
+          x: 0
+          y: 0
+          z: 0
+        }
+        slip1: 0
+        slip2: 0
+        torsional {
+          coefficient: 1
+          use_patch_radius: true
+          patch_radius: 0
+          surface_radius: 0
+          ode {
+            slip: 0
+          }
+        }
+      }
+      restitution_coefficient: 0
+      bounce_threshold: 100000
+      soft_cfm: 0
+      soft_erp: 0.2
+      kp: 1000000000000
+      kd: 1
+      max_vel: 0.01
+      min_depth: 0
+      collide_without_contact: false
+      collide_without_contact_bitmask: 1
+      collide_bitmask: 65535
+      elastic_modulus: 0
+    }
+    visual {
+      name: "cepheus::left_grip::left_grip_collision"
+      id: 30
+      parent_name: "cepheus::left_grip"
+      parent_id: 28
+      pose {
+        position {
+          x: 0.0411
+          y: 0
+          z: 0
+        }
+        orientation {
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+        }
+      }
+      type: COLLISION
+    }
+    visual {
+      name: "cepheus::left_grip::left_grip_collision__COLLISION_VISUAL__"
+      id: 31
+      parent_name: "cepheus::left_grip"
+      parent_id: 28
+      cast_shadows: false
+      pose {
+        position {
+          x: 0.0411
+          y: 0
+          z: 0
+        }
+        orientation {
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+        }
+      }
+      geometry {
+        type: BOX
+        box {
+          size {
+            x: 0.0822
+            y: 0.02
+            z: 0.02
+          }
+        }
+      }
+      material {
+        script {
+          uri: "file://media/materials/scripts/gazebo.material"
+          name: "Gazebo/OrangeTransparent"
+        }
+      }
+      is_static: false
+      type: COLLISION
+    }
+  }
+  enable_wind: false
+}
+link {
+  id: 33
+  name: "cepheus::final_link"
+  self_collide: false
+  gravity: true
+  kinematic: false
+  enabled: true
+  inertial {
+    mass: 0.0001
+    pose {
+      position {
+        x: 0
+        y: 0
+        z: 0
+      }
+      orientation {
+        x: 0
+        y: 0
+        z: 0
+        w: 1
+      }
+    }
+    ixx: 1e-07
+    ixy: 1e-05
+    ixz: 1e-05
+    iyy: 1e-07
+    iyz: 1e-05
+    izz: 1e-07
+  }
+  pose {
+    position {
+      x: 0.96271603028448816
+      y: -0.082365416497992658
+      z: 0.058749997172161027
+    }
+    orientation {
+      x: 5.069255323024195e-07
+      y: -0.008351765348433746
+      z: 5.9772840817538543e-05
+      w: 0.99996512161300677
+    }
+  }
+  visual {
+    name: "cepheus::final_link"
+    id: 33
+    parent_name: "cepheus"
+    parent_id: 10
+    pose {
+      position {
+        x: 0.96271603028448816
+        y: -0.082365416497992658
+        z: 0.058749997172161027
+      }
+      orientation {
+        x: 5.069255323024195e-07
+        y: -0.008351765348433746
+        z: 5.9772840817538543e-05
+        w: 0.99996512161300677
+      }
+    }
+    type: LINK
+  }
+  enable_wind: false
+}
+visual {
+  name: "cepheus"
+  id: 10
+  parent_name: "myworld"
+  parent_id: 1
+  pose {
+    position {
+      x: 0.0011878264605162609
+      y: 1.2738842788306787e-08
+      z: 5.9320366513013957e-10
+    }
+    orientation {
+      x: -6.9244746134005646e-10
+      y: 1.256649451797557e-09
+      z: -4.1060022070655365e-09
+      w: 1
+    }
+  }
+  type: MODEL
+}
+scale {
+  x: 1
+  y: 1
+  z: 1
+}
+self_collide: false
+enable_wind: false
+plugin {
+  name: "gazebo_ros_control"
+  filename: "libgazebo_ros_control.so"
+  innerxml: "<robotNamespace>/cepheus</robotNamespace>\n"
+}
+plugin {
+  name: "ft_sensor"
+  filename: "libgazebo_ros_ft_sensor.so"
+  innerxml: "<updateRate>0</updateRate>\n<topicName>ft_sensor_topic</topicName>\n<jointName>left_wrist_joint</jointName>\n<noise>\n  <type>gaussian</type>\n  <mean>0.0</mean>\n  <stddev>0.0003</stddev>\n</noise>\n<robotNamespace>/cepheus/</robotNamespace>\n"
+}
+plugin {
+  name: "gazebo_ros_force"
+  filename: "libgazebo_ros_force.so"
+  innerxml: "<bodyName>cepheus_base</bodyName>\n<topicName>force_base_topic</topicName>\n<force_reference_frame>cepheus_base</force_reference_frame>\n<robotNamespace>/cepheus/</robotNamespace>\n"
+}
+

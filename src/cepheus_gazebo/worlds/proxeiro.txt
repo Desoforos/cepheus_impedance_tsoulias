@@ -1,0 +1,10 @@
+		<physics name="default_physics" type="ode">
+			<max_step_size>0.001</max_step_size> <!-- Smaller step size for better accuracy -->
+			<real_time_update_rate>1000</real_time_update_rate> <!-- Update rate -->
+			<solver>
+				<type>quick</type>
+				<iters>200</iters> <!-- Increase the number of solver iterations -->
+				<sor>1.0</sor> <!-- Successive over-relaxation parameter -->
+			</solver>
+			<gravity>0 0 -9.81</gravity> <!-- Standard gravity setting -->
+		</physics>

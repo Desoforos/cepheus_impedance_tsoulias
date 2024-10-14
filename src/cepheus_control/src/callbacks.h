@@ -17,8 +17,8 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
     		double rollee, pitchee, yawee;
 			m_ee.getRPY(rollee, pitchee, yawee);
 			thetach = yawee; //angle of chaser(ee)
-			ee_x = msg->pose[i].position.x;// + (l3+r3)*cos(q3); // + (l3+r3)*cos(thetach);// +(l3+r3)*cos(q1+q2+q3);//left grip pose[6]
-    		ee_y = msg->pose[i].position.y;// + (l3+r3)*sin(q3); // + (l3+r3)*sin(thetach);// + (l3+r3)*sin(q1+q2+q3);
+			ee_x = msg->pose[i].position.x;// + (l3+r3)*cos(q3); den xreiazetai eftiaksa dummy link
+    		ee_y = msg->pose[i].position.y;// + (l3+r3)*sin(q3); 
 			xee(0) = ee_x;
 			xee(1) = ee_y;
 			xee(2) = thetach;

@@ -21,6 +21,8 @@
 #include <rosbag/view.h>
 #include <string>
 #include <signal.h> 
+#include <sensor_msgs/Imu.h>
+
 
 
 #define DESIRED_VEL 40  // RW_qdot_des [rad/s]
