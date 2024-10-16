@@ -106,6 +106,15 @@ double xstepdotdot, ystepdotdot, thstepdotdot,theta0stepdotdot;
 double sd = 0.25; //safety distance
 double theta0in, theta0fin;
 
+bool beginGrab = false;
+bool incontact =false;
+bool beginSoft = false;
+bool softFinished = false;
+bool beginHard = false;
+bool hardFinished = false;
+
+int contactCounter = 0;
+
 
  
 /////////////// GLOBAL VARIABLES DECLARATION END////////////////////////

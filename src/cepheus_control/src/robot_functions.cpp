@@ -876,7 +876,7 @@ qe << 0, fext(0), 0;  //den eimai sigouros gia afto
 
 
 
-if(abs(fext(0))<0.5){
+if(!incontact){
   bd = bd_f;
   kd = kd_f;
   md = md_f;

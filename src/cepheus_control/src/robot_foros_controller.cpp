@@ -28,25 +28,6 @@ void sigintHandler(int sig) {
 
 
 
-/////////////// GLOBAL VARIABLES INITIALIZATION START////////////////////////
-
-//einai sto variables.h
-
-/////////////// GLOBAL VARIABLES INITIALIZATION END////////////////////////
-
-
-/////////////// CALLBACK FUNCTIONS DEFINITION START////////////////////////
-
-//einai sto callbacks.h
-
-/////////////// CALLBACK FUNCTIONS DEFINITION END////////////////////////
-
-/////////////// CALCULATION FUNCTIONS DEFINITION START////////////////////////
-
-//einai sto calculations.h
-
-/////////////// CALCULATION FUNCTIONS DEFINITION END////////////////////////
-
 int main(int argc, char **argv) {
 
     int count = 0;
@@ -55,7 +36,7 @@ int main(int argc, char **argv) {
     bool record = false;
 
     /* ros init */
-    ros::init(argc, argv, "new_foros_simcontroller_node");
+    ros::init(argc, argv, "robot_foros_controller_node");
     ros::NodeHandle nh;
     signal(SIGINT, sigintHandler);
 
@@ -69,18 +50,18 @@ int main(int argc, char **argv) {
     /* Create publishers */
   
     /*Publisher for debugging purposes*/
-    ros::Publisher error_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_x", 100);
-    ros::Publisher error_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_y", 100);
-    ros::Publisher error_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_theta", 100);
-    ros::Publisher xd_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_x", 100);
-    ros::Publisher xd_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_y", 100);
-    ros::Publisher xd_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_theta", 100);
-    ros::Publisher xt_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_x", 100);
-    ros::Publisher xt_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_y", 100);
-    ros::Publisher xt_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_theta", 100);
-    ros::Publisher xee_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_x", 100);
-    ros::Publisher xee_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_y", 100);
-    ros::Publisher xee_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_theta", 100);
+    ros::Publisher error_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_x", 1);
+    ros::Publisher error_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_y", 1);
+    ros::Publisher error_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_theta", 1);
+    ros::Publisher xd_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_x", 1);
+    ros::Publisher xd_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_y", 1);
+    ros::Publisher xd_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xd_theta", 1);
+    ros::Publisher xt_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_x", 1);
+    ros::Publisher xt_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_y", 1);
+    ros::Publisher xt_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xt_theta", 1);
+    ros::Publisher xee_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_x", 1);
+    ros::Publisher xee_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_y", 1);
+    ros::Publisher xee_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_theta", 1);
 
 
 
@@ -89,16 +70,18 @@ int main(int argc, char **argv) {
 	ros::Publisher ls_offset_pub = nh.advertise<std_msgs::Float64>("set_left_shoulder_offset", 1);
 	ros::Publisher le_offset_pub = nh.advertise<std_msgs::Float64>("set_left_elbow_offset", 1);
 
+    //NA FTIAKSO PUBLISHER GIA TO ARDUINO TOU LEFO
+
 
 	ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 1, lsPosCallback);
 	ros::Subscriber le_pos_sub = nh.subscribe("read_left_elbow_position", 1, lePosCallback);
     ros::Subscriber ls_limit_sub = nh.subscribe("read_left_shoulder_limit", 1, lsLimitCallback);
 	ros::Subscriber le_limit_sub = nh.subscribe("read_left_elbow_limit", 1, leLimitCallback);
 
+    ros::Subscriber vicon_sub = nh.subscribe("VICONTOPIC", 1, viconCallback);
+    ros::Subscriber force_sub = nh.subscribe("BOTASYSTOPIC", 1, forceCallback);
 
-
-
-
+    //2 SUBSCRIBERS GIA APO LEFO, 1 SOFTFINISHED 1 HARDFINISHED. AN DEN DOULEVOYN APLA KANO METRHSH
 
 
     /* init messages */ 
@@ -106,38 +89,17 @@ int main(int argc, char **argv) {
     msg_LS.data = 0.0;
     msg_LE.data = 0.0;
     msg_LW.data = 0.0;
-    base_wrench.force.x = 0.0;
-    base_wrench.force.y = 0.0;
-    base_wrench.force.z = 0.0;
-    base_wrench.torque.x = 0.0;
-    base_wrench.torque.y = 0.0;
-    base_wrench.torque.z = 0.0;
+
     msg_ex.data = 0.0;
     msg_ey.data = 0.0;
     msg_etheta.data = 0.0;
     // msg_TX.data = 0.0;
     // msg_TY.data = 0.0;
 
-
     ROS_INFO("[new_foros_simcontroller]: torques initialized to 0. \n");
     
 
-    // double frequency = (float)1/DT;
-
-    /* Create subscribers */
-    // ros::Subscriber RW_velocity_sub = nh.subscribe<sensor_msgs::JointState>("/cepheus/joint_states", 1, velocityCheckCallback);
-    // ros::Subscriber position_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states", 1, positionCheckCallback);
-	
-    // ros::Subscriber joint_states_sub = nh.subscribe<sensor_msgs::JointState>("/cepheus/joint_states",100,jointStatesCallback); //tha to anoikso
-
-    //ros::Subscriber ee_target_pos_sub = nh.subscribe<geometry_msgs::Pose>("/cepheus/ee_target_pos", 1, ee_target_posCallback);
-    //ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 1, lsPosCallback);
-    ros::Subscriber force_sub = nh.subscribe("/cepheus/ft_sensor_topic", 100, forceCallback);
-    
-    // ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",100,gazeboposCallback);     //tha to anoikso
-    
-    //ros::Rate loop_rate(frequency);
-    ros::Rate loop_rate(100); //100Hz
+     ros::Rate loop_rate(100); //100Hz
 
     char command;
     
@@ -164,9 +126,6 @@ int main(int argc, char **argv) {
 
     std::cin>>tf;
 
-
-
-
     while(ros::ok() && !shutdown_requested){
         //ros::spinOnce(); //once it spins it will read the current rw, le, ls and the callbacks will update the values q1,q2,q3 and the velocities
         //now we update the errors and we recalculate the desired efforts to publish as msg_LE,msg_LS
@@ -175,9 +134,6 @@ int main(int argc, char **argv) {
             ROS_INFO("[new_foros_simcontroller]: Press Y to start the controller. Caution! Do not press it before running Gazebo. \n");
             std::cin>> command;
             ros::spinOnce();
-            xee_x_pub.publish(msg_xee_x);
-            xee_y_pub.publish(msg_xee_y);
-            xee_theta_pub.publish(msg_xee_theta);
             if(command == 'Y'){
                 start_movement= true;
             }
@@ -197,51 +153,50 @@ int main(int argc, char **argv) {
                 paramsinit = true;
                 ROS_INFO("[new_foros_simcontroller]: Parameters have been initialized. \n");
                 ROS_INFO("[new_foros_simcontroller]: Initializiing movement.");
-                //continue;
-                // ros::Duration(2).sleep();
             }
             ros::spinOnce();
             curr_time = ros::Time::now();
 		    dur_time = curr_time - t_beg;
             secs = dur_time.sec + dur_time.nsec * pow(10, -9);
-
- 
-            // diagnostics();
-            //desiredTrajectory(dur_time); 
-            // calculateMatrices(); //den xreiazetai pleon einai mesa sto controler()
-            // baseTrajectory(dur_time,tf);
             finaltrajectories(secs,tf); //apo last_controller.h
-            // basePDcontroll();  //ena apo ta dyo tha exo anoikto
-            // calculateQ();
             controller(count,tf,secs); //apo last_controller.h
             count++;
+            if(incontact){
+                contactCounter++;
+            }
+            else{
+                contactCounter = 0;
+            }
+           if(contactCounter > 1.5*200){ // contact for 1.5sec
+            beginGrab = true;
+           }
 
+           if(beginGrab){ 
+            if(!beginSoft){
+                beginSoft = true;
+                //ROS PUBLISH SOFTGRIP MIA FORA META DEN KSANASTELNEI
+            }
+            ros::spinOnce(); //to callback tou arduino tha kanei true to softFinished, an den doulevei apla perimeno 2 sec
+            if(softFinished){
+                if(!beginHard){
+                    beginHard = true;
+                    //ROSPUBLISH HARDGRIP MIA FORA META DEN KSANASTELNEI
+                }
+                ros::spinOnce(); //perimeno callback gia true to hardFinished
+            }
+           }
+           if (hardFinished){
+            ROS_INFO("Task completed. Ending now.")
+            shutdown_requested = true;
+           }
 
-            // base_wrench.force.x = qact(0);  //fx;
-            // base_wrench.force.y = qact(1);  //fy;
-            // //base_wrench.torque.z = qact(2); //ns;
-            // msg_RW.data = qact(2); //to bazo anapoda bas kai
-			// msg_LS.data = qact(3);
-			// msg_LE.data = qact(4);
-			// msg_LW.data = qact(5);
-            // std::cout<<"thetach is: "<<thetach<<std::endl;
-            // std::cout<<"theta0+q1+q2+q3 is: "<<(theta0+q1+q2+q3)<<std::endl;
-
-
-            // RW_torque_pub.publish(msg_RW);
-
-            base_wrench.force.x = 0.0;
-            base_wrench.force.y = 0.0;
-            base_wrench.force.z = 0.0;
-            base_wrench.torque.x = 0.0;
-            base_wrench.torque.y = 0.0;
+            if(!hardFinished){
+                // base_force_pub.publish(base_wrench);
+                // LS_torque_pub.publish(msg_LS);
+                // LE_torque_pub.publish(msg_LE);
+                // LW_torque_pub.publish(msg_LW);
+            }
             msg_fextx.data = fext(0);
-
-            // base_force_pub.publish(base_wrench);
-            // LS_torque_pub.publish(msg_LS);
-            // LE_torque_pub.publish(msg_LE);
-            // LW_torque_pub.publish(msg_LW);
-
             xd_x_pub.publish(msg_xd_x);
             xd_y_pub.publish(msg_xd_y);
             xd_theta_pub.publish(msg_xd_theta);
@@ -271,45 +226,16 @@ int main(int argc, char **argv) {
                
 
 
-                if(shutdown_requested){
-                    bag.close();
-                    record = false;
-                }
-                
+               
             }
-
-            // base_wrench.force.x = 0.0;
-            // base_wrench.force.y = 0.0;
-            // base_wrench.force.z = 0.0;
-            // base_wrench.torque.x = 0.0;
-            // base_wrench.torque.y = 0.0;
-            // base_wrench.torque.z = 0.0;
-            // msg_RW.data = 0.0; 
-	        // msg_LS.data = 0.0;
-	        // msg_LE.data = 0.0;
-	        // msg_LW.data = 0.0; 
-            // msg_xt_x.data = 0.0;
-            // msg_xt_y.data = 0.0;
-            // msg_xt_theta.data = 0.0;
-            // msg_xd_x.data = msg_xd_y.data = msg_xd_theta.data = 0.0;
-
         }
-		if(reachedTarget){ //na ftiakso to reachedGoal kalytera gia na teleionei to peirama, na ftiakso xrono
-			ROS_INFO("[new_foros_simcontroller]: Target position achieved, stopped publishing. \n");
-			break;
-		}
-    
-        // ros::spinOnce();
-        // std::cout<<"[Newforoscontroller callback] ee x is: "<<ee_x<<std::endl;
-		// std::cout<<"[Newforoscontroller callback] ee y is: "<<ee_y<<std::endl;
-		// std::cout<<"[Newforoscontroller callback] ee theta is: "<<thetach<<std::endl;
-        // xee_x_pub.publish(msg_xee_x);
-        // xee_y_pub.publish(msg_xee_y);
-        // xee_theta_pub.publish(msg_xee_theta);
-
         loop_rate.sleep();
 
     }
+
+    if(shutdown_requested && record){
+        bag.close();
+    } 
 
     return 0;
 
