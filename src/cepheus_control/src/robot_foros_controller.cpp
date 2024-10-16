@@ -1,17 +1,14 @@
 /*
-Nikiforos Tsoulias 2023
+Nikiforos Tsoulias 2024
 This will be the high level control node.
 It shall read the state of the robot (joint posistions,force applied) and calculate the output wrench needed.
 Then it shall publish it to the right topics:
-In simulation, it shall be the gazebo command/effort topics
 In the real robot, it shall be the topics that the cepheus_interface reads.
 */
 
-#include "variables.h"
-#include "callbacks.h"
-#include "calculations.h"
-#include "base_controller.h"
-#include "last_controller.h"
+#include "robot_variables.h"
+#include "robot_callbacks.h"
+#include "robot_functions.h"
 
 #include <typeinfo>
 
@@ -70,13 +67,7 @@ int main(int argc, char **argv) {
     double tf; //time of movement before reaching target
 
     /* Create publishers */
-    ros::Publisher RW_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/reaction_wheel_effort_controller/command", 100);
-    ros::Publisher LS_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_shoulder_effort_controller/command", 100);
-    ros::Publisher LE_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_elbow_effort_controller/command", 100);
-    ros::Publisher LW_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_wrist_effort_controller/command", 100);
-    // ros::Publisher thruster_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/thrusterx_effort_controller/command", 1); evgala ta dyo prismatic joints ki ebala gazebo plugin
-    // ros::Publisher thruster_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/thrustery_effort_controller/command", 1);
-    ros::Publisher base_force_pub = nh.advertise<geometry_msgs::Wrench>("/cepheus/force_base_topic", 100); //anti gia 10 gia na doume
+  
     /*Publisher for debugging purposes*/
     ros::Publisher error_x_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_x", 100);
     ros::Publisher error_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/error_y", 100);
@@ -91,6 +82,18 @@ int main(int argc, char **argv) {
     ros::Publisher xee_y_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_y", 100);
     ros::Publisher xee_theta_pub = nh.advertise<std_msgs::Float64>("/cepheus/xee_theta", 100);
 
+
+
+    ros::Publisher ls_torque_pub = nh.advertise<std_msgs::Float64>("set_left_shoulder_effort", 1);
+	ros::Publisher le_torque_pub = nh.advertise<std_msgs::Float64>("set_left_elbow_effort", 1);
+	ros::Publisher ls_offset_pub = nh.advertise<std_msgs::Float64>("set_left_shoulder_offset", 1);
+	ros::Publisher le_offset_pub = nh.advertise<std_msgs::Float64>("set_left_elbow_offset", 1);
+
+
+	ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 1, lsPosCallback);
+	ros::Subscriber le_pos_sub = nh.subscribe("read_left_elbow_position", 1, lePosCallback);
+    ros::Subscriber ls_limit_sub = nh.subscribe("read_left_shoulder_limit", 1, lsLimitCallback);
+	ros::Subscriber le_limit_sub = nh.subscribe("read_left_elbow_limit", 1, leLimitCallback);
 
 
 
@@ -125,13 +128,13 @@ int main(int argc, char **argv) {
     // ros::Subscriber RW_velocity_sub = nh.subscribe<sensor_msgs::JointState>("/cepheus/joint_states", 1, velocityCheckCallback);
     // ros::Subscriber position_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states", 1, positionCheckCallback);
 	
-    ros::Subscriber joint_states_sub = nh.subscribe<sensor_msgs::JointState>("/cepheus/joint_states",100,jointStatesCallback); //tha to anoikso
+    // ros::Subscriber joint_states_sub = nh.subscribe<sensor_msgs::JointState>("/cepheus/joint_states",100,jointStatesCallback); //tha to anoikso
 
     //ros::Subscriber ee_target_pos_sub = nh.subscribe<geometry_msgs::Pose>("/cepheus/ee_target_pos", 1, ee_target_posCallback);
     //ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 1, lsPosCallback);
     ros::Subscriber force_sub = nh.subscribe("/cepheus/ft_sensor_topic", 100, forceCallback);
     
-    ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",100,gazeboposCallback);     //tha to anoikso
+    // ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",100,gazeboposCallback);     //tha to anoikso
     
     //ros::Rate loop_rate(frequency);
     ros::Rate loop_rate(100); //100Hz

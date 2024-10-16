@@ -1,5 +1,6 @@
 #include "includes.h"
-#include "variables.h"
+#include "robot_variables.h"
+#include "robot_functions.h"
 
 
 void initialiseParametersNew(){
@@ -41,31 +42,31 @@ void initialiseParametersNew(){
     x2 = l2+r2;
     x3 = l3+r3;
 
-    M=m0+m1+m2+m3;
+    M = m0 + m1 + m2 + m3;
 
     // GIA TO PEIRAMA
     /* APATH THA TO ALLAKSO*/
-    // ee_x = 0.706577;
-    // ee_y = -0.263787;
-    // thetach = 0.866966;
-    // xeedot(0) = 0.000382186;
-    // xeedot(1) = 0.000174835;
-    // xeedot(2) = -0.000288378;
-    // xt_in  =0.787303;
-    // yt_in  =0.163512;
-    // thetat_in = 0.777124;
-    // theta0 = -0.462226;
-    // theta0dot = -0.000288378;
-    // xc0 = -0.0100868;
-    // yc0 = -0.00505269;
-    // xc0dot = 0.000724746;
-    // yc0dot = 0.000651179;
-    // q1 = -0.742835;
-    // q2 = 1.05601;
-    // q3 = 0.529251;
-    // q1dot = -1.359*pow(10,-11);
-    // q2dot = -2.75252*pow(10,-6);
-    // q3dot = -2.78264*pow(10,-13);
+    ee_x = 0.706577;
+    ee_y = -0.263787;
+    thetach = 0.866966;
+    xeedot(0) = 0.000382186;
+    xeedot(1) = 0.000174835;
+    xeedot(2) = -0.000288378;
+    xt_in  =0.787303;
+    yt_in  =0.163512;
+    thetat_in = 0.777124;
+    theta0 = -0.462226;
+    theta0dot = -0.000288378;
+    xc0 = -0.0100868;
+    yc0 = -0.00505269;
+    xc0dot = 0.000724746;
+    yc0dot = 0.000651179;
+    q1 = -0.742835;
+    q2 = 1.05601;
+    q3 = 0.529251;
+    q1dot = -1.359*pow(10,-11);
+    q2dot = -2.75252*pow(10,-6);
+    q3dot = -2.78264*pow(10,-13);
 }
 
 void calculateTrajecotryPolynomials(double tf){
@@ -360,10 +361,8 @@ void controller(int count, double tf, double t){
   Eigen::MatrixXd md_c = mdc*Eigen::MatrixXd::Identity(4,4);
   Eigen::MatrixXd bd_c = bdc*Eigen::MatrixXd::Identity(4,4);
   Eigen::MatrixXd kd_c = kdc*Eigen::MatrixXd::Identity(4,4);
-  Eigen::MatrixXd bd(4,4);
   Eigen::MatrixXd md(4,4);
   Eigen::MatrixXd kd(4,4);
-
 
 
 
@@ -878,7 +877,7 @@ qe << 0, fext(0), 0;  //den eimai sigouros gia afto
 
 
 if(abs(fext(0))<0.5){
-   bd = bd_f;
+  bd = bd_f;
   kd = kd_f;
   md = md_f;
   fdes << 0, 0, 0, 0;
