@@ -206,6 +206,23 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
 
 }
 
+// void arduinoCallcack(const std_msgs::String::ConstPtr &msg){
+// 	if(msg.data = "nothing"){
+// 		if(gripperListenedSoft){
+// 			softFinished = true;
+// 		}
+// 		if(gripperListenedHard){
+// 			hardFinished = true;
+// 		}
+// 	}
+// 	if(msg.data = "softgrip"){
+// 		gripperListenedSoft = true;
+// 	}
+// 	if(msg.data = "hardgrip"){
+// 		gripperListenedHard = true;
+// 	}
+// }
+
 
 /////////////// CALLBACK FUNCTIONS DEFINITION END////////////////////////
 #endif

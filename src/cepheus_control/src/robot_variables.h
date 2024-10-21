@@ -116,6 +116,9 @@ bool softFinished = false;
 bool beginHard = false;
 bool hardFinished = false;
 
+bool gripperListenedSoft = false;
+bool gripperListenedHard = false;
+
 int contactCounter = 0;
 
 

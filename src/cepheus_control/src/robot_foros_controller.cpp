@@ -74,6 +74,7 @@ int main(int argc, char **argv) {
 
     //NA FTIAKSO PUBLISHER GIA TO ARDUINO TOU LEFO
 
+    // ros::Subscriber arduino_sub = nh.subscribe("/tsoulias_speak", 1, arduinoCallback);
 
 	// ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 1, lsPosCallback);
 	// ros::Subscriber le_pos_sub = nh.subscribe("read_left_elbow_position", 1, lePosCallback);
