@@ -105,6 +105,9 @@ double xstepdot, ystepdot, thstepdot,theta0stepdot;
 double xstepdotdot, ystepdotdot, thstepdotdot,theta0stepdotdot;
 double sd = 0.25; //safety distance
 double theta0in, theta0fin;
+double xE_contact; // = x_target_in - l0;
+double yE_contact; // = y_target_in;
+double thetaE_contact;
 
 bool beginGrab = false;
 bool incontact =false;

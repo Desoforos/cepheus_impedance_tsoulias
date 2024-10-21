@@ -6,9 +6,11 @@ Then it shall publish it to the right topics:
 In the real robot, it shall be the topics that the cepheus_interface reads.
 */
 
+#include "includes.h"
 #include "robot_variables.h"
 #include "robot_callbacks.h"
 #include "robot_functions.h"
+
 
 #include <typeinfo>
 
@@ -73,13 +75,13 @@ int main(int argc, char **argv) {
     //NA FTIAKSO PUBLISHER GIA TO ARDUINO TOU LEFO
 
 
-	ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 1, lsPosCallback);
-	ros::Subscriber le_pos_sub = nh.subscribe("read_left_elbow_position", 1, lePosCallback);
-    ros::Subscriber ls_limit_sub = nh.subscribe("read_left_shoulder_limit", 1, lsLimitCallback);
-	ros::Subscriber le_limit_sub = nh.subscribe("read_left_elbow_limit", 1, leLimitCallback);
+	// ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 1, lsPosCallback);
+	// ros::Subscriber le_pos_sub = nh.subscribe("read_left_elbow_position", 1, lePosCallback);
+    // ros::Subscriber ls_limit_sub = nh.subscribe("read_left_shoulder_limit", 1, lsLimitCallback);
+	// ros::Subscriber le_limit_sub = nh.subscribe("read_left_elbow_limit", 1, leLimitCallback);
 
-    ros::Subscriber vicon_sub = nh.subscribe("VICONTOPIC", 1, viconCallback);
-    ros::Subscriber force_sub = nh.subscribe("BOTASYSTOPIC", 1, forceCallback);
+    // ros::Subscriber vicon_sub = nh.subscribe("VICONTOPIC", 1, viconCallback);
+    // ros::Subscriber force_sub = nh.subscribe("BOTASYSTOPIC", 1, forceCallback);
 
     //2 SUBSCRIBERS GIA APO LEFO, 1 SOFTFINISHED 1 HARDFINISHED. AN DEN DOULEVOYN APLA KANO METRHSH
 
@@ -145,7 +147,7 @@ int main(int argc, char **argv) {
                 t_beg  = ros::Time::now(); //initialize starting moment
             }
             if(!paramsinit){
-                initialiseParametersNew();
+                initialiseParameters();
                 ros::spinOnce();
                 // ros::Duration(2).sleep();
                 ROS_INFO("[new_foros_simcontroller]: Initializing parameters... \n");
@@ -158,7 +160,7 @@ int main(int argc, char **argv) {
             curr_time = ros::Time::now();
 		    dur_time = curr_time - t_beg;
             secs = dur_time.sec + dur_time.nsec * pow(10, -9);
-            finaltrajectories(secs,tf); //apo last_controller.h
+            finalTrajectories(secs,tf); //apo last_controller.h
             controller(count,tf,secs); //apo last_controller.h
             count++;
             if(incontact){
@@ -186,7 +188,7 @@ int main(int argc, char **argv) {
             }
            }
            if (hardFinished){
-            ROS_INFO("Task completed. Ending now.")
+            ROS_INFO("Task completed. Ending now.");
             shutdown_requested = true;
            }
 
