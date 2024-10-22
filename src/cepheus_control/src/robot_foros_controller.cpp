@@ -14,11 +14,11 @@ In the real robot, it shall be the topics that the cepheus_interface reads.
 
 #include <typeinfo>
 
-#define DESIRED_VEL 40  // RW_qdot_des [rad/s]
-#define NUM_OF_MEASUREMENTS 1000
-#define POS_FILTER 0.005
-#define VEL_FILTER 0.05
-#define TORQUE_LIMIT 0.00000001
+// #define DESIRED_VEL 40  // RW_qdot_des [rad/s] //ta exo valei sta includes
+// #define NUM_OF_MEASUREMENTS 1000
+// #define POS_FILTER 0.005
+// #define VEL_FILTER 0.05
+// #define TORQUE_LIMIT 0.00000001
 
 bool shutdown_requested = false;
 
@@ -67,24 +67,36 @@ int main(int argc, char **argv) {
 
 
 
-    ros::Publisher ls_torque_pub = nh.advertise<std_msgs::Float64>("set_left_shoulder_effort", 1);
-	ros::Publisher le_torque_pub = nh.advertise<std_msgs::Float64>("set_left_elbow_effort", 1);
+    ros::Publisher ls_torque_pub = nh.advertise<std_msgs::Float64>("set_left_shoulder_effort", 1);   //ropi se q1
+	ros::Publisher le_torque_pub = nh.advertise<std_msgs::Float64>("set_left_elbow_effort", 1);      //ropi se q2
+  	ros::Publisher re_torque_pub = nh.advertise<std_msgs::Float64>("set_right_elbow_effort", 1);     //ropi se q3 (ki omos to right elbow ousiastika einai to wrist)
+    ros::Publisher rw_torque_pub = nh.advertise<std_msgs::Float64>("set_reaction_wheel_effort", 1);  //ropi se reaction wheel    (ola afta ta akouei to interface)
+  
+
+
 	ros::Publisher ls_offset_pub = nh.advertise<std_msgs::Float64>("set_left_shoulder_offset", 1);
 	ros::Publisher le_offset_pub = nh.advertise<std_msgs::Float64>("set_left_elbow_offset", 1);
+    ros::Publisher re_offset_pub = nh.advertise<std_msgs::Float64>("set_right_elbow_offset", 1);
+
 
     //NA FTIAKSO PUBLISHER GIA TO ARDUINO TOU LEFO
+    ros::Subscriber arduino_sub = nh.subscribe("/tsoulias_speak", 1, arduinoCallbacktest);
+    ros::Publisher arduino_pub = nh.advertise<std_msgs::String>("/tsoulias_hear", 1);
 
-    // ros::Subscriber arduino_sub = nh.subscribe("/tsoulias_speak", 1, arduinoCallback);
 
-	// ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 1, lsPosCallback);
-	// ros::Subscriber le_pos_sub = nh.subscribe("read_left_elbow_position", 1, lePosCallback);
-    // ros::Subscriber ls_limit_sub = nh.subscribe("read_left_shoulder_limit", 1, lsLimitCallback);
+	ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 1, lsPosCallback);  //gia q1
+	ros::Subscriber le_pos_sub = nh.subscribe("read_left_elbow_position", 1, lePosCallback);     //gia q2
+  	ros::Subscriber re_pos_sub = nh.subscribe("read_right_elbow_position", 1, rePosCallback);    //gia q3  
+ 	ros::Subscriber ls_vel_sub = nh.subscribe("read_left_shoulder_velocity", 1, lsVelCallback);  //gia q1dot   
+    ros::Subscriber le_vel_sub = nh.subscribe("read_left_elbow_velocity", 1, leVelCallback);       //gia q2dot
+   	ros::Subscriber re_vel_sub = nh.subscribe("read_right_elbow_velocity", 1, reVelCallback);    //gia q3dot
+
+    // ros::Subscriber ls_limit_sub = nh.subscribe("read_left_shoulder_limit", 1, lsLimitCallback);  //afta einai gia arxikopoihsh , na ta do
 	// ros::Subscriber le_limit_sub = nh.subscribe("read_left_elbow_limit", 1, leLimitCallback);
 
-    // ros::Subscriber vicon_sub = nh.subscribe("VICONTOPIC", 1, viconCallback);
+    // ros::Subscriber vicon_sub = nh.subscribe("VICONTOPIC", 1, viconCallback);   //tha ta ftiakso sto ergasthrio
     // ros::Subscriber force_sub = nh.subscribe("BOTASYSTOPIC", 1, forceCallback);
 
-    //2 SUBSCRIBERS GIA APO LEFO, 1 SOFTFINISHED 1 HARDFINISHED. AN DEN DOULEVOYN APLA KANO METRHSH
 
 
     /* init messages */ 
@@ -177,12 +189,18 @@ int main(int argc, char **argv) {
            if(beginGrab){ 
             if(!beginSoft){
                 beginSoft = true;
+                ROS_INFO("[robot_foros_controller] Starting softgrip...");
+                arduino_msg.data = "softgrip";
+                arduino_pub.publish(arduino_msg);
                 //ROS PUBLISH SOFTGRIP MIA FORA META DEN KSANASTELNEI
             }
             ros::spinOnce(); //to callback tou arduino tha kanei true to softFinished, an den doulevei apla perimeno 2 sec
             if(softFinished){
                 if(!beginHard){
                     beginHard = true;
+                    ROS_INFO("[robot_foros_controller] Softgrip ended! Starting hardgrip...");
+                    arduino_msg.data = "hardgrip";
+                    arduino_pub.publish(arduino_msg);
                     //ROSPUBLISH HARDGRIP MIA FORA META DEN KSANASTELNEI
                 }
                 ros::spinOnce(); //perimeno callback gia true to hardFinished
@@ -193,11 +211,11 @@ int main(int argc, char **argv) {
             shutdown_requested = true;
            }
 
-            if(!hardFinished){
-                // base_force_pub.publish(base_wrench);
-                // LS_torque_pub.publish(msg_LS);
-                // LE_torque_pub.publish(msg_LE);
-                // LW_torque_pub.publish(msg_LW);
+            if(!hardFinished){//EDO ZYNEXIZETAI NA STELNONTAI TIMES ROPON
+                rw_torque_pub.publish(msg_RW);
+                ls_torque_pub.publish(msg_LS);
+                le_torque_pub.publish(msg_LE);
+                re_torque_pub.publish(msg_LW); //ousiastika einai to left wrist alla tespa
             }
             msg_fextx.data = fext(0);
             xd_x_pub.publish(msg_xd_x);
@@ -225,10 +243,6 @@ int main(int argc, char **argv) {
                 bag.write("/cepheus/xee_theta", ros::Time::now(), msg_xee_theta);   
 
                 bag.write("/cepheus/ft_sensor_topic", ros::Time::now(), msg_fextx);
-
-               
-
-
                
             }
         }

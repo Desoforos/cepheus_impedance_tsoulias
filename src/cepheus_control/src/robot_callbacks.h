@@ -107,82 +107,51 @@ void ee_target_posCallback(const geometry_msgs::Pose::ConstPtr& msg){
 }
 */
 
-void jointStatesCallback(const sensor_msgs::JointState::ConstPtr& msg){
-	int i;
-    //ROS_INFO("[foros_simcontroller]: Joint state received! q1: %f q2: %f q1dot: %f q2dot: %f \n",msg->position[1], msg->position[0], msg-> velocity[1], msg-> velocity[0]);
-	for(i=0; i<msg->name.size(); i++){
-		// ROS_INFO("[Gazebo Callback] Joint Name: %s", msg->name[i]);
-		if(msg->name[i] == "left_shoulder_joint"){
-			q1 = msg->position[i];
-			q1dot = msg->velocity[i];
-			// q1 = q1; //evgala to +q01 giati to evala stous ypologismous
-		}
-		else if(msg->name[i] == "left_elbow_joint"){
-			q2 = msg->position[i];
-			q2dot = msg->velocity[i];
-		}
-		else if(msg->name[i] == "left_wrist_joint"){
-			q3 = msg->position[i];
-			q3dot = msg->velocity[i];
-		}
-	}
-	// std::cout<<"[Joint states callback] q1dot is: "<<q1dot<<std::endl;
-	// std::cout<<"[Joint states callback] q2dot is: "<<q2dot<<std::endl;
-	// std::cout<<"[Joint states callback] q3dot is: "<<q3dot<<std::endl;
-
-	//theta0 	= msg->position[3]; //reaction wheel MALLON OXI DEN TO THELEI APO RW ALLA APO BASE ORIENTATION
-	//theta0dot = msg->velocity[3];
-}
 
 
-// void lsPosCallback(const std_msgs::Float64::ConstPtr& cmd) {
-// 	if (abs(cmd->data - ls_position) > POS_FILTER)
-// 		return;
-// 	else
-// 		ls_position = cmd->data;
-// }
-
-// void lePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
-// 	if (abs(cmd->data - le_position) > POS_FILTER)
-// 		return;
-// 	else
-// 		le_position = cmd->data;
-// }
-
-
-/*took from my boy alex*/
-/*
-void lsPosCallback(const std_msgs::Float64::ConstPtr& cmd) {
-	if (abs(cmd->data - ls_position) > POS_FILTER)
+void lsPosCallback(const std_msgs::Float64::ConstPtr& cmd) { //anti gia ls_position vazo q1
+	if (abs(cmd->data - q1) > POS_FILTER)
 		return;
 	else
-		ls_position = cmd->data;
+		q1 = cmd->data;
 }
-*/
 
-/*void lePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
-	if (abs(cmd->data - le_position) > POS_FILTER)
+void lePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
+	if (abs(cmd->data - q2) > POS_FILTER)
 		return;
 	else
-		le_position = cmd->data;
+		q2 = cmd->data;
 }
 
-
-void lsVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
-	if (abs(cmd->data - ls_velocity) > VEL_FILTER)
+void lsVelCallback(const std_msgs::Float64::ConstPtr& cmd) { //anti gia ls_velocity
+	if (abs(cmd->data - q1dot) > VEL_FILTER)
 		return;
 	else
-		ls_velocity = cmd->data;
+		q1dot = cmd->data;
 }
-
 
 void leVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
-	if (abs(cmd->data - le_velocity) > VEL_FILTER)
+	if (abs(cmd->data - q2dot) > VEL_FILTER)
 		return;
 	else
-		le_velocity = cmd->data;
-}*/
-/*thanks alex*/
+		q2dot = cmd->data;
+}
+
+void rePosCallback(const std_msgs::Float64::ConstPtr& cmd) { //anti gia re_position
+	if (abs(cmd->data - q3) > POS_FILTER)
+		return;
+	else
+		q3 = cmd->data;
+}
+
+void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) { //anti gia re_veloctiy
+	if (abs(cmd->data - q3dot) > VEL_FILTER)
+		return;
+	else
+		q3dot = cmd->data;
+}
+
+
 
 void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     force_x = msg->wrench.force.x;
@@ -206,22 +175,23 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
 
 }
 
-// void arduinoCallcack(const std_msgs::String::ConstPtr &msg){
-// 	if(msg.data = "nothing"){
-// 		if(gripperListenedSoft){
-// 			softFinished = true;
-// 		}
-// 		if(gripperListenedHard){
-// 			hardFinished = true;
-// 		}
-// 	}
-// 	if(msg.data = "softgrip"){
-// 		gripperListenedSoft = true;
-// 	}
-// 	if(msg.data = "hardgrip"){
-// 		gripperListenedHard = true;
-// 	}
-// }
+void arduinoCallbacktest(const std_msgs::String::ConstPtr &msg){
+	if(msg->data == "nothing"){
+		if(gripperListenedSoft){
+			softFinished = true;
+		}
+		if(gripperListenedHard){
+			hardFinished = true;
+		}
+	}
+	if(msg->data == "softgrip"){
+		gripperListenedSoft = true;
+	}
+	if(msg->data == "hardgrip"){
+		gripperListenedHard = true;
+	}
+}
+
 
 
 /////////////// CALLBACK FUNCTIONS DEFINITION END////////////////////////

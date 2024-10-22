@@ -58,6 +58,8 @@ std_msgs::Float64 msg_xee_x;
 std_msgs::Float64 msg_xee_y; 
 std_msgs::Float64 msg_xee_theta; 
 
+std_msgs::String arduino_msg; 
+
 
 
 

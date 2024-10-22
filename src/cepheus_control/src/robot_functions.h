@@ -919,7 +919,7 @@ double ns = kprop*errorth0 + kder*errorth0dot;
 // base_wrench.force.y = 0;  //fy;
 base_wrench.torque.z = tau(0);//ns;
 
-msg_RW.data = -tau(0); 
+msg_RW.data = tau(0); 
 // msg_RW.data = ns;
 msg_LS.data = tau(1);
 msg_LE.data = tau(2);
