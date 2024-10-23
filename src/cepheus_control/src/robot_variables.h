@@ -9,6 +9,7 @@ bool reachedTarget;// = false;
 bool start_movement;// = false;
 bool eefirstTime;// = true; //boolean for first time listening
 bool targetfirstTime;
+bool basefirstTime;
 
 /*Cepheus' variables*/
 double q1;       // angle of first joint [rad] from callback
@@ -22,17 +23,15 @@ double force_x,force_y,torque_z;
 double ee_x, ee_y; //ee_Z not needed
 double xc0, yc0, xc0dot, yc0dot; //center of mass of base
 double thetach; //orientation of chaser (end effector)
+double xE_prev,yE_prev, thetaE_prev;
+double xt_prev, yt_prev, thetat_prev;
+double xc0_prev, yc0_prev, theta0_prev;
+
 
 /*Target's variables*/
 double xt,yt;  //xtarget, ytarget, pros to paron einai idia me to ring_x,ring_y
 double thetat; //angle of target (orientation)
 double xtdot, ytdot, thetatdot;
-
-
-
-
-///////////really needed//////////////
-double xch_in, ych_in, thetach_in; //arxikh thesh chaser (end effector)
 double xt_in, yt_in, thetat_in;     //arxikh thesh target (ring)
 
 /*Messages to publish */
@@ -90,7 +89,7 @@ Eigen::MatrixXd jedot = Eigen::MatrixXd::Zero(3,6); //update: jacobian for ee
 
 double thetaE_in; //=30*(M_PI/180);
 double xE_in, yE_in;
-double q01 = -27.88931 * M_PI/180; //gonia tou shoulder joint se sxesh me base
+double q01 = 0; //to eftiaksa oste na einai mhden!  // -27.88931 * M_PI/180; //gonia tou shoulder joint se sxesh me base
 double s01 = 0.5, s02 = 0.2;
 
 //gains

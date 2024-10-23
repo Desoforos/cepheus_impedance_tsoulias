@@ -135,23 +135,23 @@ void finalTrajectories(double t,double tf){
     thstepdotdotc = 0;
     theta0stepdotdotc = 0;
 
-    // xstep = xstepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+xstepc*(abs(fext(0))/(abs(fext(0))+a22));
-    // xstepdot = xstepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+xstepdotc*(abs(fext(0))/(abs(fext(0))+a22));
-    // xstepdotdot = xstepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+xstepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    // xstep = xstepfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+xstepc*(abs(force_x)/(abs(force_x)+a22));
+    // xstepdot = xstepdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+xstepdotc*(abs(force_x)/(abs(force_x)+a22));
+    // xstepdotdot = xstepdotdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+xstepdotdotc*(abs(force_x)/(abs(force_x)+a22));
 
-    // ystep = ystepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+ystepc*(abs(fext(0))/(abs(fext(0))+a22));
-    // ystepdot = ystepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+ystepdotc*(abs(fext(0))/(abs(fext(0))+a22));
-    // ystepdotdot = ystepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+ystepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    // ystep = ystepfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+ystepc*(abs(force_x)/(abs(force_x)+a22));
+    // ystepdot = ystepdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+ystepdotc*(abs(force_x)/(abs(force_x)+a22));
+    // ystepdotdot = ystepdotdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+ystepdotdotc*(abs(force_x)/(abs(force_x)+a22));
 
-    // thstep = thstepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+thstepc*(abs(fext(0))/(abs(fext(0))+a22));
-    // thstepdot = thstepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+thstepdotc*(abs(fext(0))/(abs(fext(0))+a22));
-    // thstepdotdot = thstepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+thstepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    // thstep = thstepfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+thstepc*(abs(force_x)/(abs(force_x)+a22));
+    // thstepdot = thstepdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+thstepdotc*(abs(force_x)/(abs(force_x)+a22));
+    // thstepdotdot = thstepdotdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+thstepdotdotc*(abs(force_x)/(abs(force_x)+a22));
 
-    // theta0step = theta0stepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepc*(abs(fext(0))/(abs(fext(0))+a22));
-    // theta0stepdot = theta0stepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotc*(abs(fext(0))/(abs(fext(0))+a22));
-    // theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
+    // theta0step = theta0stepfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+theta0stepc*(abs(force_x)/(abs(force_x)+a22));
+    // theta0stepdot = theta0stepdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+theta0stepdotc*(abs(force_x)/(abs(force_x)+a22));
+    // theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+theta0stepdotdotc*(abs(force_x)/(abs(force_x)+a22));
 
-    if(abs(fext(0))<0.5){ //tha to ksananikso afto fysika
+    if(incontact){ //tha to ksananikso afto fysika
       xstep = xstepfr;
       ystep = ystepfr;
       thstep = thstepfr;
@@ -184,37 +184,8 @@ void finalTrajectories(double t,double tf){
       theta0stepdotdot = theta0stepdotdotc;
     }
 
-  // gia peirama me kosta 14/10
-    xstep = xstepfr;
-    ystep = ystepfr;
-    thstep = thstepfr;
-    theta0step = theta0stepfr;
 
-    xstepdot = xstepdotfr;
-    ystepdot = ystepdotfr;
-    thstepdot = thstepdotfr;
-    theta0stepdot = theta0stepdotfr;
 
-    xstepdotdot = xstepdotdotfr;
-    ystepdotdot = ystepdotdotfr;
-    thstepdotdot = thstepdotdotfr;
-    theta0stepdotdot = theta0stepdotdotfr;
-
-//////////////////////
-    // xstep = 1;
-    // ystep = 1;
-    // thstep = 1;
-    // theta0step = 1;
-
-    // xstepdot = 1;
-    // ystepdot = 1;
-    // thstepdot = 1;
-    // theta0stepdot = 1;
-
-    // xstepdotdot = 1;
-    // ystepdotdot = 1;
-    // thstepdotdot = 1;
-    // theta0stepdotdot = 1;
 
     msg_xd_x.data = xstep;
     msg_xd_y.data = ystep;
@@ -227,14 +198,26 @@ void finalTrajectories(double t,double tf){
     msg_xee_x.data = xee(0);
     msg_xee_y.data = xee(1);
     msg_xee_theta.data = xee(2);
+}
 
+void updateVel(double dt){
+    xeedot(0) = (ee_x-xE_prev)/dt;
+    xeedot(1) = (ee_y-yE_prev)/dt;
+    xeedot(2) = (thetach-thetaE_prev)/dt;
 
+    xtdot = (xt-xt_prev)/dt;
+    ytdot = (yt-yt_prev)/dt;
+    thetatdot = (thetat-thetat_prev)/dt;
+
+    xc0dot = (xc0-xc0_prev)/dt;
+    yc0dot = (yc0-yc0_prev)/dt;
+    theta0dot = (theta0-theta0_prev)/dt;
 }
 
 
 
 void controller(int count, double tf, double t){
-  // fext(0) = 0;
+  // force_x = 0;
 
 
     /*Jacobian coefficients*/
@@ -832,7 +815,7 @@ jebar << je21star-h21star*(h11star.inverse())*je11star, je22star-h21star*(h11sta
 
 // Qext=[0;0;Fext;0); na to ftiakso
 
-qe << 0, fext(0), 0;  //den eimai sigouros gia afto
+qe << 0, force_x, 0;  //den eimai sigouros gia afto
 //std::cout<<"qe is: "<<qe<<std::endl;
 ////std::cout<<"qe check "<<std::endl;
 
@@ -840,17 +823,17 @@ qe << 0, fext(0), 0;  //den eimai sigouros gia afto
 
 //tha ta anoikso meta tora ta kleino gia free space mono
 
-// Eigen::MatrixXd kd=kd_f*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+kd_c*(abs(fext(0))/(abs(fext(0))+a22));
+// Eigen::MatrixXd kd=kd_f*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+kd_c*(abs(force_x)/(abs(force_x)+a22));
 //std::cout<<"kd is: "<<kd<<std::endl;
 ////std::cout<<"kd check "<<std::endl;
 
 
-// Eigen::MatrixXd md=md_f*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+md_c*(abs(fext(0))/(abs(fext(0))+a22));
+// Eigen::MatrixXd md=md_f*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+md_c*(abs(force_x)/(abs(force_x)+a22));
 //std::cout<<"md is :"<<md<<std::endl;
 ////std::cout<<"md check "<<std::endl;
 
 
-// Eigen::MatrixXd bd=bd_f*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+bd_c*(abs(fext(0))/(abs(fext(0))+a22));
+// Eigen::MatrixXd bd=bd_f*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+bd_c*(abs(force_x)/(abs(force_x)+a22));
 //std::cout<<"bd is: "<<bd<<std::endl;
 ////std::cout<<"bd check "<<std::endl;
 
@@ -875,7 +858,7 @@ else{
 // fdes << 0, 0, 0, 0;
 /* MHN TO KSEXASEIS!!!!!*/
 
-// fdes << 0, 0, fd*abs(fext(0))/(abs(fext(0))+a22), 0;
+// fdes << 0, 0, fd*abs(force_x)/(abs(force_x)+a22), 0;
 
 ////std::cout<<"fdes check "<<std::endl;
 
@@ -895,7 +878,7 @@ error_dot << (theta0dot - theta0stepdot), (xeedot(0) - xstepdot), (xeedot(1) - y
 
 
 Eigen::VectorXd qext(4);
-qext << 0, 0, fext(0), 0;
+qext << 0, 0, force_x, 0;
 
 
 Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-kd*error-bd*error_dot-qext + fdes); 
@@ -963,7 +946,7 @@ if(count%100 == 0){
   // std::cout<<" q2dot is: "<<q2dot<<std::endl;
   // std::cout<<" q3dot is: "<<q3dot<<std::endl;
 
-  std::cout<<"fextx is: "<<fext(0)<<" N"<<std::endl;
+  std::cout<<"fextx is: "<<force_x<<" N"<<std::endl;
 
   std::cout<<"error is: "<<error<<std::endl;
   std::cout<<"errordot is: "<<error_dot<<std::endl;

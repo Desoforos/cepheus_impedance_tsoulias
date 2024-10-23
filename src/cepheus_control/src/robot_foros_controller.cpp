@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
     
     ros::Subscriber ee_pos_sub = nh.subscribe("/vicon/end_effector_new/end_effector_new", 1, ee_posCallback);
     ros::Subscriber target_pos_sub = nh.subscribe("/vicon/target_new/target_new", 1, target_posCallback);
-
+    ros::Subscriber base_pos_sub = nh.subscribe("/vicon/base/base", 1, base_posCallback);
 
 
     /* init messages */ 
@@ -124,6 +124,7 @@ int main(int argc, char **argv) {
     start_movement = false;
     eefirstTime = true;
     targetfirstTime = true;
+    basefirstTime = true;
 
     rosbag::Bag bag;
     std::string path = "/home/desoforos/cepheus_impedance_tsoulias/rosbags/" ;
@@ -145,11 +146,11 @@ int main(int argc, char **argv) {
     std::cin>>tf;
 
     while(ros::ok() && !shutdown_requested){
-        //ros::spinOnce(); //once it spins it will read the current rw, le, ls and the callbacks will update the values q1,q2,q3 and the velocities
+        // ros::spinOnce(); //once it spins it will read the current rw, le, ls and the callbacks will update the values q1,q2,q3 and the velocities
         //now we update the errors and we recalculate the desired efforts to publish as msg_LE,msg_LS
 
         if(!start_movement){
-            ROS_INFO("[new_foros_simcontroller]: Press Y to start the controller. Caution! Do not press it before running Gazebo. \n");
+            ROS_INFO("[new_foros_simcontroller]: Press Y to start the controller. \n");
             std::cin>> command;
             ros::spinOnce();
             if(command == 'Y'){
@@ -172,7 +173,9 @@ int main(int argc, char **argv) {
                 ROS_INFO("[new_foros_simcontroller]: Parameters have been initialized. \n");
                 ROS_INFO("[new_foros_simcontroller]: Initializiing movement.");
             }
+            /*MAIN CONTROL BODY*/
             ros::spinOnce();
+            updateVel(0.01); // 100hz
             curr_time = ros::Time::now();
 		    dur_time = curr_time - t_beg;
             secs = dur_time.sec + dur_time.nsec * pow(10, -9);
