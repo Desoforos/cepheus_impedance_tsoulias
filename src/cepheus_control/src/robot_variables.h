@@ -7,7 +7,8 @@
 /*Boolean flags*/
 bool reachedTarget;// = false;
 bool start_movement;// = false;
-bool firstTime;// = true; //boolean for first time listening
+bool eefirstTime;// = true; //boolean for first time listening
+bool targetfirstTime;
 
 /*Cepheus' variables*/
 double q1;       // angle of first joint [rad] from callback

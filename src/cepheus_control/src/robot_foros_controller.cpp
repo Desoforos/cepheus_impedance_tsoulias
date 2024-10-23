@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
     ros::Publisher re_offset_pub = nh.advertise<std_msgs::Float64>("set_right_elbow_offset", 1);
 
 
-    //NA FTIAKSO PUBLISHER GIA TO ARDUINO TOU LEFO
+
     ros::Subscriber arduino_sub = nh.subscribe("/tsoulias_speak", 1, arduinoCallbacktest);
     ros::Publisher arduino_pub = nh.advertise<std_msgs::String>("/tsoulias_hear", 1);
 
@@ -94,8 +94,10 @@ int main(int argc, char **argv) {
     // ros::Subscriber ls_limit_sub = nh.subscribe("read_left_shoulder_limit", 1, lsLimitCallback);  //afta einai gia arxikopoihsh , na ta do
 	// ros::Subscriber le_limit_sub = nh.subscribe("read_left_elbow_limit", 1, leLimitCallback);
 
-    // ros::Subscriber vicon_sub = nh.subscribe("VICONTOPIC", 1, viconCallback);   //tha ta ftiakso sto ergasthrio
-    // ros::Subscriber force_sub = nh.subscribe("BOTASYSTOPIC", 1, forceCallback);
+    ros::Subscriber force_sub = nh.subscribe("/filtered_botasys", 1, forceCallback);
+    
+    ros::Subscriber ee_pos_sub = nh.subscribe("/vicon/end_effector_new/end_effector_new", 1, ee_posCallback);
+    ros::Subscriber target_pos_sub = nh.subscribe("/vicon/target_new/target_new", 1, target_posCallback);
 
 
 
@@ -114,13 +116,14 @@ int main(int argc, char **argv) {
     ROS_INFO("[new_foros_simcontroller]: torques initialized to 0. \n");
     
 
-     ros::Rate loop_rate(100); //100Hz
+    ros::Rate loop_rate(100); //100Hz
 
     char command;
     
     reachedTarget = false;
     start_movement = false;
-    firstTime = true;
+    eefirstTime = true;
+    targetfirstTime = true;
 
     rosbag::Bag bag;
     std::string path = "/home/desoforos/cepheus_impedance_tsoulias/rosbags/" ;

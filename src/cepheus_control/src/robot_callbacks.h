@@ -4,17 +4,64 @@
 #include "robot_variables.h"
 
 /////////////// CALLBACK FUNCTIONS DEFINITION START////////////////////////
+// geometry_msgs/TransformStamped
 
+void ee_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
+	ee_x = msg->transform.translation.x;
+	ee_y = msg->transform.translation.y;
+	tf::Quaternion qee( //for angle of ee
+		msg->transform.rotation.x,
+		msg->transform.rotation.y,
+		msg->transform.rotation.z,
+		msg->transform.rotation.w);
+    	tf::Matrix3x3 m_ee(qee);	
+    	double rollee, pitchee, yawee;
+		m_ee.getRPY(rollee, pitchee, yawee);
+		thetach = yawee; //angle of chaser(ee)
+		xee(0) = ee_x;
+		xee(1) = ee_y;
+		xee(2) = thetach;
+		if(eefirstTime){   //initialize the postiion of chaser and target for the first time ONLY
+			xE_in = ee_x;
+			yE_in = ee_y;
+			thetaE_in = thetach; 
+			eefirstTime = false;
+		}
+}
+
+
+void target_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
+	xt = msg->transform.translation.x;
+	yt = msg->transform.translation.y;
+	tf::Quaternion qt( //for angle of ee
+		msg->transform.rotation.x,
+		msg->transform.rotation.y,
+		msg->transform.rotation.z,
+		msg->transform.rotation.w);
+    	tf::Matrix3x3 m_t(qt);	
+    	double rollt, pitcht, yawt;
+		m_t.getRPY(rollt, pitcht, yawt);
+		thetat = yawt; //angle of chaser(ee)
+		if(targetfirstTime){   //initialize the postiion of chaser and target for the first time ONLY
+			xt_in = xt;
+			yt_in = yt;
+			thetat_in = thetat;
+			targetfirstTime = false;
+		}
+}
+	
+
+/*
 void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update the current position of ee and ring
 	int i;
 	for(i=0; i<msg->name.size(); i++){
 		//  ROS_INFO("[Gazebo Callback] Link Name: %s", msg->name[i]);
 		if(msg->name[i] == "cepheus::final_link"){
 			tf::Quaternion qee( //for angle of ee
-				msg->pose[i].orientation.x,
-				msg->pose[i].orientation.y,
-				msg->pose[i].orientation.z,
-				msg->pose[i].orientation.w);
+				msg->transform.rotation.x,
+				msg->transform.rotation.y,
+				msg->transform.rotation.z,
+				msg->transform.rotation.w);
     		tf::Matrix3x3 m_ee(qee);	
     		double rollee, pitchee, yawee;
 			m_ee.getRPY(rollee, pitchee, yawee);
@@ -41,10 +88,10 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 			ytdot = msg->twist[i].linear.y;
 			thetatdot = msg->twist[i].angular.z;
 			tf::Quaternion qring(
-				msg->pose[i].orientation.x,
-				msg->pose[i].orientation.y,
-				msg->pose[i].orientation.z,
-				msg->pose[i].orientation.w);
+				msg->transform.rotation.x,
+				msg->transform.rotation.y,
+				msg->transform.rotation.z,
+				msg->transform.rotation.w);
 			tf::Matrix3x3 mring(qring);
 			double rollring, pitchring, yawring;
 			mring.getRPY(rollring, pitchring, yawring);
@@ -59,10 +106,10 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 			xc0dot = msg->twist[i].linear.x; //velocity of base 
 			yc0dot = msg->twist[i].linear.y;
 			tf::Quaternion q( //for angle of base
-				msg->pose[i].orientation.x,
-				msg->pose[i].orientation.y,
-				msg->pose[i].orientation.z,
-				msg->pose[i].orientation.w);
+				msg->transform.rotation.x,
+				msg->transform.rotation.y,
+				msg->transform.rotation.z,
+				msg->transform.rotation.w);
 			tf::Matrix3x3 m(q);
 			double roll, pitch, yaw;
 			m.getRPY(roll, pitch, yaw);
@@ -96,17 +143,7 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 		ROS_INFO("[callbacks]: First positions have been recorded (xE_in etc). \n");
 	}
 }
-
-/* useless
-void ee_target_posCallback(const geometry_msgs::Pose::ConstPtr& msg){
-    ROS_INFO("[foros_simcontroller]: pose msg received! ee_target.x: %f ee_target.y: %f ee_target.z: %f \n",msg->position.x, msg->position.y, msg->position.z);
-    start_movement=true;
-    ee_x_des = msg->position.x;
-    ee_y_des=msg->position.y;
-    //ee_z=msg->position.z;
-}
 */
-
 
 
 void lsPosCallback(const std_msgs::Float64::ConstPtr& cmd) { //anti gia ls_position vazo q1
@@ -154,12 +191,14 @@ void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) { //anti gia re_veloc
 
 
 void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
-    force_x = msg->wrench.force.x;
-    force_y = msg->wrench.force.y;
-	torque_z = msg->wrench.torque.z;
+    force_x = msg->wrench.force.x;  //etsi einai mapped apo to bota  filtered.
+    // force_y = msg->wrench.force.y;
+	// torque_z = msg->wrench.torque.z;
 	fext(0) = force_x;
-	fext(1) = force_y;
-	fext(2) = torque_z; //na ta bgalo apo sxolio
+	fext(1) = 0;
+	fext(2) = 0;  //den mas xreiazontai, theloume mono x
+	// fext(1) = force_y;
+	// fext(2) = torque_z; //na ta bgalo apo sxolio
 	// fext(0) =0;
 	// fext(1) = 0;
 	// fext(2) =0; //for testing

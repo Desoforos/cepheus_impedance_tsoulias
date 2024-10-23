@@ -13,6 +13,8 @@ bool gripperListenedHard = false;
 
 bool shutdown_requested = false;
 
+double force_x;
+
 std_msgs::String arduino_msg; 
 
 void sigintHandler(int sig) {
@@ -37,6 +39,17 @@ void arduinoCallbacktest(const std_msgs::String::ConstPtr &msg){
 	}
 }
 
+void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
+    force_x = msg->wrench.force.x; //etsi einai mapped apo to botasys
+    // std::cout<<"(forceCallback) I read: "<<force_X<<" N. "<<std::endl;
+	if(abs(force_x)<0.5){
+		incontact = false;
+	}
+	else{
+		incontact = true;
+	}
+}
+
 
 
 int main(int argc, char **argv) {
@@ -50,14 +63,29 @@ int main(int argc, char **argv) {
     ros::Subscriber arduino_sub = nh.subscribe("/tsoulias_speak", 1, arduinoCallbacktest);
     ros::Publisher arduino_pub = nh.advertise<std_msgs::String>("/tsoulias_hear", 1);
 
+    ros::Subscriber force_sub = nh.subscribe("/filtered_botasys", 1, forceCallback);
+
+    ros::Rate loop_rate(100); //100Hz
+
+    int secs = 0; //not actually seconds
+    int contactCounter = 0;
+
     
     char cmd;
-    std::cout<<"if you want to begin grab press Y"<<std::endl;
+    std::cout<<"Press any key to start."<<std::endl;
     std::cin>>cmd;
-    if(cmd == 'Y') beginGrab=true;
-    cmd = 'N';
+
 
     while(ros::ok() && !shutdown_requested){
+        if(incontact){
+            contactCounter++;
+            }
+        else{
+            contactCounter = 0;
+            }
+        if(contactCounter > 1.5*200){ // contact for 1.5sec
+            beginGrab = true;
+           }
         if(beginGrab){ 
                 if(!beginSoft){
                     beginSoft = true;
@@ -90,6 +118,13 @@ int main(int argc, char **argv) {
                 arduino_pub.publish(arduino_msg);
                 shutdown_requested = true;
             }
+            if(secs%100 == 0){
+                std::cout<<"fext x is: "<<force_x<<" N. "<<std::endl;
+            }
+            secs++;
+            ros::spinOnce();
+            loop_rate.sleep();
     }
+
 
 }
