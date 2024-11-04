@@ -23,6 +23,8 @@
 #include <signal.h> 
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/String.h>
+#include <std_msgs/Bool.h>
+#include <std_msgs/UInt8.h>
 
 
 

@@ -11,6 +11,14 @@ bool eefirstTime;// = true; //boolean for first time listening
 bool targetfirstTime;
 bool basefirstTime;
 
+bool ls_initialized = false;
+bool le_initialized = false;
+bool re_initialized = false;
+
+double q1_init = -60 * (M_PI / 180);
+double q2_init = 105 * (M_PI / 180);
+double q3_init = 45 * (M_PI / 180);
+
 /*Cepheus' variables*/
 double q1;       // angle of first joint [rad] from callback
 double q2;       // angle of second joint [rad] from callback
@@ -59,6 +67,7 @@ std_msgs::Float64 msg_xee_y;
 std_msgs::Float64 msg_xee_theta; 
 
 std_msgs::String arduino_msg; 
+std_msgs::Bool start_moving;
 
 
 

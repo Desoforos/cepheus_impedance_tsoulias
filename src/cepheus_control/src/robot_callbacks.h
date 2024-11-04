@@ -143,7 +143,7 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     // if(force_y>10){
     //     ROS_INFO("[foros_simcontroller]: force_y detected: %f N \n",force_y);
     // } 
-	if(abs(force_x)<0.5){
+	if(abs(force_x)<0.25){
 		incontact = false;
 	}
 	else{

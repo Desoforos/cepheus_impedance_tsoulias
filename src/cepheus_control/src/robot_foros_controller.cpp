@@ -30,6 +30,7 @@ void sigintHandler(int sig) {
 
 
 
+
 int main(int argc, char **argv) {
 
     int count = 0;
@@ -77,6 +78,7 @@ int main(int argc, char **argv) {
 	ros::Publisher ls_offset_pub = nh.advertise<std_msgs::Float64>("set_left_shoulder_offset", 1);
 	ros::Publisher le_offset_pub = nh.advertise<std_msgs::Float64>("set_left_elbow_offset", 1);
     ros::Publisher re_offset_pub = nh.advertise<std_msgs::Float64>("set_right_elbow_offset", 1);
+    ros::Publisher start_moving_pub = nh.advertise<std_msgs::Bool>("start_moving",1) ;//na dosei entolh ksereis kati ksekinao peirama
 
 
 
@@ -116,7 +118,7 @@ int main(int argc, char **argv) {
     ROS_INFO("[new_foros_simcontroller]: torques initialized to 0. \n");
     
 
-    ros::Rate loop_rate(100); //100Hz
+    ros::Rate loop_rate(200); //200Hz
 
     char command;
     
@@ -145,6 +147,10 @@ int main(int argc, char **argv) {
 
     std::cin>>tf;
 
+    q1 = q1_init;
+    q2 = q2_init;
+    q3 = q3_init;
+
     while(ros::ok() && !shutdown_requested){
         // ros::spinOnce(); //once it spins it will read the current rw, le, ls and the callbacks will update the values q1,q2,q3 and the velocities
         //now we update the errors and we recalculate the desired efforts to publish as msg_LE,msg_LS
@@ -155,6 +161,8 @@ int main(int argc, char **argv) {
             ros::spinOnce();
             if(command == 'Y'){
                 start_movement= true;
+                start_moving.data = true;
+                start_moving_pub.publish(start_moving);
             }
         }
         else{
@@ -175,7 +183,7 @@ int main(int argc, char **argv) {
             }
             /*MAIN CONTROL BODY*/
             ros::spinOnce();
-            updateVel(0.01); // 100hz
+            updateVel(0.005); // 200hz
             curr_time = ros::Time::now();
 		    dur_time = curr_time - t_beg;
             secs = dur_time.sec + dur_time.nsec * pow(10, -9);
@@ -188,7 +196,7 @@ int main(int argc, char **argv) {
             else{
                 contactCounter = 0;
             }
-           if(contactCounter > 1.5*200){ // contact for 1.5sec
+           if(contactCounter > 0.8*200){ // contact for 0.8 sec
             beginGrab = true;
            }
 
@@ -214,6 +222,8 @@ int main(int argc, char **argv) {
            }
            if (hardFinished){
             ROS_INFO("Task completed. Ending now.");
+            start_moving.data = false;
+            start_moving_pub.publish(start_moving);
             shutdown_requested = true;
            }
 
@@ -259,6 +269,9 @@ int main(int argc, char **argv) {
     if(shutdown_requested && record){
         bag.close();
     } 
+    start_moving.data = false;
+    start_moving_pub.publish(start_moving);
+
 
     return 0;
 

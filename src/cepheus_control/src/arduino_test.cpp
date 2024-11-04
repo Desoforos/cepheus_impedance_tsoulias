@@ -42,7 +42,7 @@ void arduinoCallbacktest(const std_msgs::String::ConstPtr &msg){
 void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     force_x = msg->wrench.force.x; //etsi einai mapped apo to botasys
     // std::cout<<"(forceCallback) I read: "<<force_X<<" N. "<<std::endl;
-	if(abs(force_x)<0.5){
+	if(abs(force_x)<0.25){
 		incontact = false;
 	}
 	else{
@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
         else{
             contactCounter = 0;
             }
-        if(contactCounter > 1.5*200){ // contact for 1.5sec
+        if(contactCounter > 0.8*200){ // contact for 1.5sec
             beginGrab = true;
            }
         if(beginGrab){ 

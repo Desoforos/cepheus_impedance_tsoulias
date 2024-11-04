@@ -157,7 +157,7 @@ add_executable(simple_recorder_node src/simple_recorder.cpp)
 add_executable(robot_foros_controller_node src/robot_foros_controller.cpp)
 add_executable(arduino_test_node src/arduino_test.cpp)
 add_executable(vicon_test_node src/vicon_test.cpp)
-
+add_executable(robot_foros_ignition_node src/robot_foros_ignition.cpp)
 
 
 
@@ -182,6 +182,7 @@ target_link_libraries(simple_recorder_node ${catkin_LIBRARIES} )
 target_link_libraries(robot_foros_controller_node ${catkin_LIBRARIES} )
 target_link_libraries(arduino_test_node ${catkin_LIBRARIES} )
 target_link_libraries(vicon_test_node ${catkin_LIBRARIES} )
+target_link_libraries(robot_foros_ignition_node ${catkin_LIBRARIES})
 
 
 # target_link_libraries(eross_control_node ${catkin_LIBRARIES}  _ros) #nikiforos, took from eros
