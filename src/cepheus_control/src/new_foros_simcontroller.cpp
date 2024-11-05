@@ -134,7 +134,7 @@ int main(int argc, char **argv) {
     ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",100,gazeboposCallback);     //tha to anoikso
     
     //ros::Rate loop_rate(frequency);
-    ros::Rate loop_rate(100); //100Hz
+    ros::Rate loop_rate(200); //100Hz
 
     char command;
     
@@ -234,10 +234,10 @@ int main(int argc, char **argv) {
             base_wrench.torque.y = 0.0;
             msg_fextx.data = fext(0);
 
-            // base_force_pub.publish(base_wrench);
-            // LS_torque_pub.publish(msg_LS);
-            // LE_torque_pub.publish(msg_LE);
-            // LW_torque_pub.publish(msg_LW);
+            base_force_pub.publish(base_wrench);
+            LS_torque_pub.publish(msg_LS);
+            LE_torque_pub.publish(msg_LE);
+            LW_torque_pub.publish(msg_LW);
 
             xd_x_pub.publish(msg_xd_x);
             xd_y_pub.publish(msg_xd_y);

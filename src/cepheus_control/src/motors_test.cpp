@@ -54,6 +54,54 @@ double filter_torque(double torq, double prev) {
 	return torq;
 }
 
+void base_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
+	tf::Quaternion qee( //for angle of ee
+		msg->transform.rotation.x,
+		msg->transform.rotation.y,
+		msg->transform.rotation.z,
+		msg->transform.rotation.w);
+    tf::Matrix3x3 m_ee(qee);	
+    double rollee, pitchee, yawee;
+	m_ee.getRPY(rollee, pitchee, yawee);
+	th0 = yawee; 
+}
+
+void ls_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
+	tf::Quaternion qee( 
+		msg->transform.rotation.x,
+		msg->transform.rotation.y,
+		msg->transform.rotation.z,
+		msg->transform.rotation.w);
+    tf::Matrix3x3 m_ee(qee);	
+    double rollee, pitchee, yawee;
+	m_ee.getRPY(rollee, pitchee, yawee);
+	th1 = yawee; 
+}
+
+void le_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
+	tf::Quaternion qee( 
+		msg->transform.rotation.x,
+		msg->transform.rotation.y,
+		msg->transform.rotation.z,
+		msg->transform.rotation.w);
+    tf::Matrix3x3 m_ee(qee);	
+    double rollee, pitchee, yawee;
+	m_ee.getRPY(rollee, pitchee, yawee);
+	th2 = yawee; 
+}
+
+void ee_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
+	tf::Quaternion qee( //for angle of ee
+		msg->transform.rotation.x,
+		msg->transform.rotation.y,
+		msg->transform.rotation.z,
+		msg->transform.rotation.w);
+    tf::Matrix3x3 m_ee(qee);	
+    double rollee, pitchee, yawee;
+	m_ee.getRPY(rollee, pitchee, yawee);
+	th3 = yawee; 
+}
+
 
 
 
@@ -81,8 +129,13 @@ int main(int argc, char **argv) {
 	// ros::Publisher le_offset_pub = nh.advertise<std_msgs::Float64>("set_left_elbow_offset", 1);
     // ros::Publisher re_offset_pub = nh.advertise<std_msgs::Float64>("set_right_elbow_offset", 1);
 
-    ros::Subscriber ee_pos_sub = nh.subscribe("/vicon/end_effector_new/end_effector_new", 1, ee_posCallback);
+    
     ros::Subscriber base_pos_sub = nh.subscribe("/vicon/base/base", 1, base_posCallback); 
+    ros::Subscriber ls_pos_sub = nh.subscribe("/vicon/frame1/frame1", 1, ls_posCallback);
+    ros::Subscriber le_pos_sub = nh.subscribe("/vicon/frame2/frame2", 1, le_posCallback);
+    ros::Subscriber ee_pos_sub = nh.subscribe("/vicon/end_effector_new/end_effector_new", 1, ee_posCallback);
+    
+
     double q1des, q2des, q3des;
     char cmd;
     bool initialiseArm = false;

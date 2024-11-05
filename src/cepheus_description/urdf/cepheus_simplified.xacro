@@ -396,8 +396,8 @@
 			effort="${joint_effort}"
 			velocity="${joint_velocity}" />
 		<dynamics
-			damping="0"
-			friction="0" />
+			damping="${joint_damping}"
+			friction="${joint_friction}" />
 	</joint>
 	<link name="left_grip">
 		<inertial>

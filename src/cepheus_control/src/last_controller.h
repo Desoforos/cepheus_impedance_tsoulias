@@ -205,20 +205,20 @@ void finaltrajectories(double t,double tf){
     }
 
   // gia peirama me kosta 14/10
-    xstep = xstepfr;
-    ystep = ystepfr;
-    thstep = thstepfr;
-    theta0step = theta0stepfr;
+    // xstep = xstepfr;
+    // ystep = ystepfr;
+    // thstep = thstepfr;
+    // theta0step = theta0stepfr;
 
-    xstepdot = xstepdotfr;
-    ystepdot = ystepdotfr;
-    thstepdot = thstepdotfr;
-    theta0stepdot = theta0stepdotfr;
+    // xstepdot = xstepdotfr;
+    // ystepdot = ystepdotfr;
+    // thstepdot = thstepdotfr;
+    // theta0stepdot = theta0stepdotfr;
 
-    xstepdotdot = xstepdotdotfr;
-    ystepdotdot = ystepdotdotfr;
-    thstepdotdot = thstepdotdotfr;
-    theta0stepdotdot = theta0stepdotdotfr;
+    // xstepdotdot = xstepdotdotfr;
+    // ystepdotdot = ystepdotdotfr;
+    // thstepdotdot = thstepdotdotfr;
+    // theta0stepdotdot = theta0stepdotdotfr;
 
 //////////////////////
     // xstep = 1;
@@ -939,6 +939,15 @@ double ns = kprop*errorth0 + kder*errorth0dot;
 // base_wrench.force.x = 0;  //fx;
 // base_wrench.force.y = 0;  //fy;
 base_wrench.torque.z = tau(0);//ns;
+
+tau(1) = tau(1);
+tau(2) = tau(2);
+// tau(3) = 16*tau(3);
+
+//diko moy pd, ta q1,q2 gia xy (se pososto), to q3 gia prosanatolismo
+tau(1) = -0.5*(0.3*error[1]+0.7*error[2]) - 20*(0.3*error_dot[1]+0.7*error_dot[2]);
+tau(2) = -0.5*(0.7*error[1]+0.3*error[2]) - 20*(0.7*error_dot[1]+0.3*error_dot[2]);
+tau(3) = -0.5*(thetach - thstep) - 20*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
 
 msg_RW.data = -tau(0); 
 // msg_RW.data = ns;
