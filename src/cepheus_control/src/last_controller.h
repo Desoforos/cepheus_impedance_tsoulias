@@ -91,8 +91,65 @@ void calculateTrajecotryPolynomials(double tf){
     a5 = res(2);
 }
 
+void initialiseWrist(){
+  	if(qfirstTime){
+    ROS_INFO("[in q3 intialization]: q1,q2 have been recorded.");
+		q1_init = q1;
+		q2_init = q2;
+    theta0in = theta0;
+    qfirstTime = false;
+	  }
+    Eigen::VectorXd tau(4);
+
+    if( (abs(theta0in-theta0)< 0.001) && (abs(q1_init-q1) < 0.001) && (abs(q2_init-q2) < 0.001) && (abs(thetat -thetach) < 0.001)
+      && (abs(theta0dot)<0.0001) && (abs(q1dot)<0.0001) && (abs(q2dot)<0.0001) && abs(xeedot(2))<0.0001){
+        wristInitialised = true;
+        base_wrench.torque.z = 0.00001;//ns;
+        // msg_RW.data = -tau(0); 
+        msg_LS.data = 0.00001;
+        msg_LE.data = 0.00001;
+        msg_LW.data = 0.00001;
+    }
+    else{ 
+      tau(0) = 0.6*(theta0in - theta0) + 20*(0-theta0dot);
+      tau(1) = 0.6*(q1_init-q1) + 20*(0-q1dot);
+      tau(2) = 0.6*(q2_init-q2) + 20*(0-q2dot);
+      tau(3) = 0.6*(thetat - thetach) + 0.6*(0 - xeedot(2)); // dhladh q3 MONO gia orientation
+
+      base_wrench.torque.z = tau(0);//ns;
+      // msg_RW.data = -tau(0); 
+      msg_LS.data = tau(1);
+      msg_LE.data = tau(2);
+      msg_LW.data = tau(3);
+    }
+
+}
 
 void finaltrajectories(double t,double tf){
+  	if(firstTime){   //initialize the postiion of chaser and target for the first time ONLY
+		xch_in = ee_x;
+		ych_in = ee_y;
+		xt_in = xt;
+		yt_in = yt;
+		thetach_in = thetach;
+		thetat_in = thetat;// - M_PI/4; //gia na yparxei mia diafora hehe
+		// x_target_in = xt;
+		// y_target_in = yt;
+		xE_contact = xt;
+		yE_contact = yt;
+		thetaE_contact = thetat;// - M_PI/2;
+		//theta_target_in = thetat;
+		xE_in = ee_x;
+		yE_in = ee_y;
+		thetaE_in = thetach; //ousiastika to egrapsa 2 fores, useless
+		theta0in = theta0;
+		theta0fin = theta0;
+		firstTime = false;
+		// msg_xt_x.data = xt_in;
+    	// msg_xt_y.data = yt_in;
+    	// msg_xt_theta.data = thetat_in;
+		ROS_INFO("[in impedance control]: First positions have been recorded (xE_in etc). \n");
+	  }
     double s,sdot, sdotdot;
 
     s = a0 + a1*t + a2*pow(t,2) + a3*pow(t,3) + a4*pow(t,4) + a5*pow(t,5);
@@ -203,6 +260,9 @@ void finaltrajectories(double t,double tf){
       thstepdotdot = thstepdotdotc;
       theta0stepdotdot = theta0stepdotdotc;
     }
+    // thstep = thetat;
+    // thstepdot = 0;
+    // thstepdotdot = 0;
 
   // gia peirama me kosta 14/10
     // xstep = xstepfr;
@@ -236,17 +296,17 @@ void finaltrajectories(double t,double tf){
     // thstepdotdot = 1;
     // theta0stepdotdot = 1;
 
-    msg_xd_x.data = xstep;
-    msg_xd_y.data = ystep;
-    msg_xd_theta.data = thstep;
+    // msg_xd_x.data = xstep;
+    // msg_xd_y.data = ystep;
+    // msg_xd_theta.data = thstep;
 
-    msg_xt_x.data = xt;
-    msg_xt_y.data = yt;
-    msg_xt_theta.data = thetat;
+    // msg_xt_x.data = xt;
+    // msg_xt_y.data = yt;
+    // msg_xt_theta.data = thetat;
 
-    msg_xee_x.data = xee(0);
-    msg_xee_y.data = xee(1);
-    msg_xee_theta.data = xee(2);
+    // msg_xee_x.data = xee(0);
+    // msg_xee_y.data = xee(1);
+    // msg_xee_theta.data = xee(2);
 
 
 }
@@ -918,8 +978,11 @@ error_dot << (theta0dot - theta0stepdot), (xeedot(0) - xstepdot), (xeedot(1) - y
 Eigen::VectorXd qext(4);
 qext << 0, 0, fext(0), 0;
 
+// error = 5*error; //gia to gazebo mono
 
-Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-kd*error-bd*error_dot-qext + fdes); 
+
+
+Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-2*kd*error-16*bd*error_dot-qext + fdes); 
 
 
 
@@ -940,19 +1003,23 @@ double ns = kprop*errorth0 + kder*errorth0dot;
 // base_wrench.force.y = 0;  //fy;
 base_wrench.torque.z = tau(0);//ns;
 
-tau(1) = tau(1);
-tau(2) = tau(2);
-// tau(3) = 16*tau(3);
+
 
 //diko moy pd, ta q1,q2 gia xy (se pososto), to q3 gia prosanatolismo
-tau(1) = -0.5*(0.3*error[1]+0.7*error[2]) - 20*(0.3*error_dot[1]+0.7*error_dot[2]);
-tau(2) = -0.5*(0.7*error[1]+0.3*error[2]) - 20*(0.7*error_dot[1]+0.3*error_dot[2]);
-tau(3) = -0.5*(thetach - thstep) - 20*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
+// tau(1) = -0.5*(0.3*error[1]+0.7*error[2]) - 20*(0.3*error_dot[1]+0.7*error_dot[2]);
+// tau(2) = -0.5*(0.7*error[1]+0.3*error[2]) - 20*(0.7*error_dot[1]+0.3*error_dot[2]);
+// tau(3) = -0.5*(thetach - thstep) - 20*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
 
-msg_RW.data = -tau(0); 
+// msg_RW.data = -tau(0); 
 // msg_RW.data = ns;
+
+// tau(1) = tau(1)/46;//93;
+// tau(2) = tau(2)/46;//93;
+// tau(3) = tau(3)/46;//93;
 msg_LS.data = tau(1);
 msg_LE.data = tau(2);
+
+// tau(3) = 0.6*(thstep-thetach) + 0.6*(thstepdot - xeedot(2));
 msg_LW.data = tau(3);
 
 

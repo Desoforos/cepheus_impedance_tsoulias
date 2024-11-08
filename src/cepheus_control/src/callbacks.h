@@ -69,30 +69,30 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 			// std::cout<<"[Gazebo callback] theta0dot is: "<<theta0dot<<std::endl;
 		}
 	}
-	if(firstTime){   //initialize the postiion of chaser and target for the first time ONLY
-		xch_in = ee_x;
-		ych_in = ee_y;
-		xt_in = xt;
-		yt_in = yt;
-		thetach_in = thetach;
-		thetat_in = thetat;// - M_PI/4; //gia na yparxei mia diafora hehe
-		// x_target_in = xt;
-		// y_target_in = yt;
-		xE_contact = xt;
-		yE_contact = yt;
-		thetaE_contact = thetat;// - M_PI/2;
-		//theta_target_in = thetat;
-		xE_in = ee_x;
-		yE_in = ee_y;
-		thetaE_in = thetach; //ousiastika to egrapsa 2 fores, useless
-		theta0in = theta0;
-		theta0fin = theta0;
-		firstTime = false;
-		// msg_xt_x.data = xt_in;
-    	// msg_xt_y.data = yt_in;
-    	// msg_xt_theta.data = thetat_in;
-		ROS_INFO("[callbacks]: First positions have been recorded (xE_in etc). \n");
-	}
+	// if(firstTime){   //initialize the postiion of chaser and target for the first time ONLY
+	// 	xch_in = ee_x;
+	// 	ych_in = ee_y;
+	// 	xt_in = xt;
+	// 	yt_in = yt;
+	// 	thetach_in = thetach;
+	// 	thetat_in = thetat;// - M_PI/4; //gia na yparxei mia diafora hehe
+	// 	// x_target_in = xt;
+	// 	// y_target_in = yt;
+	// 	xE_contact = xt;
+	// 	yE_contact = yt;
+	// 	thetaE_contact = thetat;// - M_PI/2;
+	// 	//theta_target_in = thetat;
+	// 	xE_in = ee_x;
+	// 	yE_in = ee_y;
+	// 	thetaE_in = thetach; //ousiastika to egrapsa 2 fores, useless
+	// 	theta0in = theta0;
+	// 	theta0fin = theta0;
+	// 	firstTime = false;
+	// 	// msg_xt_x.data = xt_in;
+    // 	// msg_xt_y.data = yt_in;
+    // 	// msg_xt_theta.data = thetat_in;
+	// 	ROS_INFO("[callbacks]: First positions have been recorded (xE_in etc). \n");
+	// }
 }
 
 /* useless
@@ -124,6 +124,10 @@ void jointStatesCallback(const sensor_msgs::JointState::ConstPtr& msg){
 			q3dot = msg->velocity[i];
 		}
 	}
+	// if(qfirstTime){
+	// 	q1_init = q1;
+	// 	q2_init = q2;
+	// }
 	// std::cout<<"[Joint states callback] q1dot is: "<<q1dot<<std::endl;
 	// std::cout<<"[Joint states callback] q2dot is: "<<q2dot<<std::endl;
 	// std::cout<<"[Joint states callback] q3dot is: "<<q3dot<<std::endl;

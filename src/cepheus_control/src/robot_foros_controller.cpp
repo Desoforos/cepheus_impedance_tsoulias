@@ -115,7 +115,12 @@ int main(int argc, char **argv) {
     // msg_TX.data = 0.0;
     // msg_TY.data = 0.0;
 
-    ROS_INFO("[new_foros_simcontroller]: torques initialized to 0. \n");
+    prev_tau(0) = 0.0;
+    prev_tau(1) = 0.0;
+    prev_tau(2) = 0.0;
+    prev_tau(3) = 0.0;
+
+    ROS_INFO("[new_foros_simcontroller]: Prev torques initialized to 0. \n");
     
 
     ros::Rate loop_rate(200); //200Hz

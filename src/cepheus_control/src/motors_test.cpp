@@ -102,6 +102,53 @@ void ee_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
 	th3 = yawee; 
 }
 
+void lsPosCallback(const std_msgs::Float64::ConstPtr& cmd) {
+	if (abs(cmd->data - q1) > POS_FILTER)
+		return;
+	else
+		q1 = cmd->data;
+}
+
+
+void lePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
+	if (abs(cmd->data - q2) > POS_FILTER)
+		return;
+	else
+		q2 = cmd->data;
+}
+
+void rePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
+	if (abs(cmd->data - q3) > POS_FILTER)
+		return;
+	else
+		q3 = cmd->data;
+}
+
+
+void lsVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
+	if (abs(cmd->data - q1dot) > VEL_FILTER)
+		return;
+	else
+		q1dot = cmd->data;
+}
+
+
+void leVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
+	if (abs(cmd->data - q2dot) > VEL_FILTER)
+		return;
+	else
+		q2dot = cmd->data;
+}
+
+
+void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
+	if (abs(cmd->data - q3dot) > VEL_FILTER)
+		return;
+	else
+		q3dot = cmd->data;
+}
+
+
 
 
 
@@ -130,10 +177,17 @@ int main(int argc, char **argv) {
     // ros::Publisher re_offset_pub = nh.advertise<std_msgs::Float64>("set_right_elbow_offset", 1);
 
     
-    ros::Subscriber base_pos_sub = nh.subscribe("/vicon/base/base", 1, base_posCallback); 
-    ros::Subscriber ls_pos_sub = nh.subscribe("/vicon/frame1/frame1", 1, ls_posCallback);
-    ros::Subscriber le_pos_sub = nh.subscribe("/vicon/frame2/frame2", 1, le_posCallback);
-    ros::Subscriber ee_pos_sub = nh.subscribe("/vicon/end_effector_new/end_effector_new", 1, ee_posCallback);
+    // ros::Subscriber base_pos_sub = nh.subscribe("/vicon/base/base", 1, base_posCallback); 
+    // ros::Subscriber ls_pos_sub = nh.subscribe("/vicon/frame1/frame1", 1, ls_posCallback);
+    // ros::Subscriber le_pos_sub = nh.subscribe("/vicon/frame2/frame2", 1, le_posCallback);
+    // ros::Subscriber ee_pos_sub = nh.subscribe("/vicon/end_effector_new/end_effector_new", 1, ee_posCallback);
+
+    ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 1, lsPosCallback);
+	ros::Subscriber le_pos_sub = nh.subscribe("read_left_elbow_position", 1, lePosCallback);
+	ros::Subscriber re_pos_sub = nh.subscribe("read_right_elbow_position", 1, rePosCallback);
+	ros::Subscriber ls_vel_sub = nh.subscribe("read_left_shoulder_velocity", 1, lsVelCallback);
+	ros::Subscriber le_vel_sub = nh.subscribe("read_left_elbow_velocity", 1, leVelCallback);
+	ros::Subscriber re_vel_sub = nh.subscribe("read_right_elbow_velocity", 1, reVelCallback);
     
 
     double q1des, q2des, q3des;
@@ -143,7 +197,7 @@ int main(int argc, char **argv) {
     double Kd = 0.006;
 
 	double errorq[3];
-	double error_qdot[3];
+	double errorqdot[3];
 	double torq[3];
 	double prev_torq[3];
 	double qd[3];
@@ -158,10 +212,10 @@ int main(int argc, char **argv) {
 		qd_dot[i] = 0.0;
 	}
 
-    th0 = th1 = th2 = th3 = 0;  //arxikopoihsh kalou kakou
+    // th0 = th1 = th2 = th3 = 0;  //arxikopoihsh kalou kakou
     ros::spinOnce();
-    calAngles();
-    updateVel(0.005); //200hz
+    // calAngles();
+    // updateVel(0.005); //200hz
     std::cout<<"q1 is: "<<(q1*180/M_PI)<<" degrees."<<std::endl;
     std::cout<<"q2 is: "<<(q2*180/M_PI)<<" degrees."<<std::endl;
     std::cout<<"q3 is: "<<(q3*180/M_PI)<<" degrees."<<std::endl;
@@ -212,18 +266,21 @@ int main(int argc, char **argv) {
                     break;
                 }
 
+            prev_torq[0] = torq[0];
+            prev_torq[1] = torq[1];
+            prev_torq[2] = torq[2];
             torq[0] = Kp*errorq[0] + Kd*errorqdot[0];
             torq[1] = Kp*errorq[1] + Kd*errorqdot[1];
             torq[2] = Kp*errorq[2] + Kd*errorqdot[2];
 
             torque.data = filter_torque(torq[0], prev_torq[0]);
-            torque.data = torq[0];
+            // torque.data = 0.001; //torq[0];
             ls_torque_pub.publish(torque);
             torque.data = filter_torque(torq[1], prev_torq[1]);
-            torque.data = torq[1];
-            le_torque_pub.publish(torque);
+            // torque.data = 0.0001; //torq[1];
+            le_torque_pub.publish(torque); //sxolio gia debugging
             torque.data = filter_torque(torq[2], prev_torq[2]);
-            torque.data = torq[2];
+            // torque.data = torq[2];
             re_torque_pub.publish(torque);
         }
 

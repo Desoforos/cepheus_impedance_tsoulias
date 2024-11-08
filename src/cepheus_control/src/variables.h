@@ -7,7 +7,9 @@
 /*Boolean flags*/
 bool reachedTarget;// = false;
 bool start_movement;// = false;
-bool firstTime;// = true; //boolean for first time listening
+bool firstTime;// = true; //boolean for first time listening x,y
+bool qfirstTime;
+bool wristInitialised;
 
 /*Cepheus' variables*/
 double q1;       // angle of first joint [rad] from callback
@@ -31,14 +33,14 @@ double xtdot, ytdot, thetatdot;
 
 
 /*Arxikes (kai telikes) sinthikes*/
-double q1_init = -60 * (M_PI / 180);
-double q2_init = 105 * (M_PI / 180);
-double q3_init = 45 * (M_PI / 180);
-double q1des = 45* (M_PI / 180);  //kanonika afta briskontai apo inverse kinematics alla tespa
-double q2des = 45 * (M_PI / 180);
-double q3des = 0;
-double q1dotdes = 0.0;
-double q2dotdes = 0.0;
+double q1_init;// = -60 * (M_PI / 180);
+double q2_init; // = 105 * (M_PI / 180);
+double q3_init; // = 45 * (M_PI / 180);
+double q1des; // = 45* (M_PI / 180);  //kanonika afta briskontai apo inverse kinematics alla tespa
+double q2des; // = 45 * (M_PI / 180);
+double q3des; // = 0;
+double q1dotdes; // = 0.0;
+double q2dotdes; // = 0.0;
 ///////////really needed//////////////
 double xch_in, ych_in, thetach_in; //arxikh thesh chaser (end effector)
 double xt_in, yt_in, thetat_in;     //arxikh thesh target (ring)
@@ -78,6 +80,19 @@ std_msgs::Float64 msg_xt_theta;
 std_msgs::Float64 msg_xee_x; 
 std_msgs::Float64 msg_xee_y; 
 std_msgs::Float64 msg_xee_theta; 
+
+std_msgs::Float64 msg_xd_x_dot; //xd_x
+std_msgs::Float64 msg_xd_y_dot; //xd_y
+std_msgs::Float64 msg_xd_theta_dot; //xd_y
+
+std_msgs::Float64 msg_xt_x_dot; 
+std_msgs::Float64 msg_xt_y_dot; 
+std_msgs::Float64 msg_xt_theta_dot; 
+
+std_msgs::Float64 msg_xee_x_dot; 
+std_msgs::Float64 msg_xee_y_dot; 
+std_msgs::Float64 msg_xee_theta_dot; 
+
 
 
 
@@ -264,6 +279,10 @@ double xstepdot, ystepdot, thstepdot,theta0stepdot;
 double xstepdotdot, ystepdotdot, thstepdotdot,theta0stepdotdot;
 double sd = 0.25; //safety distance
 double theta0in, theta0fin;
+
+Eigen::VectorXd tau(4);
+Eigen::VectorXd prev_tau(4);
+
 
 
  

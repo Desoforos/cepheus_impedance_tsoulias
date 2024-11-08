@@ -154,11 +154,11 @@ add_executable(testsetter_node src/testsetter.cpp)
 add_executable(new_foros_simcontroller_node src/new_foros_simcontroller.cpp)
 add_executable(simple_publisher_node src/simple_publisher.cpp)
 add_executable(simple_recorder_node src/simple_recorder.cpp)
-add_executable(robot_foros_controller_node src/robot_foros_controller.cpp)
+# add_executable(robot_foros_controller_node src/robot_foros_controller.cpp)
 add_executable(arduino_test_node src/arduino_test.cpp)
 add_executable(vicon_test_node src/vicon_test.cpp)
 add_executable(robot_foros_ignition_node src/robot_foros_ignition.cpp)
-# add_executable(motors_test_node src/motors_test.cpp)
+add_executable(motors_test_node src/motors_test.cpp)
 
 
 
@@ -180,11 +180,11 @@ target_link_libraries(testsetter_node ${catkin_LIBRARIES}  ) #nikiforos
 target_link_libraries(new_foros_simcontroller_node ${catkin_LIBRARIES} ) #nikiforos
 target_link_libraries(simple_publisher_node ${catkin_LIBRARIES} )
 target_link_libraries(simple_recorder_node ${catkin_LIBRARIES} )
-target_link_libraries(robot_foros_controller_node ${catkin_LIBRARIES} )
+# target_link_libraries(robot_foros_controller_node ${catkin_LIBRARIES} )
 target_link_libraries(arduino_test_node ${catkin_LIBRARIES} )
 target_link_libraries(vicon_test_node ${catkin_LIBRARIES} )
 target_link_libraries(robot_foros_ignition_node ${catkin_LIBRARIES})
-# target_link_libraries(motors_test_node ${catkin_LIBRARIES})
+target_link_libraries(motors_test_node ${catkin_LIBRARIES})
 
 
 

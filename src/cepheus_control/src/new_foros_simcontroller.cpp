@@ -138,9 +138,12 @@ int main(int argc, char **argv) {
 
     char command;
     
+    wristInitialised = false;
+    
     reachedTarget = false;
     start_movement = false;
     firstTime = true;
+    qfirstTime = true;
 
     rosbag::Bag bag;
     std::string path = "/home/desoforos/cepheus_impedance_tsoulias/rosbags/" ;
@@ -180,11 +183,6 @@ int main(int argc, char **argv) {
             }
         }
         else{
-            if(!hasbegun){
-                ROS_INFO("[new_foros_simcontroller]: Initializiing control procedure.");
-                hasbegun = true; //apla gia to rosinfo na mas pei oti ksekinaei tin kinhsh
-                t_beg  = ros::Time::now(); //initialize starting moment
-            }
             if(!paramsinit){
                 initialiseParametersNew();
                 ros::spinOnce();
@@ -202,30 +200,110 @@ int main(int argc, char **argv) {
 		    dur_time = curr_time - t_beg;
             secs = dur_time.sec + dur_time.nsec * pow(10, -9);
 
- 
-            // diagnostics();
-            //desiredTrajectory(dur_time); 
-            // calculateMatrices(); //den xreiazetai pleon einai mesa sto controler()
-            // baseTrajectory(dur_time,tf);
-            finaltrajectories(secs,tf); //apo last_controller.h
-            // basePDcontroll();  //ena apo ta dyo tha exo anoikto
-            // calculateQ();
-            controller(count,tf,secs); //apo last_controller.h
-            count++;
+            /*first initialise the wrist and keep q1,q2 steady*/
+            if(!wristInitialised){
+                initialiseWrist();
+            }
+            else{
+                if(!hasbegun){
+                    ROS_INFO("[new_foros_simcontroller]: Initializiing control procedure.");
+                    hasbegun = true; //apla gia to rosinfo na mas pei oti ksekinaei tin kinhsh
+                    t_beg  = ros::Time::now(); //initialize starting moment
+                }
+                ros::spinOnce();
+                curr_time = ros::Time::now();
+		        dur_time = curr_time - t_beg;  //ksekinaei h metrhsh meta to initialization tou wrist, 30 sec gia wrist kai 30 sec gia ta alla
+                secs = dur_time.sec + dur_time.nsec * pow(10, -9);
+                // diagnostics();
+                //desiredTrajectory(dur_time); 
+                // calculateMatrices(); //den xreiazetai pleon einai mesa sto controler()
+                // baseTrajectory(dur_time,tf);
+                finaltrajectories(secs,tf); //apo last_controller.h
+                // basePDcontroll();  //ena apo ta dyo tha exo anoikto
+                // calculateQ();
+                controller(count,tf,secs); //apo last_controller.h
+                count++;
 
 
-            // base_wrench.force.x = qact(0);  //fx;
-            // base_wrench.force.y = qact(1);  //fy;
-            // //base_wrench.torque.z = qact(2); //ns;
-            // msg_RW.data = qact(2); //to bazo anapoda bas kai
-			// msg_LS.data = qact(3);
-			// msg_LE.data = qact(4);
-			// msg_LW.data = qact(5);
-            // std::cout<<"thetach is: "<<thetach<<std::endl;
-            // std::cout<<"theta0+q1+q2+q3 is: "<<(theta0+q1+q2+q3)<<std::endl;
+                // base_wrench.force.x = qact(0);  //fx;
+                // base_wrench.force.y = qact(1);  //fy;
+                // //base_wrench.torque.z = qact(2); //ns;
+                // msg_RW.data = qact(2); //to bazo anapoda bas kai
+                // msg_LS.data = qact(3);
+                // msg_LE.data = qact(4);
+                // msg_LW.data = qact(5);
+                // std::cout<<"thetach is: "<<thetach<<std::endl;
+                // std::cout<<"theta0+q1+q2+q3 is: "<<(theta0+q1+q2+q3)<<std::endl;
 
 
-            // RW_torque_pub.publish(msg_RW);
+                // RW_torque_pub.publish(msg_RW);
+                if(record){
+                    msg_xd_x.data = xstep;
+                    msg_xd_y.data = ystep;
+                    msg_xd_theta.data = thstep;
+
+                    msg_xt_x.data = xt;
+                    msg_xt_y.data = yt;
+                    msg_xt_theta.data = thetat;
+
+                    msg_xee_x.data = xee(0);
+                    msg_xee_y.data = xee(1);
+                    msg_xee_theta.data = xee(2);
+
+                    msg_xd_x_dot.data = xstepdot;
+                    msg_xd_y_dot.data = ystepdot;
+                    msg_xd_theta_dot.data = thstepdot;
+
+                    msg_xt_x_dot.data = xtdot;
+                    msg_xt_y_dot.data = ytdot;
+                    msg_xt_theta_dot.data = thetatdot;
+
+                    msg_xee_x_dot.data = xeedot(0);
+                    msg_xee_y_dot.data = xeedot(1);
+                    msg_xee_theta_dot.data = xeedot(2);
+
+
+
+
+                    bag.write("/cepheus/xt_x", ros::Time::now(), msg_xt_x);
+                    bag.write("/cepheus/xd_x", ros::Time::now(), msg_xd_x);
+                    bag.write("/cepheus/xee_x", ros::Time::now(), msg_xee_x);
+
+                    bag.write("/cepheus/xt_y", ros::Time::now(), msg_xt_y);
+                    bag.write("/cepheus/xd_y", ros::Time::now(), msg_xd_y);
+                    bag.write("/cepheus/xee_y", ros::Time::now(), msg_xee_y);      
+
+                    bag.write("/cepheus/xt_theta", ros::Time::now(), msg_xt_theta);
+                    bag.write("/cepheus/xd_theta", ros::Time::now(), msg_xd_theta);
+                    bag.write("/cepheus/xee_theta", ros::Time::now(), msg_xee_theta);   
+
+                    bag.write("/cepheus/ft_sensor_topic", ros::Time::now(), msg_fextx);
+
+
+                    bag.write("/cepheus/xt_x_dot", ros::Time::now(), msg_xt_x_dot);
+                    bag.write("/cepheus/xd_x_dot", ros::Time::now(), msg_xd_x_dot);
+                    bag.write("/cepheus/xee_x_dot", ros::Time::now(), msg_xee_x_dot);
+
+                    bag.write("/cepheus/xt_y_dot", ros::Time::now(), msg_xt_y_dot);
+                    bag.write("/cepheus/xd_y_dot", ros::Time::now(), msg_xd_y_dot);
+                    bag.write("/cepheus/xee_y_dot", ros::Time::now(), msg_xee_y_dot);      
+
+                    bag.write("/cepheus/xt_theta_dot", ros::Time::now(), msg_xt_theta_dot);
+                    bag.write("/cepheus/xd_theta_dot", ros::Time::now(), msg_xd_theta_dot);
+                    bag.write("/cepheus/xee_theta_dot", ros::Time::now(), msg_xee_theta_dot); 
+
+
+
+                
+
+
+                    if(shutdown_requested){
+                        bag.close();
+                        record = false;
+                    }
+                    
+                }
+            }
 
             base_wrench.force.x = 0.0;
             base_wrench.force.y = 0.0;
@@ -249,31 +327,7 @@ int main(int argc, char **argv) {
             xee_y_pub.publish(msg_xee_y);
             xee_theta_pub.publish(msg_xee_theta);
 
-            if(record){
 
-                bag.write("/cepheus/xt_x", ros::Time::now(), msg_xt_x);
-                bag.write("/cepheus/xd_x", ros::Time::now(), msg_xd_x);
-                bag.write("/cepheus/xee_x", ros::Time::now(), msg_xee_x);
-
-                bag.write("/cepheus/xt_y", ros::Time::now(), msg_xt_y);
-                bag.write("/cepheus/xd_y", ros::Time::now(), msg_xd_y);
-                bag.write("/cepheus/xee_y", ros::Time::now(), msg_xee_y);      
-
-                bag.write("/cepheus/xt_theta", ros::Time::now(), msg_xt_theta);
-                bag.write("/cepheus/xd_theta", ros::Time::now(), msg_xd_theta);
-                bag.write("/cepheus/xee_theta", ros::Time::now(), msg_xee_theta);   
-
-                bag.write("/cepheus/ft_sensor_topic", ros::Time::now(), msg_fextx);
-
-               
-
-
-                if(shutdown_requested){
-                    bag.close();
-                    record = false;
-                }
-                
-            }
 
             // base_wrench.force.x = 0.0;
             // base_wrench.force.y = 0.0;

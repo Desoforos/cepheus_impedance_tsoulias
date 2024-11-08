@@ -214,6 +214,42 @@ void updateVel(double dt){
     theta0dot = (theta0-theta0_prev)/dt;
 }
 
+double filter_torque(double torq, double prev) {
+	if (torq == 0.0){
+		// torq = 0.00001;
+		torq = 0.00001;
+		if (prev < 0.0)
+			torq = torq * -1;
+		printf("CHANGED ZERO TORQUE\n");
+	}
+	return torq;
+}
+
+void PDcontroller(){
+  Eigen::VectorXd error(4); //ta sxolia einai gia aplo PD xoris ton xrono
+
+  error << (theta0 - theta0step), (ee_x - xstep), (ee_y - ystep), (thetach - thstep);
+  // error << (theta0 - theta0in), (ee_x - xt), (ee_y - yt), (thetach - thetat);
+
+  Eigen::VectorXd error_dot(4);
+  error_dot << (theta0dot - theta0stepdot), (xeedot(0) - xstepdot), (xeedot(1) - ystepdot), (xeedot(2) - thstepdot);
+  // error_dot << (theta0dot - 0), (xeedot(0) - 0), (xeedot(1) - 0), (xeedot(2) - 0);
+  prev_tau(0) = tau(0);
+  prev_tau(1) = tau(1);
+  prev_tau(2) = tau(2);
+  prev_tau(3) = tau(3);
+
+  tau(0) = 0.6*(theta0in - theta0) + 20*(0-theta0dot);
+  tau(1) = -0.5*(0.3*error[1]+0.7*error[2]) - 20*(0.3*error_dot[1]+0.7*error_dot[2]);
+  tau(2) = -0.5*(0.7*error[1]+0.3*error[2]) - 20*(0.7*error_dot[1]+0.3*error_dot[2]);
+  tau(3) = -0.5*(thetach - thstep) - 20*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
+  msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
+  // msg_RW.data = ns;
+  msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
+  msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
+  msg_LW.data = filter_torque(tau(3),prev_tau(3)); //tau(3);
+}
+
 
 
 void controller(int count, double tf, double t){
@@ -887,8 +923,13 @@ Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-kd*error-bd*error_dot-qext + fd
 
 Eigen::VectorXd qbar=hbar*u+cbar-jebar*qe;
 
+prev_tau(0) = tau(0);
+prev_tau(1) = tau(1);
+prev_tau(2) = tau(2);
+prev_tau(3) = tau(3);
 
-Eigen::VectorXd tau = (jbar.inverse())*qbar;
+
+tau = (jbar.inverse())*qbar;
 
 
 // tau = tau/100;
@@ -898,15 +939,31 @@ errorth0 = theta0step -theta0;
 errorth0dot = theta0stepdot - theta0dot;
 double ns = kprop*errorth0 + kder*errorth0dot;
 
+/* apo eross apla blepo tous pollaplasiastes:*/
+		// torq[0]=-tau(1)/186;
+		// torq[1]=tau(2)/186;
+		// torq[2]=-tau(3)/186;
+
+
+
+		// torq[3] = tau(0);
+  /*telos eross*/
+
 // base_wrench.force.x = 0;  //fx;
 // base_wrench.force.y = 0;  //fy;
 base_wrench.torque.z = tau(0);//ns;
 
-msg_RW.data = tau(0); 
+// msg_RW.data = tau(0); 
+// // msg_RW.data = ns;
+// msg_LS.data = tau(1);
+// msg_LE.data = tau(2);
+// msg_LW.data = tau(3);
+
+msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
 // msg_RW.data = ns;
-msg_LS.data = tau(1);
-msg_LE.data = tau(2);
-msg_LW.data = tau(3);
+msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
+msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
+msg_LW.data = filter_torque(tau(3),prev_tau(3));
 
 
 //std::cout<<"/////////////////"<<std::endl;
