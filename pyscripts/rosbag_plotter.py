@@ -82,6 +82,11 @@ for topic, msg, t in bag.read_messages(topics=['/cepheus/xt_x', '/cepheus/xd_x',
         xd_theta_dot.append(msg.data)
     elif topic == "/cepheus/xee_theta_dot":
         xee_theta_dot.append(msg.data)
+    
+    #Fextx values
+    elif topic == "/cepheus/ft_sensor_topic":
+        fext_x.append(msg.data)
+
 
 
 

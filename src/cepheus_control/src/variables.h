@@ -283,6 +283,8 @@ double theta0in, theta0fin;
 Eigen::VectorXd tau(4);
 Eigen::VectorXd prev_tau(4);
 
+int steadycounter = 0;
+
 
 
  

@@ -134,11 +134,11 @@ int main(int argc, char **argv) {
     ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",100,gazeboposCallback);     //tha to anoikso
     
     //ros::Rate loop_rate(frequency);
-    ros::Rate loop_rate(200); //100Hz
+    ros::Rate loop_rate(200); //200Hz
 
     char command;
     
-    wristInitialised = false;
+    wristInitialised = false; 
     
     reachedTarget = false;
     start_movement = false;

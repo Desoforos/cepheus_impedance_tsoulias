@@ -99,28 +99,29 @@ void initialiseWrist(){
     theta0in = theta0;
     qfirstTime = false;
 	  }
-    Eigen::VectorXd tau(4);
+    Eigen::VectorXd tauu(4);
 
     if( (abs(theta0in-theta0)< 0.001) && (abs(q1_init-q1) < 0.001) && (abs(q2_init-q2) < 0.001) && (abs(thetat -thetach) < 0.001)
-      && (abs(theta0dot)<0.0001) && (abs(q1dot)<0.0001) && (abs(q2dot)<0.0001) && abs(xeedot(2))<0.0001){
-        wristInitialised = true;
-        base_wrench.torque.z = 0.00001;//ns;
-        // msg_RW.data = -tau(0); 
-        msg_LS.data = 0.00001;
-        msg_LE.data = 0.00001;
-        msg_LW.data = 0.00001;
+      && (abs(theta0dot)<0.0001) && (abs(q1dot)<0.0001) && (abs(q2dot)<0.0001) && abs(xeedot(2))<0.00001 &&abs(xeedot(0)<0.0001 && abs(xeedot(1)<0.0001))){
+          wristInitialised = true;
+          base_wrench.torque.z = 0.0;//ns;
+          // msg_RW.data = -tau(0); 
+          msg_LS.data = 0.0;
+          msg_LE.data = 0.0;
+          msg_LW.data = 0.0;
+    
     }
-    else{ 
-      tau(0) = 0.6*(theta0in - theta0) + 20*(0-theta0dot);
-      tau(1) = 0.6*(q1_init-q1) + 20*(0-q1dot);
-      tau(2) = 0.6*(q2_init-q2) + 20*(0-q2dot);
-      tau(3) = 0.6*(thetat - thetach) + 0.6*(0 - xeedot(2)); // dhladh q3 MONO gia orientation
+    else{
+      tauu(0) = 2*(theta0in - theta0) + 20*(0-theta0dot);
+      tauu(1) = 2*(q1_init-q1) + 20*(0-q1dot);
+      tauu(2) = 2*(q2_init-q2) + 20*(0-q2dot);
+      tauu(3) = 2*(thetat - thetach) + 20*(0 - xeedot(2)); // dhladh q3 MONO gia orientation
 
-      base_wrench.torque.z = tau(0);//ns;
+      base_wrench.torque.z = tauu(0);//ns;
       // msg_RW.data = -tau(0); 
-      msg_LS.data = tau(1);
-      msg_LE.data = tau(2);
-      msg_LW.data = tau(3);
+      msg_LS.data = tauu(1);
+      msg_LE.data = tauu(2);
+      msg_LW.data = tauu(3);
     }
 
 }
@@ -982,7 +983,7 @@ qext << 0, 0, fext(0), 0;
 
 
 
-Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-2*kd*error-16*bd*error_dot-qext + fdes); 
+Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-32*kd*error-32*bd*error_dot-qext + fdes); //thelei 32* h kati tetoio
 
 
 

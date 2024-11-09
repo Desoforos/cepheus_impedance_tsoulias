@@ -6,6 +6,7 @@
 #include "variables.h"
 
 
+
 bool switchControllers(ros::NodeHandle& nh, 
                        const std::vector<std::string>& stop_controllers, 
                        const std::vector<std::string>& start_controllers) {
@@ -52,6 +53,49 @@ bool unloadController(ros::NodeHandle& nh, const std::string& controller_name) {
     }
 }
 
+
+void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update the current position of ee and ring
+	int i;
+	for(i=0; i<msg->name.size(); i++){
+		//  ROS_INFO("[Gazebo Callback] Link Name: %s", msg->name[i]);
+		if(msg->name[i] == "cepheus::final_link"){
+			tf::Quaternion qee( //for angle of ee
+				msg->pose[i].orientation.x,
+				msg->pose[i].orientation.y,
+				msg->pose[i].orientation.z,
+				msg->pose[i].orientation.w);
+    		tf::Matrix3x3 m_ee(qee);	
+    		double rollee, pitchee, yawee;
+			m_ee.getRPY(rollee, pitchee, yawee);
+			thetach = yawee; //angle of chaser(ee)
+		}
+		if(msg->name[i] == "simple_ring::base_link"){
+			tf::Quaternion qring(
+				msg->pose[i].orientation.x,
+				msg->pose[i].orientation.y,
+				msg->pose[i].orientation.z,
+				msg->pose[i].orientation.w);
+			tf::Matrix3x3 mring(qring);
+			double rollring, pitchring, yawring;
+			mring.getRPY(rollring, pitchring, yawring);
+			thetat = yawring; //angle of target
+		}
+        if(msg->name[i] == "cepheus::cepheus_base"){
+			tf::Quaternion q( //for angle of base
+				msg->pose[i].orientation.x,
+				msg->pose[i].orientation.y,
+				msg->pose[i].orientation.z,
+				msg->pose[i].orientation.w);
+			tf::Matrix3x3 m(q);
+			double roll, pitch, yaw;
+			m.getRPY(roll, pitch, yaw);
+			theta0 = yaw; //angle of base
+			// std::cout<<"[Gazebo callback] theta0dot is: "<<theta0dot<<std::endl;
+		}
+	}
+}
+
+
 int main(int argc, char** argv) {
     ros::init(argc, argv, "testsetter_node");
     ros::NodeHandle nh;
@@ -64,72 +108,24 @@ int main(int argc, char** argv) {
     ros::Publisher LE_position_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_elbow_position_controller/command", 1);
     ros::Publisher LW_position_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_wrist_position_controller/command", 1);
 
+    ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",100,gazeboposCallback); 
+
     /* messages to publish */
     std_msgs::Float64 msg_LS;
     std_msgs::Float64 msg_LE;
     std_msgs::Float64 msg_LW;
 
-    // double q1,q2,q3,q01;
-    // double xE_in,yE_in,thetaE_in;
-    // double xb_in,yb_in,thetab_in;
-    // double cos_q2, sin_q2, sint_th0_q1, cos_th0_q1;
-    // double q1_in, q2_in,q3_in;
-    // double acap,bcap;
-    // double sin_th0_q1;
-    // double m0,m1,m2,m3,r0,r1,r2,r3,l0,l1,l2,l3,mt;
-    // double r0x,r0y;
-    // double a,b,c,d;
+
+
+    double q01  = -0.5236;
 
     char cmd;
     bool isDone = false;
     bool legitChar = false;
 
-    // m0 = 13.3; //ta evala se sxolio gia na valo tous kosta
-    // m1 = 0.083;
-    // m2 = 0.187;
-    // m3 = 0.03547;
-    // r0 = 0.1954;
-    // r1 = 0.062;
-    // r2 = 0.062;
-    // r3 = 0.06553; //apo prakseis monos mou
-    // l0 = 0;
-    // l1 = 0.119;
-    // l2 = 0.119;
-    // l3 = 0.01947;
-    // mt = 10;
 
-    // r0x = 0.17271; //syntetagmenes tou shoulder joint se sxesh me vash, apo xacro ta phra
-    // r0y = 0.091404;
 
-    // a=sqrt(r0x*r0x+r0y*r0y);
-    // b=l1+r1;
-    // c=l2+r2;
-    // d=l3+r3;
-
-    // xE_in=0.72;
-    // yE_in=-0.25143;
-    // thetaE_in=0.7854;
-    // q01=-30*M_PI/180;
-
-    // xb_in=0;
-    // yb_in=0;
-    // thetab_in=0*(M_PI/180)+q01;
-
-    // cos_q2=((pow((xE_in-xb_in-a*cos(thetab_in)-d*cos(thetaE_in)),2))+
-    //     (pow((yE_in-yb_in-a*sin(thetab_in)-d*sin(thetaE_in)),2))-(b*b)-(c*c))/(2*b*c);
-    // sin_q2=sqrt(1-pow((cos_q2),2));
-
-    // acap=c*sin_q2;
-    // bcap=b+c*cos_q2;
-
-    // sin_th0_q1=-((acap*(xE_in-xb_in-a*cos(thetab_in)-d*cos(thetaE_in))-
-    //         bcap*(yE_in-yb_in-a*sin(thetab_in)-d*sin(thetaE_in)))/((b*b)+(c*c)+2*b*c*cos_q2));
-    // cos_th0_q1=(acap*(yE_in-yb_in-a*sin(thetab_in)-d*sin(thetaE_in))+
-    //     bcap*(xE_in-xb_in-a*cos(thetab_in)-d*cos(thetaE_in)))/((b*b)+(c*c)+2*b*c*cos_q2);
-    
-    // q2_in=atan2(sin_q2,cos_q2);
-    // q1_in=atan2(sin_th0_q1,cos_th0_q1)-thetab_in;
-    // q3_in=thetaE_in-thetab_in-q1_in-q2_in;
+  
 
 
 
@@ -152,7 +148,7 @@ int main(int argc, char** argv) {
 
         msg_LS.data = q1;
         msg_LE.data = q2;
-        msg_LW.data = q3;
+        msg_LW.data = q3; //thetach + q01 - theta0 - q1 - q2;
 
         LS_position_pub.publish(msg_LS);
         LE_position_pub.publish(msg_LE);
