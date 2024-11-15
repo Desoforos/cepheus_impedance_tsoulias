@@ -72,26 +72,45 @@ geometry_msgs::Wrench base_wrench; //x,y force of thrusters
 std_msgs::Float64 msg_xd_x; //xd_x
 std_msgs::Float64 msg_xd_y; //xd_y
 std_msgs::Float64 msg_xd_theta; //xd_y
+std_msgs::Float64 msg_xd_theta0; //xd_y
+
 
 std_msgs::Float64 msg_xt_x; 
 std_msgs::Float64 msg_xt_y; 
 std_msgs::Float64 msg_xt_theta; 
+std_msgs::Float64 msg_xt_theta0; //xd_y
+
 
 std_msgs::Float64 msg_xee_x; 
 std_msgs::Float64 msg_xee_y; 
 std_msgs::Float64 msg_xee_theta; 
+std_msgs::Float64 msg_xee_theta0; //xd_y
+
 
 std_msgs::Float64 msg_xd_x_dot; //xd_x
 std_msgs::Float64 msg_xd_y_dot; //xd_y
 std_msgs::Float64 msg_xd_theta_dot; //xd_y
+std_msgs::Float64 msg_xd_theta0_dot; //xd_y
+
 
 std_msgs::Float64 msg_xt_x_dot; 
 std_msgs::Float64 msg_xt_y_dot; 
 std_msgs::Float64 msg_xt_theta_dot; 
+std_msgs::Float64 msg_xt_theta0_dot; 
 
 std_msgs::Float64 msg_xee_x_dot; 
 std_msgs::Float64 msg_xee_y_dot; 
 std_msgs::Float64 msg_xee_theta_dot; 
+std_msgs::Float64 msg_xee_theta0_dot; 
+
+
+std_msgs::Float64 msg_torqueq1;
+std_msgs::Float64 msg_torqueq2;
+std_msgs::Float64 msg_torqueq3;
+std_msgs::Float64 msg_torquerw;
+
+
+
 
 
 

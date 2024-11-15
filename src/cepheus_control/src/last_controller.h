@@ -983,7 +983,7 @@ qext << 0, 0, fext(0), 0;
 
 
 
-Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-32*kd*error-32*bd*error_dot-qext + fdes); //thelei 32* h kati tetoio
+Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-64*kd*error-48*bd*error_dot-qext + fdes); //32,32 einai kalo (test16) kai to 64,32
 
 
 

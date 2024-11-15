@@ -134,7 +134,7 @@ int main(int argc, char **argv) {
     ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",100,gazeboposCallback);     //tha to anoikso
     
     //ros::Rate loop_rate(frequency);
-    ros::Rate loop_rate(200); //200Hz
+    ros::Rate loop_rate(400); //400Hz
 
     char command;
     
@@ -241,26 +241,42 @@ int main(int argc, char **argv) {
                     msg_xd_x.data = xstep;
                     msg_xd_y.data = ystep;
                     msg_xd_theta.data = thstep;
+                    msg_xd_theta0.data = theta0step;
+
 
                     msg_xt_x.data = xt;
                     msg_xt_y.data = yt;
                     msg_xt_theta.data = thetat;
+                    msg_xt_theta0.data = theta0in;
+
 
                     msg_xee_x.data = xee(0);
                     msg_xee_y.data = xee(1);
                     msg_xee_theta.data = xee(2);
+                    msg_xee_theta0.data = theta0;
 
                     msg_xd_x_dot.data = xstepdot;
                     msg_xd_y_dot.data = ystepdot;
                     msg_xd_theta_dot.data = thstepdot;
+                    msg_xd_theta0_dot.data = theta0stepdot;
+
 
                     msg_xt_x_dot.data = xtdot;
                     msg_xt_y_dot.data = ytdot;
                     msg_xt_theta_dot.data = thetatdot;
+                    msg_xt_theta0_dot.data = 0;
 
                     msg_xee_x_dot.data = xeedot(0);
                     msg_xee_y_dot.data = xeedot(1);
                     msg_xee_theta_dot.data = xeedot(2);
+                    msg_xee_theta0_dot.data = theta0dot;
+
+                    msg_torquerw.data = tau(0);
+                    msg_torqueq1.data = tau(1);
+                    msg_torqueq2.data = tau(2);
+                    msg_torqueq3.data = tau(3);
+
+
 
 
 
@@ -269,13 +285,19 @@ int main(int argc, char **argv) {
                     bag.write("/cepheus/xd_x", ros::Time::now(), msg_xd_x);
                     bag.write("/cepheus/xee_x", ros::Time::now(), msg_xee_x);
 
+
                     bag.write("/cepheus/xt_y", ros::Time::now(), msg_xt_y);
                     bag.write("/cepheus/xd_y", ros::Time::now(), msg_xd_y);
                     bag.write("/cepheus/xee_y", ros::Time::now(), msg_xee_y);      
 
                     bag.write("/cepheus/xt_theta", ros::Time::now(), msg_xt_theta);
                     bag.write("/cepheus/xd_theta", ros::Time::now(), msg_xd_theta);
-                    bag.write("/cepheus/xee_theta", ros::Time::now(), msg_xee_theta);   
+                    bag.write("/cepheus/xee_theta", ros::Time::now(), msg_xee_theta);
+                    
+                    bag.write("/cepheus/xt_theta0", ros::Time::now(), msg_xt_theta0);
+                    bag.write("/cepheus/xd_theta0", ros::Time::now(), msg_xd_theta0);
+                    bag.write("/cepheus/xee_theta0", ros::Time::now(), msg_xee_theta0);     
+                       
 
                     bag.write("/cepheus/ft_sensor_topic", ros::Time::now(), msg_fextx);
 
@@ -290,7 +312,22 @@ int main(int argc, char **argv) {
 
                     bag.write("/cepheus/xt_theta_dot", ros::Time::now(), msg_xt_theta_dot);
                     bag.write("/cepheus/xd_theta_dot", ros::Time::now(), msg_xd_theta_dot);
-                    bag.write("/cepheus/xee_theta_dot", ros::Time::now(), msg_xee_theta_dot); 
+                    bag.write("/cepheus/xee_theta_dot", ros::Time::now(), msg_xee_theta_dot);
+
+                    bag.write("/cepheus/xt_theta0_dot", ros::Time::now(), msg_xt_theta0_dot);
+                    bag.write("/cepheus/xd_theta0_dot", ros::Time::now(), msg_xd_theta0_dot);
+                    bag.write("/cepheus/xee_theta0_dot", ros::Time::now(), msg_xee_theta0_dot);
+
+
+                    bag.write("/cepheus/torquerw", ros::Time::now(), msg_torquerw);
+                    bag.write("/cepheus/torqueq1", ros::Time::now(), msg_torqueq1);
+                    bag.write("/cepheus/torqueq2", ros::Time::now(), msg_torqueq2);
+                    bag.write("/cepheus/torqueq3", ros::Time::now(), msg_torqueq3);
+
+
+
+
+             
 
 
 

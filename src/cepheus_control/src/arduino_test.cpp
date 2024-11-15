@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
 
     ros::Subscriber force_sub = nh.subscribe("/filtered_botasys", 1, forceCallback);
 
-    ros::Rate loop_rate(100); //100Hz
+    ros::Rate loop_rate(200); //200Hz
 
     int secs = 0; //not actually seconds
     int contactCounter = 0;
@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
         else{
             contactCounter = 0;
             }
-        if(contactCounter > 0.8*200){ // contact for 1.5sec
+        if(contactCounter > 0.8*200){ // contact for 0.8 sec
             beginGrab = true;
            }
         if(beginGrab){ 

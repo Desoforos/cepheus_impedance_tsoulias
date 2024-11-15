@@ -96,7 +96,7 @@ bag.close()
 # time_stamps = np.array(time_stamps)
 
 #diorthosh
-sampling_frequency = 200  # Hz
+sampling_frequency = 400  # Hz
 time_stamps= np.arange(0, len(xt_x)) / sampling_frequency
 time_stamps -= time_stamps[0]  # Start from 0
 
