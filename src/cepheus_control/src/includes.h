@@ -33,5 +33,6 @@
 #define POS_FILTER 0.005
 #define VEL_FILTER 0.05
 #define TORQUE_LIMIT 0.00000001
+#define MAX_TORQUE 5    //mexri 5Nm na boroun na askithoun
 
 #endif

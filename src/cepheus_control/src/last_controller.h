@@ -99,34 +99,26 @@ void initialiseWrist(){
     theta0in = theta0;
     qfirstTime = false;
 	  }
-    Eigen::VectorXd tauu(4);
 
     if( (abs(theta0in-theta0)< 0.001) && (abs(q1_init-q1) < 0.001) && (abs(q2_init-q2) < 0.001) && (abs(thetat -thetach) < 0.001)
       && (abs(theta0dot)<0.0001) && (abs(q1dot)<0.0001) && (abs(q2dot)<0.0001) && abs(xeedot(2))<0.00001 &&abs(xeedot(0)<0.0001 && abs(xeedot(1)<0.0001))){
           wristInitialised = true;
-          base_wrench.torque.z = 0.0;//ns;
-          // msg_RW.data = -tau(0); 
-          msg_LS.data = 0.0;
-          msg_LE.data = 0.0;
-          msg_LW.data = 0.0;
-    
+          torqueRW = torqueq1 = torqueq2 = torqueq3 = 0.0;
     }
     else{
-      tauu(0) = 2*(theta0in - theta0) + 20*(0-theta0dot);
-      tauu(1) = 2*(q1_init-q1) + 20*(0-q1dot);
-      tauu(2) = 2*(q2_init-q2) + 20*(0-q2dot);
-      tauu(3) = 2*(thetat - thetach) + 20*(0 - xeedot(2)); // dhladh q3 MONO gia orientation
-
-      base_wrench.torque.z = tauu(0);//ns;
-      // msg_RW.data = -tau(0); 
-      msg_LS.data = tauu(1);
-      msg_LE.data = tauu(2);
-      msg_LW.data = tauu(3);
+      torqueRW= 2*(theta0in - theta0) + 20*(0-theta0dot);
+      torqueq1= 2*(q1_init-q1) + 20*(0-q1dot);
+      torqueq2= 2*(q2_init-q2) + 20*(0-q2dot);
+      torqueq3= 2*(thetat - thetach) + 20*(0 - xeedot(2)); // dhladh q3 MONO gia orientation
     }
 
 }
 
-void finaltrajectories(double t,double tf){
+double calcacc(double dt, double curr, double prev){
+  return ((curr-prev)/dt);
+}
+
+void finaltrajectories(double t,double tf, double hz){
   	if(firstTime){   //initialize the postiion of chaser and target for the first time ONLY
 		xch_in = ee_x;
 		ych_in = ee_y;
@@ -197,9 +189,12 @@ void finaltrajectories(double t,double tf){
       thstepdotdotfr = 0;
       theta0stepdotdotfr = 0;
     }
+    prevxtdot = xtdot;
+		prevytdot = ytdot;
+		prevthetatdot = thetatdot;
 
-    xstepc = xt;
-    ystepc = yt;
+    xstepc = xt + 0.0001; //0.0001*cos(xee(2));
+    ystepc = yt;  //+ 0.0001*sin(xee(2));
     thstepc = thetat;
     theta0stepc = theta0fin;
 
@@ -208,9 +203,9 @@ void finaltrajectories(double t,double tf){
     thstepdotc = thetatdot;
     theta0stepdotc = 0;
 
-    xstepdotdotc = 0;
-    ystepdotdotc = 0;
-    thstepdotdotc = 0;
+    xstepdotdotc = calcacc(1/hz,xtdot,prevxtdot);  
+    ystepdotdotc = calcacc(1/hz,ytdot,prevytdot);
+    thstepdotdotc = calcacc(1/hz,thetatdot,prevthetatdot);
     theta0stepdotdotc = 0;
 
     // xstep = xstepfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+xstepc*(abs(fext(0))/(abs(fext(0))+a22));
@@ -229,7 +224,7 @@ void finaltrajectories(double t,double tf){
     // theta0stepdot = theta0stepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotc*(abs(fext(0))/(abs(fext(0))+a22));
     // theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
 
-    if(abs(fext(0))<0.5){ //tha to ksananikso afto fysika
+    if(t<=tf){ //tha to ksananikso afto fysika //anti gia abs(fext(0))<0.5
       xstep = xstepfr;
       ystep = ystepfr;
       thstep = thstepfr;
@@ -410,13 +405,13 @@ void controller(int count, double tf, double t){
   Eigen::MatrixXd md_f = mdf*Eigen::MatrixXd::Identity(4,4);
   Eigen::MatrixXd bd_f = bdf*Eigen::MatrixXd::Identity(4,4);
   Eigen::MatrixXd kd_f = kdf*Eigen::MatrixXd::Identity(4,4);
-  double ke = pow(10,6);
+  double ke = pow(10,6); //pow(10,6);
   double z_contact=z_free*sqrt(kdf/(kdf+ke));
   double wn_contact=wn_free*sqrt((kdf+ke)/kdf);
   double fd = 1;
   double kdc = 100;
   double mdc=(kdc+ke)/pow(wn_contact,2);
-  double be = 0;
+  double be = 0;  //0;
   double bdc=2*z_contact*wn_contact*mdc-be;
   Eigen::MatrixXd md_c = mdc*Eigen::MatrixXd::Identity(4,4);
   Eigen::MatrixXd bd_c = bdc*Eigen::MatrixXd::Identity(4,4);
@@ -938,7 +933,7 @@ qe << 0, fext(0), 0;  //den eimai sigouros gia afto
 
 
 
-if(abs(fext(0))<0.5){
+if(t<=tf){ //anti gia abs(fext(0))<0.5
   bd = bd_f;
   kd = kd_f;
   md = md_f;
@@ -983,7 +978,7 @@ qext << 0, 0, fext(0), 0;
 
 
 
-Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-64*kd*error-48*bd*error_dot-qext + fdes); //32,32 einai kalo (test16) kai to 64,32
+Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-64*kd*error-52*bd*error_dot-qext + fdes); //32,32 einai kalo (test16) kai to 64,32
 
 
 
@@ -1002,11 +997,12 @@ double ns = kprop*errorth0 + kder*errorth0dot;
 
 // base_wrench.force.x = 0;  //fx;
 // base_wrench.force.y = 0;  //fy;
-base_wrench.torque.z = tau(0);//ns;
+
 
 
 
 //diko moy pd, ta q1,q2 gia xy (se pososto), to q3 gia prosanatolismo
+// tau(0) = -0.5*error[0] - 20*error_dot[0];
 // tau(1) = -0.5*(0.3*error[1]+0.7*error[2]) - 20*(0.3*error_dot[1]+0.7*error_dot[2]);
 // tau(2) = -0.5*(0.7*error[1]+0.3*error[2]) - 20*(0.7*error_dot[1]+0.3*error_dot[2]);
 // tau(3) = -0.5*(thetach - thstep) - 20*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
@@ -1017,106 +1013,125 @@ base_wrench.torque.z = tau(0);//ns;
 // tau(1) = tau(1)/46;//93;
 // tau(2) = tau(2)/46;//93;
 // tau(3) = tau(3)/46;//93;
-msg_LS.data = tau(1);
-msg_LE.data = tau(2);
-
 // tau(3) = 0.6*(thstep-thetach) + 0.6*(thstepdot - xeedot(2));
-msg_LW.data = tau(3);
 
 
-//std::cout<<"/////////////////"<<std::endl;
-if(count%100 == 0){
-  std::cout<<"time is: "<<t<<" sec"<<std::endl;
-  std::cout<<"xstep is: "<<xstep<<std::endl;
-  std::cout<<"ystep is: "<<ystep<<std::endl;
-  std::cout<<"thstep is: "<<thstep<<std::endl;
+if(abs(tau(0))>=MAX_TORQUE || abs(tau(1))>=MAX_TORQUE || abs(tau(2))>=MAX_TORQUE || abs(tau(3))>=MAX_TORQUE){
+  /*initiate safety closure*/
+  ROS_WARN("Reached Critical Torques! Initiating safe close..");
+  safeclose = true;
+}
+else{
+  torqueRW = tau(0);
+  torqueq1 = tau(1);
+  torqueq2 = tau(2);
+  torqueq3 = tau(3);
 
-  // std::cout<<"md is: "<<md<<std::endl;
-  // std::cout<<"kd is: "<<kd<<std::endl;
-  // std::cout<<"bd is: "<<bd<<std::endl;
+  // base_wrench.torque.z = tau(0);//ns;
+  // msg_LS.data = tau(1);
+  // msg_LE.data = tau(2);
+  // msg_LW.data = tau(3);
 
-  // std::cout<<" ee x is: "<<ee_x<<std::endl;
-	// std::cout<<" ee y is: "<<ee_y<<std::endl;
-	// std::cout<<" ee theta is: "<<thetach<<std::endl;
-  // std::cout<<"eex dot is: "<<xeedot(0)<<std::endl;
-  // std::cout<<"eey dot is: "<<xeedot(1)<<std::endl;
-  // std::cout<<"eetheta dot is: "<<xeedot(2)<<std::endl;
-
-  // std::cout<<"xt_in is: "<<xt_in<<std::endl;
-  // std::cout<<"yt_in is: "<<yt_in<<std::endl;
-  // std::cout<<"thetat_in is: "<<thetat_in<<std::endl;
-
-
-  // std::cout<<"theta0 is: "<<theta0<<std::endl;
-  // std::cout<<"theta0dot is: "<<theta0dot<<std::endl;
-  // std::cout<<"xc0 is: "<<xc0<<std::endl;
-  // std::cout<<"yc0 is: "<<yc0<<std::endl; 
-  // std::cout<<"xc0dot is: "<<xc0dot<<std::endl;
-  // std::cout<<"yc0dot is: "<<yc0dot<<std::endl;
-
-  // std::cout<<" q1 is: "<<q1<<std::endl;
-  // std::cout<<" q2 is: "<<q2<<std::endl;
-  // std::cout<<" q3 is: "<<q3<<std::endl;
-  // std::cout<<" q1dot is: "<<q1dot<<std::endl;
-  // std::cout<<" q2dot is: "<<q2dot<<std::endl;
-  // std::cout<<" q3dot is: "<<q3dot<<std::endl;
-
-  std::cout<<"fextx is: "<<fext(0)<<" N"<<std::endl;
-
-  std::cout<<"error is: "<<error<<std::endl;
-  std::cout<<"errordot is: "<<error_dot<<std::endl;
-
-  std::cout<<"rw torque is:  "<<tau(0)<<" Nm. "<< std::endl;
-  std::cout<<"q1 torque is:  "<<tau(1)<<" Nm. "<< std::endl;
-  std::cout<<"q2 torque is:  "<<tau(2)<<" Nm. "<< std::endl;
-  std::cout<<"q3 torque is:  "<<tau(3)<<" Nm. "<< std::endl;
+  // msg_torquerw.data = tau(0);
+  // msg_torqueq1.data = tau(1);
+  // msg_torqueq2.data = tau(2);
+  // msg_torqueq3.data = tau(3);
 
 
-  // std::cout<<"h is: "<<h<<std::endl;
-  // std::cout<<"c is: "<<c<<std::endl;
-  // std::cout<<"je is: "<<je<<std::endl;
-  // std::cout<<"jedot is: "<<jedot<<std::endl;
+  //std::cout<<"/////////////////"<<std::endl;
+  if(count%100 == 0){
+    std::cout<<"time is: "<<t<<" sec"<<std::endl;
+    std::cout<<"xstep is: "<<xstep<<std::endl;
+    std::cout<<"ystep is: "<<ystep<<std::endl;
+    std::cout<<"thstep is: "<<thstep<<std::endl;
 
-  // std::cout <<"jvw is: "<<jvw<<std::endl;
-  // std::cout <<"jvq is: "<<jvq<<std::endl;
-  // std::cout <<"jac1 is: "<<jac1<<std::endl;
-  // std::cout <<"jac1dot is: "<<jac1dot<<std::endl;
-  // std::cout <<"hstar is: "<<hstar<<std::endl;
-  // std::cout <<"v1 is: "<<v1<<std::endl;
-  // std::cout<<"cstar is: "<<cstar<<std::endl;
-  // std::cout<<"jstar is: "<<jstar<<std::endl;
-  // std::cout<<"jestar is: "<<jestar<<std::endl;
-  // std::cout<<"hbar is: "<<hbar<<std::endl;
-  // std::cout<<"cbar is: "<<cbar<<std::endl;
-  // std::cout<<"jbar is: "<<jbar<<std::endl;
-  // std::cout<<"jebar is: "<<jebar<<std::endl;
-  // std::cout<<"fes is: "<<fdes<<std::endl;
-  // std::cout<<"xdotdot_des is:  "<<xdotdot_des<<std::endl;
-  // std::cout<<"qext is: "<<qext<<std::endl;
-  // std::cout<<"u is: "<<u<<std::endl;
-  // std::cout<<"qbar is: "<<qbar<<std::endl;
+    // std::cout<<"md is: "<<md<<std::endl;
+    // std::cout<<"kd is: "<<kd<<std::endl;
+    // std::cout<<"bd is: "<<bd<<std::endl;
 
-  // std::cout<<"***STARS*****"<<std::endl;
-  // std::cout<<"j12star is:"<<j12star<<std::endl;
-  // std::cout<<"j22star is:"<<j22star<<std::endl;
-  // std::cout<<"h11star is:"<<h11star<<std::endl;
-  // std::cout<<"h12star is:"<<h12star<<std::endl;
-  // std::cout<<"h21star is:"<<h21star<<std::endl;
-  // std::cout<<"h22star is:"<<h22star<<std::endl;
-  // std::cout<<"c1star is:"<<c1star<<std::endl;
-  // std::cout<<"c2star is:"<<c2star<<std::endl;
-  // std::cout<<"je11star is:"<<je11star<<std::endl;
-  // std::cout<<"je12star is:"<<je12star<<std::endl;
-  // std::cout<<"je21star is:"<<je21star<<std::endl;
-  // std::cout<<"je22star is:"<<je22star<<std::endl; 
+    // std::cout<<" ee x is: "<<ee_x<<std::endl;
+    // std::cout<<" ee y is: "<<ee_y<<std::endl;
+    // std::cout<<" ee theta is: "<<thetach<<std::endl;
+    // std::cout<<"eex dot is: "<<xeedot(0)<<std::endl;
+    // std::cout<<"eey dot is: "<<xeedot(1)<<std::endl;
+    // std::cout<<"eetheta dot is: "<<xeedot(2)<<std::endl;
 
- 
+    // std::cout<<"xt_in is: "<<xt_in<<std::endl;
+    // std::cout<<"yt_in is: "<<yt_in<<std::endl;
+    // std::cout<<"thetat_in is: "<<thetat_in<<std::endl;
 
 
+    // std::cout<<"theta0 is: "<<theta0<<std::endl;
+    // std::cout<<"theta0dot is: "<<theta0dot<<std::endl;
+    // std::cout<<"xc0 is: "<<xc0<<std::endl;
+    // std::cout<<"yc0 is: "<<yc0<<std::endl; 
+    // std::cout<<"xc0dot is: "<<xc0dot<<std::endl;
+    // std::cout<<"yc0dot is: "<<yc0dot<<std::endl;
+
+    // std::cout<<" q1 is: "<<q1<<std::endl;
+    // std::cout<<" q2 is: "<<q2<<std::endl;
+    // std::cout<<" q3 is: "<<q3<<std::endl;
+    // std::cout<<" q1dot is: "<<q1dot<<std::endl;
+    // std::cout<<" q2dot is: "<<q2dot<<std::endl;
+    // std::cout<<" q3dot is: "<<q3dot<<std::endl;
+
+    std::cout<<"fextx is: "<<fext(0)<<" N"<<std::endl;
+
+    std::cout<<"error is: "<<error<<std::endl;
+    std::cout<<"errordot is: "<<error_dot<<std::endl;
+
+    std::cout<<"rw torque is:  "<<tau(0)<<" Nm. "<< std::endl;
+    std::cout<<"q1 torque is:  "<<tau(1)<<" Nm. "<< std::endl;
+    std::cout<<"q2 torque is:  "<<tau(2)<<" Nm. "<< std::endl;
+    std::cout<<"q3 torque is:  "<<tau(3)<<" Nm. "<< std::endl;
 
 
-  std::cout<<"/////////////////"<<std::endl;
-  std::cout<<" "<<std::endl;
+    // std::cout<<"h is: "<<h<<std::endl;
+    // std::cout<<"c is: "<<c<<std::endl;
+    // std::cout<<"je is: "<<je<<std::endl;
+    // std::cout<<"jedot is: "<<jedot<<std::endl;
+
+    // std::cout <<"jvw is: "<<jvw<<std::endl;
+    // std::cout <<"jvq is: "<<jvq<<std::endl;
+    // std::cout <<"jac1 is: "<<jac1<<std::endl;
+    // std::cout <<"jac1dot is: "<<jac1dot<<std::endl;
+    // std::cout <<"hstar is: "<<hstar<<std::endl;
+    // std::cout <<"v1 is: "<<v1<<std::endl;
+    // std::cout<<"cstar is: "<<cstar<<std::endl;
+    // std::cout<<"jstar is: "<<jstar<<std::endl;
+    // std::cout<<"jestar is: "<<jestar<<std::endl;
+    // std::cout<<"hbar is: "<<hbar<<std::endl;
+    // std::cout<<"cbar is: "<<cbar<<std::endl;
+    // std::cout<<"jbar is: "<<jbar<<std::endl;
+    // std::cout<<"jebar is: "<<jebar<<std::endl;
+    // std::cout<<"fes is: "<<fdes<<std::endl;
+    // std::cout<<"xdotdot_des is:  "<<xdotdot_des<<std::endl;
+    // std::cout<<"qext is: "<<qext<<std::endl;
+    // std::cout<<"u is: "<<u<<std::endl;
+    // std::cout<<"qbar is: "<<qbar<<std::endl;
+
+    // std::cout<<"***STARS*****"<<std::endl;
+    // std::cout<<"j12star is:"<<j12star<<std::endl;
+    // std::cout<<"j22star is:"<<j22star<<std::endl;
+    // std::cout<<"h11star is:"<<h11star<<std::endl;
+    // std::cout<<"h12star is:"<<h12star<<std::endl;
+    // std::cout<<"h21star is:"<<h21star<<std::endl;
+    // std::cout<<"h22star is:"<<h22star<<std::endl;
+    // std::cout<<"c1star is:"<<c1star<<std::endl;
+    // std::cout<<"c2star is:"<<c2star<<std::endl;
+    // std::cout<<"je11star is:"<<je11star<<std::endl;
+    // std::cout<<"je12star is:"<<je12star<<std::endl;
+    // std::cout<<"je21star is:"<<je21star<<std::endl;
+    // std::cout<<"je22star is:"<<je22star<<std::endl; 
+
+  
+
+
+
+
+    std::cout<<"/////////////////"<<std::endl;
+    std::cout<<" "<<std::endl;
+  }
 }
 
 }

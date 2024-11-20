@@ -304,6 +304,11 @@ Eigen::VectorXd prev_tau(4);
 
 int steadycounter = 0;
 
+double prevxtdot, prevytdot, prevthetatdot;
+
+double torqueRW,torqueq1,torqueq2,torqueq3;
+bool safeclose ;
+
 
 
  

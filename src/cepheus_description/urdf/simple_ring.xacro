@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="simple_ring">
-  <xacro:include filename="$(find cepheus_description)/urdf/simple_ring.gazebo" />
+	<xacro:include filename="$(find cepheus_description)/urdf/simple_ring.gazebo" />
+	<link name="world"></link>
 
-  <link name="world"></link>
-
-	<!-- <joint name="p1_joint" type="prismatic">
+	<joint name="p1_joint" type="prismatic">
 		<parent link="world"/>
 		<child link="p1"/>
+		<origin rpy="0 0 0" xyz="0 0 0.045"/>
 		<axis xyz="1 0 0"/>
 		<limit lower="-100" upper="100" effort="1000" velocity="10000"/>
 		<dynamics damping="0" friction="0"/>
@@ -16,13 +16,13 @@
 			<origin
 				xyz="0.0 0.0 0.0"
 				rpy="0.0 0.0 0.0" />
-			<mass value="0.01" />
+			<mass value="0.001" />
 			<inertia
 				ixx="1e-2"
-				ixy="0.0"
-				ixz="0.0"
+				ixy="0.000001"
+				ixz="0.000001"
 				iyy="1e-2"
-				iyz="0.0"
+				iyz="0.000001"
 				izz="1e-2" />
 		</inertial>
 	</link>
@@ -30,16 +30,6 @@
 		<mu1>0</mu1>
 		<mu2>0</mu2>
 	</gazebo>
-	<transmission name="lin1">
-		<type>transmission_interface/SimpleTransmission</type>
-		<joint name="p1_joint">
-			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-		</joint>
-		<actuator name="lin_motor1">
-			<hardwareInterface>EffortJointInterface</hardwareInterface>
-			<mechanicalReduction>1</mechanicalReduction>
-		</actuator>
-	</transmission>
 	<joint name="p2_joint" type="prismatic">
 		<parent link="p1"/>
 		<child link="p2"/>
@@ -58,58 +48,36 @@
 			<origin
 				xyz="0.0 0.0 0.0"
 				rpy="0.0 0.0 0.0" />
-			<mass value="0.01" />
+			<mass value="0.001" />
 			<inertia
 				ixx="1e-2"
-				ixy="0.0"
-				ixz="0.0"
+				ixy="0.000001"
+				ixz="0.000001"
 				iyy="1e-2"
-				iyz="0.0"
+				iyz="0.000001"
 				izz="1e-2" />
 		</inertial>
-		<surface>
-			<friction>
-				<ode>
-					<mu>0</mu>
-					<mu2>0</mu2>
-					<fdir1>0 1.0 0</fdir1>
-					<implicit_spring_damper>true</implicit_spring_damper>
-				</ode>
-			</friction>
-		</surface>
 	</link>
 	<gazebo reference="p2">
 		<mu1>0</mu1>
 		<mu2>0</mu2>
 	</gazebo>
-	<transmission name="lin2">
-		<type>transmission_interface/SimpleTransmission</type>
-		<joint name="p2_joint">
-			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-		</joint>
-		<actuator name="lin_motor2">
-			<hardwareInterface>EffortJointInterface</hardwareInterface>
-			<mechanicalReduction>1</mechanicalReduction>
-		</actuator>
-	</transmission>
-  <joint name="fixed_joint" type="fixed">
-    <parent link="p2"/>
-    <origin link="base_link"/> 
-  </joint> -->
-  <joint name="base_joint" type="planar">
-    <origin xyz = "5 0 0" rpy="0 0 0"/>
-    <parent link="world"/>
-    <child link="base_link"/>
-  </joint> 
+	<joint name="r_joint" type="continuous">
+		<axis xyz="0 0 1"/>
+		<parent link="p2"/>
+		<origin rpy="0 0 0" xyz="0 0 0"/>
+		<child link="base_link"/>
+		<dynamics damping="0.0" friction="0.0"/>
+	</joint>
   <link name="base_link">
-    <visual>
-      <geometry>
-        <box size="0.09 0.09 0.09"/>
-      </geometry>
-      <origin xyz="0.045 0 0" rpy="0 0 0" />
-      <material name="blue">
-        <color rgba="0 0 .8 1"/>
-      </material>
+	<visual>
+    	<geometry>
+        	<box size="0.09 0.09 0.09"/>
+      	</geometry>
+      	<origin xyz="0.045 0 0" rpy="0 0 0" />
+      	<material name="blue">
+       		<color rgba="0 0 .8 1"/>
+      	</material>
     </visual>
     <collision>
       <geometry>
@@ -124,36 +92,10 @@
     </inertial>
   </link>
   <gazebo reference="base_link">
-      <mu1>0</mu1>
-      <mu2>0</mu2>
+	<mu1>0</mu1>
+    <mu2>0</mu2>
+	<kp>1000000</kp>
+	<kd>0</kd>
   </gazebo>
-<!--  
-  <link name="ring_link">
-    <visual>
-      <geometry>
-        <cylinder length="0.01" radius="0.1"/>
-      </geometry>
-       //htan se sxolio afto<origin xyz="0 0 0.525" /> 
-      <material name="blue">
-        <color rgba="0 0 .8 1"/>
-      </material>
-    </visual>
-    <collision>
-      <geometry>
-        <cylinder length="0.01" radius="0.1"/>
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="1"/>
-      <inertia ixx="0.04" ixy="0.0" ixz="0.0" iyy="0.4" iyz="0.0" izz="0.02"/>
-    </inertial>
-  </link>
--->
-
-  <!-- <joint name="simple_joint" type="continuous"> 
-    <parent link="base_link"/>
-    <child link="ring_link"/>
-    //htan se sxolio afto <origin xyz="0 0 0.5" /> 
-  </joint> -->
 
 </robot>

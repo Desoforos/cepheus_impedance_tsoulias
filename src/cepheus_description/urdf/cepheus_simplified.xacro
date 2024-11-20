@@ -429,14 +429,20 @@
 			<geometry>
 				<box size="${gripper_length} 0.02 0.02"/>
 			</geometry>
-			<surface>
+			<!-- <surface>
 				<friction>
 					<ode>
-						<mu>0</mu>           <!-- Coefficient of friction -->
-						<mu2>0</mu2>         <!-- Secondary coefficient of friction -->
+						<mu>0</mu>          
+						<mu2>0</mu2>         
 					</ode>
 				</friction>
-			</surface>
+				<contact>
+        			<ode>
+						<kp>1000000.0</kp>
+						<kd>0.0</kd>
+					</ode>
+				</contact>
+			</surface> -->
 		</collision>
 		<!-- <xacro:inertial_box mass="0.046" x="0.0672" y="0.02" z="0.02">
 			<origin xyz="${gripper_length/2} 0 0" rpy="0 0 0"/>
@@ -475,7 +481,7 @@
 		<parent link="left_grip"/>
 		<child link="final_link"/>
 		<origin
-			xyz="${gripper_length} 0 0"
+			xyz="${gripper_length} 0 0.02"
 			rpy="0 0 0 " />
 		<axis xyz="1 0 0"/>
 		<limit lower="-1" upper="1" effort="${joint_effort}" velocity="${joint_velocity}"/>
@@ -495,6 +501,7 @@
 				iyz="0.00001"
 				izz="1e-7" />
 		</inertial>
+
 	</link>
 
 	<transmission name="tran4">
@@ -557,6 +564,8 @@
 			</plugin>
 			<!-- <pose>0 0 0 0 0 0</pose> -->
 		</sensor>
+		<kp>1000000</kp>
+		<kd>0</kd>
   </gazebo>	
 	<!-- <gravity>false</gravity> -->
 </robot>

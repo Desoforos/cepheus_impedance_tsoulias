@@ -56,6 +56,13 @@ int main(int argc, char **argv) {
     bool hasbegun = false;
     bool paramsinit = false;
     bool record = false;
+    
+
+    double safetylimit = 25*M_PI/180;  //safetylimit 25 degrees to rad
+    double theta0fin = 0;  //telikes synthikes gia safeclose
+    double q1fin = 45*M_PI/180; 
+    double q2fin = 45*M_PI/180; 
+    double q3fin = 10*M_PI/180;
 
     /* ros init */
     ros::init(argc, argv, "new_foros_simcontroller_node");
@@ -135,15 +142,17 @@ int main(int argc, char **argv) {
     
     //ros::Rate loop_rate(frequency);
     ros::Rate loop_rate(400); //400Hz
+    double hz = 400; //400hz
 
     char command;
     
-    wristInitialised = false; 
+    wristInitialised = false; //true gia dokimi 
     
     reachedTarget = false;
     start_movement = false;
     firstTime = true;
     qfirstTime = true;
+    safeclose = false;
 
     rosbag::Bag bag;
     std::string path = "/home/desoforos/cepheus_impedance_tsoulias/rosbags/" ;
@@ -211,32 +220,40 @@ int main(int argc, char **argv) {
                     t_beg  = ros::Time::now(); //initialize starting moment
                 }
                 ros::spinOnce();
-                curr_time = ros::Time::now();
-		        dur_time = curr_time - t_beg;  //ksekinaei h metrhsh meta to initialization tou wrist, 30 sec gia wrist kai 30 sec gia ta alla
-                secs = dur_time.sec + dur_time.nsec * pow(10, -9);
-                // diagnostics();
-                //desiredTrajectory(dur_time); 
-                // calculateMatrices(); //den xreiazetai pleon einai mesa sto controler()
-                // baseTrajectory(dur_time,tf);
-                finaltrajectories(secs,tf); //apo last_controller.h
-                // basePDcontroll();  //ena apo ta dyo tha exo anoikto
-                // calculateQ();
-                controller(count,tf,secs); //apo last_controller.h
-                count++;
+                if(abs(q1)<safetylimit && abs(q2)<safetylimit){
+                    if(!safeclose){
+                        ROS_WARN("Arm extended! Initiating safe close...");
+                        safeclose = true;
+                    }
+                }
+                if(!safeclose){
+                    curr_time = ros::Time::now();
+                    dur_time = curr_time - t_beg;  //ksekinaei h metrhsh meta to initialization tou wrist, 30 sec gia wrist kai 30 sec gia ta alla
+                    secs = dur_time.sec + dur_time.nsec * pow(10, -9);
+                    finaltrajectories(secs,tf,hz); //apo last_controller.h
+                    // diagnostics();
+                    //desiredTrajectory(dur_time); 
+                    // calculateMatrices(); //den xreiazetai pleon einai mesa sto controler()
+                    // baseTrajectory(dur_time,tf);
+                    // basePDcontroll();  //ena apo ta dyo tha exo anoikto
+                    // calculateQ();
+                    controller(count,tf,secs); //apo last_controller.h
+                    count++;
+                }
+                else{
+                    //safe close here
+                    /*apla gia na kano ta plots meta kratao kai ta trajectories..*/
+                    curr_time = ros::Time::now();
+                    dur_time = curr_time - t_beg;  //ksekinaei h metrhsh meta to initialization tou wrist, 30 sec gia wrist kai 30 sec gia ta alla
+                    secs = dur_time.sec + dur_time.nsec * pow(10, -9);
+                    finaltrajectories(secs,tf,hz); //apo last_controller.h
 
-
-                // base_wrench.force.x = qact(0);  //fx;
-                // base_wrench.force.y = qact(1);  //fy;
-                // //base_wrench.torque.z = qact(2); //ns;
-                // msg_RW.data = qact(2); //to bazo anapoda bas kai
-                // msg_LS.data = qact(3);
-                // msg_LE.data = qact(4);
-                // msg_LW.data = qact(5);
-                // std::cout<<"thetach is: "<<thetach<<std::endl;
-                // std::cout<<"theta0+q1+q2+q3 is: "<<(theta0+q1+q2+q3)<<std::endl;
-
-
-                // RW_torque_pub.publish(msg_RW);
+                    // torqueRW = 0.2*(theta0fin - theta0) + 1.5*(0-theta0dot);
+                    // torqueq1 = 0.2*(q1fin-q1) + 1.5*(0-q1dot);
+                    // torqueq2 = 0.2*(q2fin-q2) + 1.5*(0-q2dot);
+                    // torqueq3 = 0.2*(q3fin-q2) + 1.5*(0-q2dot);
+                    torqueRW = torqueq1 = torqueq2 = torqueq3 = 0.0;
+                }
                 if(record){
                     msg_xd_x.data = xstep;
                     msg_xd_y.data = ystep;
@@ -271,15 +288,12 @@ int main(int argc, char **argv) {
                     msg_xee_theta_dot.data = xeedot(2);
                     msg_xee_theta0_dot.data = theta0dot;
 
-                    msg_torquerw.data = tau(0);
-                    msg_torqueq1.data = tau(1);
-                    msg_torqueq2.data = tau(2);
-                    msg_torqueq3.data = tau(3);
+                    msg_fextx.data = fext(0);
 
-
-
-
-
+                    msg_torquerw.data = torqueRW;
+                    msg_torqueq1.data = torqueq1;
+                    msg_torqueq2.data = torqueq2;
+                    msg_torqueq3.data = torqueq3;
 
                     bag.write("/cepheus/xt_x", ros::Time::now(), msg_xt_x);
                     bag.write("/cepheus/xd_x", ros::Time::now(), msg_xd_x);
@@ -322,32 +336,14 @@ int main(int argc, char **argv) {
                     bag.write("/cepheus/torquerw", ros::Time::now(), msg_torquerw);
                     bag.write("/cepheus/torqueq1", ros::Time::now(), msg_torqueq1);
                     bag.write("/cepheus/torqueq2", ros::Time::now(), msg_torqueq2);
-                    bag.write("/cepheus/torqueq3", ros::Time::now(), msg_torqueq3);
-
-
-
-
-             
-
-
-
-                
-
-
-                    if(shutdown_requested){
-                        bag.close();
-                        record = false;
-                    }
-                    
+                    bag.write("/cepheus/torqueq3", ros::Time::now(), msg_torqueq3);                  
                 }
             }
 
-            base_wrench.force.x = 0.0;
-            base_wrench.force.y = 0.0;
-            base_wrench.force.z = 0.0;
-            base_wrench.torque.x = 0.0;
-            base_wrench.torque.y = 0.0;
-            msg_fextx.data = fext(0);
+            base_wrench.torque.z = torqueRW;
+            msg_LS.data = torqueq1;
+            msg_LE.data = torqueq2;
+            msg_LW.data = torqueq3;
 
             base_force_pub.publish(base_wrench);
             LS_torque_pub.publish(msg_LS);
@@ -363,37 +359,16 @@ int main(int argc, char **argv) {
             xee_x_pub.publish(msg_xee_x);
             xee_y_pub.publish(msg_xee_y);
             xee_theta_pub.publish(msg_xee_theta);
-
-
-
-            // base_wrench.force.x = 0.0;
-            // base_wrench.force.y = 0.0;
-            // base_wrench.force.z = 0.0;
-            // base_wrench.torque.x = 0.0;
-            // base_wrench.torque.y = 0.0;
-            // base_wrench.torque.z = 0.0;
-            // msg_RW.data = 0.0; 
-	        // msg_LS.data = 0.0;
-	        // msg_LE.data = 0.0;
-	        // msg_LW.data = 0.0; 
-            // msg_xt_x.data = 0.0;
-            // msg_xt_y.data = 0.0;
-            // msg_xt_theta.data = 0.0;
-            // msg_xd_x.data = msg_xd_y.data = msg_xd_theta.data = 0.0;
-
         }
+
 		if(reachedTarget){ //na ftiakso to reachedGoal kalytera gia na teleionei to peirama, na ftiakso xrono
 			ROS_INFO("[new_foros_simcontroller]: Target position achieved, stopped publishing. \n");
 			break;
 		}
-    
-        // ros::spinOnce();
-        // std::cout<<"[Newforoscontroller callback] ee x is: "<<ee_x<<std::endl;
-		// std::cout<<"[Newforoscontroller callback] ee y is: "<<ee_y<<std::endl;
-		// std::cout<<"[Newforoscontroller callback] ee theta is: "<<thetach<<std::endl;
-        // xee_x_pub.publish(msg_xee_x);
-        // xee_y_pub.publish(msg_xee_y);
-        // xee_theta_pub.publish(msg_xee_theta);
+
+        if(record && shutdown_requested){
+            bag.close();
+        }
 
         loop_rate.sleep();
 
