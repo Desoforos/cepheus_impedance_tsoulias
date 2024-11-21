@@ -308,6 +308,7 @@ double prevxtdot, prevytdot, prevthetatdot;
 
 double torqueRW,torqueq1,torqueq2,torqueq3;
 bool safeclose ;
+double maxtorque = 20;
 
 
 

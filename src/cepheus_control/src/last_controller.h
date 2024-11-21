@@ -189,11 +189,9 @@ void finaltrajectories(double t,double tf, double hz){
       thstepdotdotfr = 0;
       theta0stepdotdotfr = 0;
     }
-    prevxtdot = xtdot;
-		prevytdot = ytdot;
-		prevthetatdot = thetatdot;
+   
 
-    xstepc = xt + 0.0001; //0.0001*cos(xee(2));
+    xstepc = xt + 0.0005; //0.0001*cos(xee(2));
     ystepc = yt;  //+ 0.0001*sin(xee(2));
     thstepc = thetat;
     theta0stepc = theta0fin;
@@ -1016,10 +1014,14 @@ double ns = kprop*errorth0 + kder*errorth0dot;
 // tau(3) = 0.6*(thstep-thetach) + 0.6*(thstepdot - xeedot(2));
 
 
-if(abs(tau(0))>=MAX_TORQUE || abs(tau(1))>=MAX_TORQUE || abs(tau(2))>=MAX_TORQUE || abs(tau(3))>=MAX_TORQUE){
+if((abs(tau(0))> maxtorque) || (abs(tau(1))>maxtorque) || (abs(tau(2))>maxtorque) || (abs(tau(3))>maxtorque)){
   /*initiate safety closure*/
   ROS_WARN("Reached Critical Torques! Initiating safe close..");
   safeclose = true;
+  std::cout<<"rw torque is:  "<<tau(0)<<" Nm. "<< std::endl;
+  std::cout<<"q1 torque is:  "<<tau(1)<<" Nm. "<< std::endl;
+  std::cout<<"q2 torque is:  "<<tau(2)<<" Nm. "<< std::endl;
+  std::cout<<"q3 torque is:  "<<tau(3)<<" Nm. "<< std::endl;
 }
 else{
   torqueRW = tau(0);

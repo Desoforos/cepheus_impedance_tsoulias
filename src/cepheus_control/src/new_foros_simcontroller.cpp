@@ -141,8 +141,8 @@ int main(int argc, char **argv) {
     ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",100,gazeboposCallback);     //tha to anoikso
     
     //ros::Rate loop_rate(frequency);
-    ros::Rate loop_rate(400); //400Hz
-    double hz = 400; //400hz
+    ros::Rate loop_rate(200); //200Hz
+    double hz = 200; //200hz
 
     char command;
     
@@ -227,6 +227,7 @@ int main(int argc, char **argv) {
                     }
                 }
                 if(!safeclose){
+                    fext(0) = abs(mt*calcacc(1/hz,xtdot,prevxtdot)); //override the plugin while experiment
                     curr_time = ros::Time::now();
                     dur_time = curr_time - t_beg;  //ksekinaei h metrhsh meta to initialization tou wrist, 30 sec gia wrist kai 30 sec gia ta alla
                     secs = dur_time.sec + dur_time.nsec * pow(10, -9);
@@ -243,6 +244,7 @@ int main(int argc, char **argv) {
                 else{
                     //safe close here
                     /*apla gia na kano ta plots meta kratao kai ta trajectories..*/
+                    fext(0) = 0; //xanei epafh
                     curr_time = ros::Time::now();
                     dur_time = curr_time - t_beg;  //ksekinaei h metrhsh meta to initialization tou wrist, 30 sec gia wrist kai 30 sec gia ta alla
                     secs = dur_time.sec + dur_time.nsec * pow(10, -9);

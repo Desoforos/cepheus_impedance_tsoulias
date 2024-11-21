@@ -35,6 +35,16 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 		if(msg->name[i] == "simple_ring::base_link"){
 			xt= msg->pose[i].position.x; // - offset - sd; //targetx minus the offset of the cube minus a safety distance
     		yt = msg->pose[i].position.y; //targety
+			if(firstTime){
+				prevxtdot = 0;
+				prevytdot = 0;
+				prevthetatdot = 0;
+			}
+			else{
+				prevxtdot = xtdot;
+				prevytdot = ytdot;
+				prevthetatdot = thetatdot;
+			}
 			xtdot = msg->twist[i].linear.x;
 			ytdot = msg->twist[i].linear.y;
 			thetatdot = msg->twist[i].angular.z;
@@ -176,9 +186,9 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     force_x = msg->wrench.force.x;
     force_y = msg->wrench.force.y;
 	torque_z = msg->wrench.torque.z;
-	fext(0) = -force_x; //allazo proshmo bas kaiii
-	fext(1) = force_y;
-	fext(2) = torque_z; //na ta bgalo apo sxolio
+	// fext(0) = -force_x; //allazo proshmo bas kaiii ta kleino gia ligo
+	// fext(1) = force_y;
+	// fext(2) = torque_z; //na ta bgalo apo sxolio
 	// fext(0) =0;
 	// fext(1) = 0;
 	// fext(2) =0; //for testing

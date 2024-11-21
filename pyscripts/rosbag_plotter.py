@@ -134,13 +134,30 @@ bag.close()
 # time_stamps = np.array(time_stamps)
 
 #diorthosh
-sampling_frequency = 400  # Hz
+sampling_frequency = 200  # Hz
 time_stamps= np.arange(0, len(xt_x)) / sampling_frequency
 time_stamps -= time_stamps[0]  # Start from 0
 
 desired_secs = 30
 
 des_len = sampling_frequency*desired_secs
+
+
+
+#smoothen the plots:
+xee_x = savgol_filter(xee_x, window_length=51, polyorder=3)
+xee_y = savgol_filter(xee_y, window_length=51, polyorder=3)
+xee_theta = savgol_filter(xee_theta, window_length=51, polyorder=3)
+xee_theta0 = savgol_filter(xee_theta0, window_length=51, polyorder=3)
+# # fext_x = savgol_filter(fext_x, window_length=51, polyorder=3)  #mou xalaei ta arnhtika
+xee_x_dot = savgol_filter(xee_x_dot, window_length=51, polyorder=3)
+xee_y_dot = savgol_filter(xee_y_dot, window_length=51, polyorder=3)
+xee_theta_dot = savgol_filter(xee_theta_dot, window_length=51, polyorder=3)
+xee_theta0_dot = savgol_filter(xee_theta0_dot, window_length=51, polyorder=3)
+torquerw = savgol_filter(torquerw, window_length=51, polyorder=3)
+torqueq1 = savgol_filter(torqueq1, window_length=51, polyorder=3)
+torqueq2 = savgol_filter(torqueq2, window_length=51, polyorder=3)
+torqueq3 = savgol_filter(torqueq3, window_length=51, polyorder=3)
 
 
 # # Create plots
@@ -307,14 +324,13 @@ plt.tight_layout()
 plt.show()
 
 
-# Apply smoothing to torque data
-smoothed_torque = savgol_filter(torquerw, window_length=51, polyorder=3)
+
 
 
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
 # Plot torquerw
-axs[0, 0].plot(time_stamps[:len(smoothed_torque)], smoothed_torque, label='Base torque', color='b')
+axs[0, 0].plot(time_stamps[:len(torquerw)], torquerw, label='Base torque', color='b')
 axs[0, 0].grid()
 axs[0, 0].set_title('Base torque ')
 axs[0, 0].set_xlabel('Time [s]')
