@@ -71,10 +71,10 @@ void initialiseParametersNew(){
 void calculateTrajecotryPolynomials(double tf){
     Eigen::MatrixXd eq_matrix(3,3);
     Eigen::VectorXd eq_bscale(3);
-    double ts = 0.1*tf;
-    double wn = 6/ts;
-    kprop_mb = wn*wn;
-    kder_mb = 2*wn; //ta vgala tha ta vro monos mou
+    // double ts = 0.1*tf;
+    // double wn = 6/ts;
+    // kprop_mb = wn*wn;
+    // kder_mb = 2*wn; //ta vgala tha ta vro monos mou
     
     
     eq_matrix << pow(tf,3), pow(tf,4), pow(tf,5),
@@ -1018,6 +1018,10 @@ if((abs(tau(0))> maxtorque) || (abs(tau(1))>maxtorque) || (abs(tau(2))>maxtorque
   /*initiate safety closure*/
   ROS_WARN("Reached Critical Torques! Initiating safe close..");
   safeclose = true;
+  theta0safeclose = theta0;
+  q1safeclose = q1;
+  q2safeclose = q2;
+  q3safeclose = q3;
   std::cout<<"rw torque is:  "<<tau(0)<<" Nm. "<< std::endl;
   std::cout<<"q1 torque is:  "<<tau(1)<<" Nm. "<< std::endl;
   std::cout<<"q2 torque is:  "<<tau(2)<<" Nm. "<< std::endl;

@@ -309,6 +309,10 @@ double prevxtdot, prevytdot, prevthetatdot;
 double torqueRW,torqueq1,torqueq2,torqueq3;
 bool safeclose ;
 double maxtorque = 20;
+double theta0safeclose;// = 0;  //telikes synthikes gia safeclose
+double q1safeclose ;//= 45*M_PI/180; 
+double q2safeclose ;//= 45*M_PI/180; 
+double q3safeclose ;//= 10*M_PI/180;
 
 
 

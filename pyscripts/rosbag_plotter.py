@@ -5,6 +5,25 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 from scipy.signal import savgol_filter
+from scipy.interpolate import interp1d
+
+
+def smoothlist(rawlist):
+    incontact = False
+    for i in range(len(rawlist)):
+        if(i == 0):
+            pass
+        if(i>62.25*200):
+            pass
+        else:
+            if(abs(rawlist[i])>0.1):
+                incontact = True
+            if(incontact):
+                if(abs(rawlist[i])<0.01):
+                    rawlist[i] = rawlist[i-1]
+    return rawlist
+
+
 
 # Bag file path
 path = "/home/desoforos/cepheus_impedance_tsoulias/rosbags/"
@@ -138,7 +157,7 @@ sampling_frequency = 200  # Hz
 time_stamps= np.arange(0, len(xt_x)) / sampling_frequency
 time_stamps -= time_stamps[0]  # Start from 0
 
-desired_secs = 30
+desired_secs = 60
 
 des_len = sampling_frequency*desired_secs
 
@@ -159,14 +178,28 @@ torqueq1 = savgol_filter(torqueq1, window_length=51, polyorder=3)
 torqueq2 = savgol_filter(torqueq2, window_length=51, polyorder=3)
 torqueq3 = savgol_filter(torqueq3, window_length=51, polyorder=3)
 
+# 1. Threshold to detect the contact phase
+threshold = -0.5
+fext_xarr = np.array(fext_x)
+contact_indices = np.where(fext_xarr < threshold)[0]
+
+# 2. Interpolate only within the contact phase
+fext_interp = fext_xarr.copy()
+if len(contact_indices) > 0:
+    # Replace non-contact values within the contact phase with interpolated values
+    contact_times = np.arange(len(fext_xarr))[contact_indices]
+    interpolator = interp1d(contact_times, fext_xarr[contact_indices], kind='linear', fill_value="extrapolate")
+    non_contact_indices = np.where((fext_xarr >= threshold) & (np.arange(len(fext_xarr)) > contact_indices[0]))[0]
+    fext_interp[non_contact_indices] = interpolator(non_contact_indices)
+
 
 # # Create plots
 
 # # X Coordinates (Target, Desired, Actual)
 # plt.figure()
-# plt.plot(time_stamps[:len(xt_x)], xt_x, label='Target X', color='r')
-# plt.plot(time_stamps[:len(xd_x)], xd_x, label='Desired X', color='g')
-# plt.plot(time_stamps[:len(xee_x)], xee_x, label='Actual X', color='b')
+# plt.plot(time_stamps[:des_len], xt_x, label='Target X', color='r')
+# plt.plot(time_stamps[:des_len], xd_x, label='Desired X', color='g')
+# plt.plot(time_stamps[:des_len], xee_x, label='Actual X', color='b')
 # plt.grid()
 # plt.title('X Coordinates')
 # plt.xlabel('Time [s]')
@@ -175,9 +208,9 @@ torqueq3 = savgol_filter(torqueq3, window_length=51, polyorder=3)
 
 # # Y Coordinates (Target, Desired, Actual)
 # plt.figure()
-# plt.plot(time_stamps[:len(xt_y)], xt_y, label='Target Y', color='r')
-# plt.plot(time_stamps[:len(xd_y)], xd_y, label='Desired Y', color='g')
-# plt.plot(time_stamps[:len(xee_y)], xee_y, label='Actual Y', color='b')
+# plt.plot(time_stamps[:des_len], xt_y, label='Target Y', color='r')
+# plt.plot(time_stamps[:des_len], xd_y, label='Desired Y', color='g')
+# plt.plot(time_stamps[:des_len], xee_y, label='Actual Y', color='b')
 # plt.grid()
 # plt.title('Y Coordinates')
 # plt.xlabel('Time [s]')
@@ -186,9 +219,9 @@ torqueq3 = savgol_filter(torqueq3, window_length=51, polyorder=3)
 
 # # Theta Coordinates (Target, Desired, Actual)
 # plt.figure()
-# plt.plot(time_stamps[:len(xt_theta)], xt_theta, label='Target Theta', color='r')
-# plt.plot(time_stamps[:len(xd_theta)], xd_theta, label='Desired Theta', color='g')
-# plt.plot(time_stamps[:len(xee_theta)], xee_theta, label='Actual Theta', color='b')
+# plt.plot(time_stamps[:des_len], xt_theta, label='Target Theta', color='r')
+# plt.plot(time_stamps[:des_len], xd_theta, label='Desired Theta', color='g')
+# plt.plot(time_stamps[:des_len], xee_theta, label='Actual Theta', color='b')
 # plt.grid()
 # plt.title('Theta Coordinates')
 # plt.xlabel('Time [s]')
@@ -197,7 +230,7 @@ torqueq3 = savgol_filter(torqueq3, window_length=51, polyorder=3)
 
 # # External Force (X-axis)
 # plt.figure()
-# plt.plot(time_stamps[:len(fext_x)], fext_x, label='Fext X', color='k')
+# plt.plot(time_stamps[:des_len], fext_x, label='Fext X', color='k')
 # plt.grid()
 # plt.title('External Force (X-axis)')
 # plt.xlabel('Time [s]')
@@ -211,9 +244,9 @@ torqueq3 = savgol_filter(torqueq3, window_length=51, polyorder=3)
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
 # Plot X Coordinates (Target, Desired, Actual)
-axs[0, 0].plot(time_stamps[:len(xt_x)], xt_x, label='Target X', color='r')
-axs[0, 0].plot(time_stamps[:len(xd_x)], xd_x, label='Desired X', color='g')
-axs[0, 0].plot(time_stamps[:len(xee_x)], xee_x, label='Actual X', color='b')
+axs[0, 0].plot(time_stamps[:des_len], xt_x[:des_len], label='Target X', color='r')
+axs[0, 0].plot(time_stamps[:des_len], xd_x[:des_len], label='Desired X', color='g',linestyle='--')
+axs[0, 0].plot(time_stamps[:des_len], xee_x[:des_len], label='Actual X', color='b')
 axs[0, 0].grid()
 axs[0, 0].set_title('X Coordinates')
 axs[0, 0].set_xlabel('Time [s]')
@@ -221,9 +254,9 @@ axs[0, 0].set_ylabel('X Position [m]')
 axs[0, 0].legend()
 
 # Plot Y Coordinates (Target, Desired, Actual)
-axs[0, 1].plot(time_stamps[:len(xt_y)], xt_y, label='Target Y', color='r')
-axs[0, 1].plot(time_stamps[:len(xd_y)], xd_y, label='Desired Y', color='g')
-axs[0, 1].plot(time_stamps[:len(xee_y)], xee_y, label='Actual Y', color='b')
+axs[0, 1].plot(time_stamps[:des_len], xt_y[:des_len], label='Target Y', color='r')
+axs[0, 1].plot(time_stamps[:des_len], xd_y[:des_len], label='Desired Y', color='g',linestyle='--')
+axs[0, 1].plot(time_stamps[:des_len], xee_y[:des_len], label='Actual Y', color='b')
 axs[0, 1].grid()
 axs[0, 1].set_title('Y Coordinates')
 axs[0, 1].set_xlabel('Time [s]')
@@ -231,9 +264,9 @@ axs[0, 1].set_ylabel('Y Position [m]')
 axs[0, 1].legend()
 
 # Plot Theta Coordinates (Target, Desired, Actual)
-axs[1, 0].plot(time_stamps[:len(xt_theta)], xt_theta, label='Target Theta', color='r')
-axs[1, 0].plot(time_stamps[:len(xd_theta)], xd_theta, label='Desired Theta', color='g')
-axs[1, 0].plot(time_stamps[:len(xee_theta)], xee_theta, label='Actual Theta', color='b')
+axs[1, 0].plot(time_stamps[:des_len], xt_theta[:des_len], label='Target Theta', color='r')
+axs[1, 0].plot(time_stamps[:des_len], xd_theta[:des_len], label='Desired Theta', color='g',linestyle='--')
+axs[1, 0].plot(time_stamps[:des_len], xee_theta[:des_len], label='Actual Theta', color='b')
 axs[1, 0].grid()
 axs[1, 0].set_title('Theta Coordinates')
 axs[1, 0].set_xlabel('Time [s]')
@@ -241,9 +274,9 @@ axs[1, 0].set_ylabel('Theta [rad]')
 axs[1, 0].legend()
 
 # Plot Theta0 Coordinates (Target, Desired, Actual)
-axs[1, 1].plot(time_stamps[:len(xt_theta0)], xt_theta0, label='Target Theta0', color='r')
-axs[1, 1].plot(time_stamps[:len(xd_theta0)], xd_theta0, label='Desired Theta0', color='g')
-axs[1, 1].plot(time_stamps[:len(xee_theta0)], xee_theta0, label='Actual Theta0', color='b')
+axs[1, 1].plot(time_stamps[:des_len], xt_theta0[:des_len], label='Target Theta0', color='r')
+axs[1, 1].plot(time_stamps[:des_len], xd_theta0[:des_len], label='Desired Theta0', color='g',linestyle='--')
+axs[1, 1].plot(time_stamps[:des_len], xee_theta0[:des_len], label='Actual Theta0', color='b')
 axs[1, 1].grid()
 axs[1, 1].set_title('Theta0 Coordinates')
 axs[1, 1].set_xlabel('Time [s]')
@@ -252,7 +285,7 @@ axs[1, 1].legend()
 
 
 # # Plot External Force (X-axis)
-# axs[1, 1].plot(time_stamps[:len(fext_x)], fext_x, label='Fext X', color='k')
+# axs[1, 1].plot(time_stamps[:des_len], fext_x, label='Fext X', color='k')
 # axs[1, 1].grid()
 # axs[1, 1].set_title('External Force (X-axis)')
 # axs[1, 1].set_xlabel('Time [s]')
@@ -269,9 +302,9 @@ plt.show()
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
 # Plot Xdot Coordinates (Target, Desired, Actual)
-axs[0, 0].plot(time_stamps[:len(xt_x_dot)], xt_x_dot, label='Target Xdot', color='r')
-axs[0, 0].plot(time_stamps[:len(xd_x_dot)], xd_x_dot, label='Desired Xdot', color='g')
-axs[0, 0].plot(time_stamps[:len(xee_x_dot)], xee_x_dot, label='Actual Xdot', color='b')
+axs[0, 0].plot(time_stamps[:des_len], xt_x_dot[:des_len], label='Target Xdot', color='r')
+axs[0, 0].plot(time_stamps[:des_len], xd_x_dot[:des_len], label='Desired Xdot', color='g',linestyle='--')
+axs[0, 0].plot(time_stamps[:des_len], xee_x_dot[:des_len], label='Actual Xdot', color='b')
 axs[0, 0].grid()
 axs[0, 0].set_title('Xdot ')
 axs[0, 0].set_xlabel('Time [s]')
@@ -279,9 +312,9 @@ axs[0, 0].set_ylabel('X Velcotiy [m/sec]')
 axs[0, 0].legend()
 
 # Plot Ydot Coordinates (Target, Desired, Actual)
-axs[0, 1].plot(time_stamps[:len(xt_y_dot)], xt_y_dot, label='Target Ydot', color='r')
-axs[0, 1].plot(time_stamps[:len(xd_y_dot)], xd_y_dot, label='Desired Ydot', color='g')
-axs[0, 1].plot(time_stamps[:len(xee_y_dot)], xee_y_dot, label='Actual Ydot', color='b')
+axs[0, 1].plot(time_stamps[:des_len], xt_y_dot[:des_len], label='Target Ydot', color='r')
+axs[0, 1].plot(time_stamps[:des_len], xd_y_dot[:des_len], label='Desired Ydot', color='g',linestyle='--')
+axs[0, 1].plot(time_stamps[:des_len], xee_y_dot[:des_len], label='Actual Ydot', color='b')
 axs[0, 1].grid()
 axs[0, 1].set_title('Ydot')
 axs[0, 1].set_xlabel('Time [s]')
@@ -289,9 +322,9 @@ axs[0, 1].set_ylabel('Y Velocity [m/sec]')
 axs[0, 1].legend()
 
 # Plot Thetadot Coordinates (Target, Desired, Actual)
-axs[1, 0].plot(time_stamps[:len(xt_theta_dot)], xt_theta_dot, label='Target Thetadot', color='r')
-axs[1, 0].plot(time_stamps[:len(xd_theta_dot)], xd_theta_dot, label='Desired Thetadot', color='g')
-axs[1, 0].plot(time_stamps[:len(xee_theta_dot)], xee_theta_dot, label='Actual Thetadot', color='b')
+axs[1, 0].plot(time_stamps[:des_len], xt_theta_dot[:des_len], label='Target Thetadot', color='r')
+axs[1, 0].plot(time_stamps[:des_len], xd_theta_dot[:des_len], label='Desired Thetadot', color='g',linestyle='--')
+axs[1, 0].plot(time_stamps[:des_len], xee_theta_dot[:des_len], label='Actual Thetadot', color='b')
 axs[1, 0].grid()
 axs[1, 0].set_title('Thetadot')
 axs[1, 0].set_xlabel('Time [s]')
@@ -299,9 +332,9 @@ axs[1, 0].set_ylabel('Thetadot [rad/sec]')
 axs[1, 0].legend()
 
 # Plot Thetadot Coordinates (Target, Desired, Actual)
-axs[1, 1].plot(time_stamps[:len(xt_theta0_dot)], xt_theta0_dot, label='Target Theta0dot', color='r')
-axs[1, 1].plot(time_stamps[:len(xd_theta0_dot)], xd_theta0_dot, label='Desired Theta0dot', color='g')
-axs[1, 1].plot(time_stamps[:len(xee_theta0_dot)], xee_theta0_dot, label='Actual Theta0dot', color='b')
+axs[1, 1].plot(time_stamps[:des_len], xt_theta0_dot[:des_len], label='Target Theta0dot', color='r')
+axs[1, 1].plot(time_stamps[:des_len], xd_theta0_dot[:des_len], label='Desired Theta0dot', color='g',linestyle='--')
+axs[1, 1].plot(time_stamps[:des_len], xee_theta0_dot[:des_len], label='Actual Theta0dot', color='b')
 axs[1, 1].grid()
 axs[1, 1].set_title('Theta0dot')
 axs[1, 1].set_xlabel('Time [s]')
@@ -310,7 +343,7 @@ axs[1, 1].legend()
 
 
 # # Plot External Force (X-axis)
-# axs[1, 1].plot(time_stamps[:len(fext_x)], fext_x, label='Fext X', color='k')
+# axs[1, 1].plot(time_stamps[:des_len], fext_x, label='Fext X', color='k')
 # axs[1, 1].grid()
 # axs[1, 1].set_title('External Force (X-axis)')
 # axs[1, 1].set_xlabel('Time [s]')
@@ -330,7 +363,7 @@ plt.show()
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
 # Plot torquerw
-axs[0, 0].plot(time_stamps[:len(torquerw)], torquerw, label='Base torque', color='b')
+axs[0, 0].plot(time_stamps[:des_len], torquerw[:des_len], label='Base torque', color='b')
 axs[0, 0].grid()
 axs[0, 0].set_title('Base torque ')
 axs[0, 0].set_xlabel('Time [s]')
@@ -338,7 +371,7 @@ axs[0, 0].set_ylabel('Base torque [Nm]')
 axs[0, 0].legend()
 
 # Plot torqueq1
-axs[0, 1].plot(time_stamps[:len(torqueq1)], torqueq1, label='Joint1 torque', color='b')
+axs[0, 1].plot(time_stamps[:des_len], torqueq1[:des_len], label='Joint1 torque', color='b')
 axs[0, 1].grid()
 axs[0, 1].set_title('Joint1 torque')
 axs[0, 1].set_xlabel('Time [s]')
@@ -346,7 +379,7 @@ axs[0, 1].set_ylabel('Joint1 torque [Nm]')
 axs[0, 1].legend()
 
 # Plot torqueq2
-axs[1, 0].plot(time_stamps[:len(torqueq2)], torqueq2, label='Joint2 torque', color='b')
+axs[1, 0].plot(time_stamps[:des_len], torqueq2[:des_len], label='Joint2 torque', color='b')
 axs[1, 0].grid()
 axs[1, 0].set_title('Joint2 torque')
 axs[1, 0].set_xlabel('Time [s]')
@@ -354,7 +387,7 @@ axs[1, 0].set_ylabel('Joint2 torque [Nm]')
 axs[1, 0].legend()
 
 # Plot torqueq3
-axs[1, 1].plot(time_stamps[:len(torqueq3)], torqueq3, label='Joint3 torque', color='b')
+axs[1, 1].plot(time_stamps[:des_len], torqueq3[:des_len], label='Joint3 torque', color='b')
 axs[1, 1].grid()
 axs[1, 1].set_title('Joint3 torque')
 axs[1, 1].set_xlabel('Time [s]')
@@ -366,11 +399,12 @@ plt.tight_layout()
 
 # Show all plots in one window
 plt.show()
-
-
+fext_smoothed = fext_x.copy()
+fext_smoothed = smoothlist(fext_smoothed)
 # External Force (X-axis)
 plt.figure()
-plt.plot(time_stamps[:len(fext_x)], fext_x, label='Fext X', color='k')
+# plt.plot(time_stamps[:des_len], fext_x, label='Fext X', color='k',linestyle='--')
+plt.plot(time_stamps[:des_len], fext_smoothed[:des_len], label='Fext_x')
 plt.grid()
 plt.title('External Force (X-axis)')
 plt.xlabel('Time [s]')

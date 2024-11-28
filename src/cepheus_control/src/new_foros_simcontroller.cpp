@@ -59,10 +59,7 @@ int main(int argc, char **argv) {
     
 
     double safetylimit = 25*M_PI/180;  //safetylimit 25 degrees to rad
-    double theta0fin = 0;  //telikes synthikes gia safeclose
-    double q1fin = 45*M_PI/180; 
-    double q2fin = 45*M_PI/180; 
-    double q3fin = 10*M_PI/180;
+
 
     /* ros init */
     ros::init(argc, argv, "new_foros_simcontroller_node");
@@ -224,6 +221,11 @@ int main(int argc, char **argv) {
                     if(!safeclose){
                         ROS_WARN("Arm extended! Initiating safe close...");
                         safeclose = true;
+                        theta0fin = theta0;
+                        theta0safeclose = theta0;
+                        q1safeclose = q1;
+                        q2safeclose = q2;
+                        q3safeclose = q3;
                     }
                 }
                 if(!safeclose){
@@ -250,11 +252,11 @@ int main(int argc, char **argv) {
                     secs = dur_time.sec + dur_time.nsec * pow(10, -9);
                     finaltrajectories(secs,tf,hz); //apo last_controller.h
 
-                    // torqueRW = 0.2*(theta0fin - theta0) + 1.5*(0-theta0dot);
-                    // torqueq1 = 0.2*(q1fin-q1) + 1.5*(0-q1dot);
-                    // torqueq2 = 0.2*(q2fin-q2) + 1.5*(0-q2dot);
-                    // torqueq3 = 0.2*(q3fin-q2) + 1.5*(0-q2dot);
-                    torqueRW = torqueq1 = torqueq2 = torqueq3 = 0.0;
+                    torqueRW = 0.06*(theta0safeclose - theta0) + 0.6*(0-theta0dot);
+                    torqueq1 = 0.06*(q1safeclose-q1) + 0.6*(0-q1dot);
+                    torqueq2 = 0.06*(q2safeclose-q2) + 0.6*(0-q2dot);
+                    torqueq3 = 0.06*(q3safeclose-q3) + 0.6*(0-q3dot);
+                    // torqueRW = torqueq1 = torqueq2 = torqueq3 = 0.0;
                 }
                 if(record){
                     msg_xd_x.data = xstep;
