@@ -164,6 +164,7 @@ int main(int argc, char **argv) {
             ROS_INFO("[new_foros_simcontroller]: Press Y to start the controller. \n");
             std::cin>> command;
             ros::spinOnce();
+            loop_rate.sleep()
             if(command == 'Y'){
                 start_movement= true;
                 start_moving.data = true;
@@ -179,6 +180,7 @@ int main(int argc, char **argv) {
             if(!paramsinit){
                 initialiseParameters();
                 ros::spinOnce();
+                loop_rate.sleep();
                 // ros::Duration(2).sleep();
                 ROS_INFO("[new_foros_simcontroller]: Initializing parameters... \n");
                 calculateTrajecotryPolynomials(tf);
@@ -188,6 +190,7 @@ int main(int argc, char **argv) {
             }
             /*MAIN CONTROL BODY*/
             ros::spinOnce();
+            loop_rate.sleep();
             updateVel(0.005); // 200hz
             curr_time = ros::Time::now();
 		    dur_time = curr_time - t_beg;
@@ -214,6 +217,7 @@ int main(int argc, char **argv) {
                 //ROS PUBLISH SOFTGRIP MIA FORA META DEN KSANASTELNEI
             }
             ros::spinOnce(); //to callback tou arduino tha kanei true to softFinished, an den doulevei apla perimeno 2 sec
+            loop_rate.sleep();
             if(softFinished){
                 if(!beginHard){
                     beginHard = true;
@@ -223,6 +227,7 @@ int main(int argc, char **argv) {
                     //ROSPUBLISH HARDGRIP MIA FORA META DEN KSANASTELNEI
                 }
                 ros::spinOnce(); //perimeno callback gia true to hardFinished
+                loop_rate.sleep();
             }
            }
            if (hardFinished){
@@ -267,7 +272,7 @@ int main(int argc, char **argv) {
                
             }
         }
-        loop_rate.sleep();
+        //loop_rate.sleep();  exei bei allou
 
     }
 

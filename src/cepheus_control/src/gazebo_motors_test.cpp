@@ -1,5 +1,4 @@
 #include "includes.h"
-#include <deque>  // For the sliding window
 
 bool shutdown_requested = false;
 double theta0,th1,th2,th3;  //oi gonies ton frames se sxesh me adraneiako ss, tha metatrapoun se q1,q2,q3
@@ -26,59 +25,13 @@ const double qfilter = 5*M_PI/180; //5 moires
 
 
 
-std::deque<double> q1_window;  // Stores the last N values
-std::deque<double> q2_window;  // Stores the last N values
-std::deque<double> q3_window;  // Stores the last N values
-
-std::deque<double> q1dot_window;  // Stores the last N values
-std::deque<double> q2dot_window;  // Stores the last N values
-std::deque<double> q3dot_window;  // Stores the last N values
-
-
-const int window_size = 20;     // Size of the sliding window
-
-double moving_average(double new_value, std::deque<double>& window, int size) {
-    window.push_back(new_value);               // Add the new value
-    if (window.size() > size) window.pop_front();  // Remove oldest value if window exceeds size
-    double sum = 0;
-    for (double val : window) sum += val;      // Sum all values in the window
-    return sum / window.size();                // Return the average
-}
-
-
-
-
-
 
 void sigintHandler(int sig) {
     ROS_INFO("Shutdown request received. Performing cleanup tasks...");
     shutdown_requested = true;  // Set flag for graceful shutdown
 }
 
-// void calcAngles(){
-//     /*na ftiakso katallhla frames sth vicon gia na ypologizo q1,q2,q3*/
-//     /*fadazomai: q1 = gonia frame 1-gonia bashs(theta0)
-//     q2 = gonia frame2 - gonia frame1
-//     q3 = gonia frame3(end effector) - gonia frame2*
-//     opou: frame1: sto arm, frame2: sto forearm, frame3: sto gripper */
-//     if(firstTime){
-//         q1 = th1-th0;
-//         q2 = th2-th1;
-//         q3 = th3-th2;
-//         q1prev = q1;
-//         q2prev = q2;
-//         q3prev = q3;
-//         firstTime = false;
-//     }
-//     else{
-//     q1prev = q1;
-//     q2prev = q2;
-//     q3prev = q3;
-//     q1 = th1-th0;
-//     q2 = th2-th1;
-//     q3 = th3-th2;
-//     }
-// }
+
 
 void updateVel(double dt){
     theta0dot = (theta0-theta0prev)/dt;
@@ -98,156 +51,45 @@ double filter_torque(double torq, double prev) { //an einai mhden dinei 0.00001 
 	return torq;
 }
 
-void base_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
-    if(msg == nullptr){
-        ROS_WARN("Vicon null pointer, exiting...");
-    }
-    else{
-        tf::Quaternion qee( //for angle of ee
-            msg->transform.rotation.x,
-            msg->transform.rotation.y,
-            msg->transform.rotation.z,
-            msg->transform.rotation.w);
-        tf::Matrix3x3 m_ee(qee);	
-        double rollee, pitchee, yawee;
-        m_ee.getRPY(rollee, pitchee, yawee);
-        if(firstTime){
-            theta0 = yawee;
-            theta0prev = theta0;
-            firstTime = false;
-        }
-        else{
-            if((abs(theta0 - yawee)>10*M_PI/180)){
-                //do nothing
-            }
-            else{
-                theta0prev = theta0;
-                theta0 = yawee;
-            }
-        }
-    }
-	// theta0 = yawee; 
+void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update the current position of ee and ring
+	int i;
+	for(i=0; i<msg->name.size(); i++){
+		//  ROS_INFO("[Gazebo Callback] Link Name: %s", msg->name[i]);
+		if(msg->name[i] == "cepheus::cepheus_base"){
+			tf::Quaternion q( //for angle of base
+				msg->pose[i].orientation.x,
+				msg->pose[i].orientation.y,
+				msg->pose[i].orientation.z,
+				msg->pose[i].orientation.w);
+			tf::Matrix3x3 m(q);
+			double roll, pitch, yaw;
+			m.getRPY(roll, pitch, yaw);
+			theta0 = yaw; //angle of base
+			theta0dot = msg->twist[i].angular.z; //angledot of base
+			// std::cout<<"[Gazebo callback] theta0dot is: "<<theta0dot<<std::endl;
+		}
+	}
 }
-
-void ls_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
-	tf::Quaternion qee( 
-		msg->transform.rotation.x,
-		msg->transform.rotation.y,
-		msg->transform.rotation.z,
-		msg->transform.rotation.w);
-    tf::Matrix3x3 m_ee(qee);	
-    double rollee, pitchee, yawee;
-	m_ee.getRPY(rollee, pitchee, yawee);
-	th1 = yawee; 
-}
-
-void le_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
-	tf::Quaternion qee( 
-		msg->transform.rotation.x,
-		msg->transform.rotation.y,
-		msg->transform.rotation.z,
-		msg->transform.rotation.w);
-    tf::Matrix3x3 m_ee(qee);	
-    double rollee, pitchee, yawee;
-	m_ee.getRPY(rollee, pitchee, yawee);
-	th2 = yawee; 
-}
-
-void ee_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
-	tf::Quaternion qee( //for angle of ee
-		msg->transform.rotation.x,
-		msg->transform.rotation.y,
-		msg->transform.rotation.z,
-		msg->transform.rotation.w);
-    tf::Matrix3x3 m_ee(qee);	
-    double rollee, pitchee, yawee;
-	m_ee.getRPY(rollee, pitchee, yawee);
-	th3 = yawee; 
-}
-
-void lsPosCallback(const std_msgs::Float64::ConstPtr& cmd) {
-    // if (firstTimeq1) {
-    //     rawq1 = -(cmd->data);
-    //     q1 = rawq1 + offsetq1;
-    //     firstTimeq1 = false;
-    //     }
-    // else{
-    //     if (abs(-(cmd->data) - rawq1) > qfilter){
-    //         //do nothing
-    //         }
-    //     else{
-    //         rawq1 = -(cmd->data); //o encoder tou mou ta diabazei anapoda
-    //         q1 = rawq1 +  offsetq1;  
-    //         }
-    // }
-    q1 = moving_average(-(cmd->data), q1_window, window_size) + offsetq1;
-    // q1 =  -(cmd->data) +  offsetq1; // tha dokimaso to pano
-}
-
-
-void lePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
-    // if (firstTimeq2) {
-    //     rawq2 = cmd->data;
-    //     q2 = rawq2 + offsetq2;
-    //     firstTimeq2 = false;
-    //     }
-    // else{    
-    //     if (abs(cmd->data - rawq2) > qfilter){
-    //         //do nothing
-    //         }
-    //     else{
-    //         rawq2 = cmd->data; //o encoder tou mou ta diabazei anapoda
-    //         q2 = rawq2 +  offsetq2;  
-    //         }
-    // }
-    q2 = moving_average(cmd->data, q2_window, window_size) + offsetq2;
-    // q2 = cmd->data + offsetq2;
-}
-
-void rePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
-    // if (firstTimeq3) {
-    //     rawq3 = -(cmd->data);
-    //     q3 = rawq3 + offsetq3;
-    //     firstTimeq3 = false;
-    //     }
-    // else{
-    //     if (abs(-(cmd->data) - rawq3) > qfilter){
-    //         //do nothing
-    //         }
-    //     else{
-    //         rawq3 = -(cmd->data); //o encoder tou mou ta diabazei anapoda
-    //         q3 = rawq3 +  offsetq3;  
-    //         }
-    // }
-    q3 = moving_average(-(cmd->data), q3_window, window_size) + offsetq3;
-    // q3 = -(cmd->data) + offsetq3;
-}
-
-
-void lsVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
-	// if (abs(cmd->data - q1dot) > VEL_FILTER)
-	// 	return;
-	// else
-    q1dot = moving_average(-(cmd->data), q1dot_window, window_size);
-	// q1dot = -(cmd->data);
-}
-
-
-void leVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
-	// if (abs(cmd->data - q2dot) > VEL_FILTER)
-	// 	return;
-	// else
-    q1dot = moving_average(cmd->data, q2dot_window, window_size);
-	// q2dot = cmd->data;
-}
-
-
-void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
-	// if (abs(cmd->data - q3dot) > VEL_FILTER)
-	// 	return;
-	// else
-    q3dot = moving_average(-(cmd->data), q3dot_window, window_size);
-	// q3dot = -(cmd->data);
+	
+void jointStatesCallback(const sensor_msgs::JointState::ConstPtr& msg){
+	int i;
+    //ROS_INFO("[foros_simcontroller]: Joint state received! q1: %f q2: %f q1dot: %f q2dot: %f \n",msg->position[1], msg->position[0], msg-> velocity[1], msg-> velocity[0]);
+	for(i=0; i<msg->name.size(); i++){
+		// ROS_INFO("[Gazebo Callback] Joint Name: %s", msg->name[i]);
+		if(msg->name[i] == "left_shoulder_joint"){
+			q1 = msg->position[i];
+			q1dot = msg->velocity[i];
+			// q1 = q1; //evgala to +q01 giati to evala stous ypologismous
+		}
+		else if(msg->name[i] == "left_elbow_joint"){
+			q2 = msg->position[i];
+			q2dot = msg->velocity[i];
+		}
+		else if(msg->name[i] == "left_wrist_joint"){
+			q3 = msg->position[i];
+			q3dot = msg->velocity[i];
+		}
+	}
 }
 
 
@@ -320,45 +162,26 @@ void finaltrajectories(double t,double tfree){
 
 int main(int argc, char **argv) {
 
-    theta0 = theta0dot = theta0prev = 0.0001;
-    // theta0 = q1 = q2 = q3 = q1dot = q2dot = q3dot = theta0dot = 0; //apla gia dokimi
-
-
-
-
     /* ros init */
-    ros::init(argc, argv, "motors_test_node");
+    ros::init(argc, argv, "gazebo_motors_test_node");
     ros::NodeHandle nh;
     signal(SIGINT, sigintHandler);
 
-    ros::Publisher ls_torque_pub = nh.advertise<std_msgs::Float64>("set_left_shoulder_effort", 1);   //ropi se q1
-	ros::Publisher le_torque_pub = nh.advertise<std_msgs::Float64>("set_left_elbow_effort", 1);      //ropi se q2
-  	ros::Publisher re_torque_pub = nh.advertise<std_msgs::Float64>("set_right_elbow_effort", 1);     //ropi se q3 (ki omos to right elbow ousiastika einai to wrist)
-    ros::Publisher rw_torque_pub = nh.advertise<std_msgs::Float64>("cmd_torque", 1);  //ropi se reaction wheel    (ola afta ta akouei to interface)
+    ros::Publisher base_force_pub = nh.advertise<geometry_msgs::Wrench>("/cepheus/force_base_topic", 100); //anti gia 10 gia na doume
+
+    ros::Publisher ls_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_shoulder_effort_controller/command", 100);   //ropi se q1
+	ros::Publisher le_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_elbow_effort_controller/command", 100);      //ropi se q2
+  	ros::Publisher re_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/left_wrist_effort_controller/command", 100);     //ropi se q3 (ki omos to right elbow ousiastika einai to wrist)
+    ros::Publisher rw_torque_pub = nh.advertise<std_msgs::Float64>("/cepheus/reaction_wheel_effort_controller/command", 100);  //ropi se reaction wheel    (ola afta ta akouei to interface)
     int count = 0;
     ros::Rate loop_rate(200);  //200hz
     std_msgs::Float64 torque;
-  
-
-
-	// ros::Publisher ls_offset_pub = nh.advertise<std_msgs::Float64>("set_left_shoulder_offset", 1);
-	// ros::Publisher le_offset_pub = nh.advertise<std_msgs::Float64>("set_left_elbow_offset", 1);
-    // ros::Publisher re_offset_pub = nh.advertise<std_msgs::Float64>("set_right_elbow_offset", 1);
 
     
-    ros::Subscriber base_pos_sub = nh.subscribe("/vicon/cepheusbase/cepheusbase", 10, base_posCallback); //TO ANOIGOKLEINO
-    
+   
+    ros::Subscriber joint_states_sub = nh.subscribe<sensor_msgs::JointState>("/cepheus/joint_states",100,jointStatesCallback); //tha to anoikso
+    ros::Subscriber gazebo_pos_sub = nh.subscribe<gazebo_msgs::LinkStates>("/gazebo/link_states",100,gazeboposCallback);     //tha to anoikso
 
-    // ros::Subscriber ls_pos_sub = nh.subscribe("/vicon/frame1/frame1", 1, ls_posCallback);
-    // ros::Subscriber le_pos_sub = nh.subscribe("/vicon/frame2/frame2", 1, le_posCallback);
-    // ros::Subscriber ee_pos_sub = nh.subscribe("/vicon/end_effector_new/end_effector_new", 1, ee_posCallback);
-
-    ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 10, lsPosCallback);
-	ros::Subscriber le_pos_sub = nh.subscribe("read_left_elbow_position", 10, lePosCallback);
-	ros::Subscriber re_pos_sub = nh.subscribe("read_right_elbow_position", 10, rePosCallback);
-	ros::Subscriber ls_vel_sub = nh.subscribe("read_left_shoulder_velocity", 10, lsVelCallback);
-	ros::Subscriber le_vel_sub = nh.subscribe("read_left_elbow_velocity", 10, leVelCallback);
-	ros::Subscriber re_vel_sub = nh.subscribe("read_right_elbow_velocity", 10, reVelCallback);
 
     std_msgs::Float64 msg_torqueq1;
     std_msgs::Float64 msg_torqueq2;
@@ -384,6 +207,14 @@ int main(int argc, char **argv) {
     std_msgs::Float64 msg_q2ddot;
     std_msgs::Float64 msg_q3ddot;
     std_msgs::Float64 msg_theta0ddot;
+    geometry_msgs::Wrench base_wrench;
+
+    base_wrench.force.x = 0.0;
+    base_wrench.force.y = 0.0;
+    base_wrench.force.z = 0.0;
+    base_wrench.torque.x = 0.0;
+    base_wrench.torque.y = 0.0;
+    base_wrench.torque.z = 0.0;
 
     
 
@@ -425,12 +256,6 @@ int main(int argc, char **argv) {
 		qd[i] = 0.0;
 		qd_dot[i] = 0.0;
 	}
-    // theta0 = theta0dot = 0; //gia dokimi
-
-    // th0 = th1 = th2 = th3 = 0;  //arxikopoihsh kalou kakou
-    ros::spinOnce();
-    // calAngles();
-    // updateVel(0.005); //200hz
 
 
     ROS_INFO("[Motors test]: You want to record to a bag? Press Y for yes, anything else for no. \n");
@@ -442,26 +267,13 @@ int main(int argc, char **argv) {
         std::cin >>  bag_file_name;
         bag.open(path + bag_file_name + ".bag", rosbag::bagmode::Write);
     }
-
-     while(!offsetsdone){
-        ROS_INFO("[Motors test]: Press Y to calculate angle offsets.");
-        std::cin>>cmd;
-        if(cmd == 'Y'){
-            ros::spinOnce();
-            loop_rate.sleep();
-            offsetq1 = q1known - q1;
-            offsetq2 = q2known - q2;
-            offsetq3 = q3known - q3;
-            ROS_INFO("Angle offsets have been calculated.");
-            offsetsdone = true;
-
-        }
-        ros::Duration(2.0).sleep();
-    }
+    
 
 
 
 
+    ros::spinOnce();
+    loop_rate.sleep();
 
     std::cout<<"theta0 is: "<<(theta0*180/M_PI)<<" degrees."<<std::endl; 
     std::cout<<"q1 is: "<<(q1*180/M_PI)<<" degrees."<<std::endl;
@@ -479,8 +291,6 @@ int main(int argc, char **argv) {
 
 
     while(!legitChar){
-        ros::spinOnce();
-        std::cout<<"theta0 is: "<<theta0<<std::endl;
         ROS_INFO("[Motors test]:Press Y to initialize arm or N not to. ");
         std::cin >>cmd;
         if(cmd == 'Y'){
@@ -491,6 +301,7 @@ int main(int argc, char **argv) {
             initialiseArm = true;
             ROS_WARN("Initializing arm...");
             ros::spinOnce();
+            loop_rate.sleep();
             theta0in = theta0;  //to arxiko theta0, thelo na meinei statheri gonia
             q1des = q1des*M_PI/180; //from deg to rad
             q2des = q2des*M_PI/180; //from deg to rad
@@ -515,15 +326,7 @@ int main(int argc, char **argv) {
 
     while(ros::ok() && !shutdown_requested){
         ros::spinOnce();
-        // theta0 = q1 = q2 = q3 = q1dot = q2dot = q3dot = theta0dot = 0; //apla gia dokimi
-        updateVel(0.005); //200hz
-        // calcAngles();
-        // if(count%100 == 0){
-        //     std::cout<<"theta0 is: "<<(theta0*180/M_PI)<<" degrees."<<std::endl;
-        //     std::cout<<"q1 is: "<<(q1*180/M_PI)<<" degrees."<<std::endl;
-        //     std::cout<<"q2 is: "<<(q2*180/M_PI)<<" degrees."<<std::endl;
-        //     std::cout<<"q3 is: "<<(q3*180/M_PI)<<" degrees."<<std::endl;
-        // }
+        loop_rate.sleep();
         if(initialiseArm){
 
             curr_time = ros::Time::now();
@@ -558,25 +361,14 @@ int main(int argc, char **argv) {
             prev_torq[1] = torq[1];
             prev_torq[2] = torq[2];
             prev_torq[3] = torq[3];
-            // torq[0] = 25*errorq[0] + 5*errorqdot[0]; //apo emena afta
-            // torq[1] = -(6*errorq[1] + 0.6*errorqdot[1])/186; //- giati ta mesa einai pros ta arnhtika , to /186 to vlepo pantou ston vraxiona
-            // torq[2] = (6*errorq[2] + 0.6*errorqdot[2])/186;
-            // torq[3] = -(6*errorq[3] + 0.6*errorqdot[3])/186;
             torq[0] = 0.5*errorq[0] + 2*errorqdot[0]; 
-            torq[1] = 0.6*errorq[1] + 0.3*errorqdot[1]; 
-            torq[2] = 0.6*errorq[2] + 0.3*errorqdot[2];
-            torq[3] = 0.6*errorq[3] + 0.3*errorqdot[3];
-
-            /*gia diabasma apo interface*/
-            torq[0] = torq[0]/186;
-            torq[1] = -torq[1]/186;
-            torq[2] = torq[2]/186;
-            torq[3] = torq[3]/186;
+            torq[1] = (0.6*errorq[1] + 0.3*errorqdot[1]); 
+            torq[2] = (0.6*errorq[2] + 0.3*errorqdot[2]);
+            torq[3] = (0.6*errorq[3] + 0.3*errorqdot[3]);
 
 
-
-            torque.data = filter_torque(torq[0], prev_torq[0]);
-            rw_torque_pub.publish(torque);
+            base_wrench.torque.z = filter_torque(torq[0], prev_torq[0]);
+            base_force_pub.publish(base_wrench);
             torque.data = filter_torque(torq[1], prev_torq[1]);
             ls_torque_pub.publish(torque);  //dokimi mono reaction wheel
             torque.data = filter_torque(torq[2], prev_torq[2]);
@@ -602,10 +394,11 @@ int main(int argc, char **argv) {
             std::cout<<"error q2  is: "<<errorq[2]<< " deg"<<std::endl;
             std::cout<<"error q3  is: "<<errorq[3]<< " deg"<<std::endl;
 
-            std::cout<<"RW torq  is: "<<torq[0]*186<< " Nm"<<std::endl;
-            std::cout<<"q1 torq is: "<<-torq[1]*186<< " Nm"<<std::endl;
-            std::cout<<"q2 torq is: "<<torq[2]*186<< " Nm"<<std::endl;
-            std::cout<<"q3 torq is: "<<-torq[3]*186<< " Nm"<<std::endl;
+            std::cout<<"RW torq  is: "<<torq[0]<< " Nm"<<std::endl;
+            std::cout<<"q1 torq is: "<<torq[1]<< " Nm"<<std::endl;
+            std::cout<<"q2 torq is: "<<torq[2]<< " Nm"<<std::endl;
+            std::cout<<"q3 torq is: "<<torq[3]<< " Nm"<<std::endl;
+
 
 
             }
@@ -666,7 +459,6 @@ int main(int argc, char **argv) {
                     bag.write("/cepheus/torqueq3", ros::Time::now(), msg_torqueq3);               
             }
         }
-        loop_rate.sleep();
     }
 
     if(record){
