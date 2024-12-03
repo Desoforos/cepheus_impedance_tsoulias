@@ -181,7 +181,7 @@ int main(int argc, char **argv) {
             ROS_INFO("[new_foros_simcontroller]: Press Y to start the controller. Caution! Do not press it before running Gazebo. \n");
             std::cin>> command;
             ros::spinOnce();
-            loop_rate.sleep();
+            // loop_rate.sleep();
             xee_x_pub.publish(msg_xee_x);
             xee_y_pub.publish(msg_xee_y);
             xee_theta_pub.publish(msg_xee_theta);
@@ -193,7 +193,7 @@ int main(int argc, char **argv) {
             if(!paramsinit){
                 initialiseParametersNew();
                 ros::spinOnce();
-                loop_rate.sleep();
+                // loop_rate.sleep();
                 // ros::Duration(2).sleep();
                 ROS_INFO("[new_foros_simcontroller]: Initializing parameters... \n");
                 calculateTrajecotryPolynomials(tf);
@@ -204,7 +204,7 @@ int main(int argc, char **argv) {
                 // ros::Duration(2).sleep();
             }
             ros::spinOnce();
-            loop_rate.sleep();
+            // loop_rate.sleep();
             curr_time = ros::Time::now();
 		    dur_time = curr_time - t_beg;
             secs = dur_time.sec + dur_time.nsec * pow(10, -9);
@@ -220,7 +220,7 @@ int main(int argc, char **argv) {
                     t_beg  = ros::Time::now(); //initialize starting moment
                 }
                 ros::spinOnce();
-                loop_rate.sleep();
+                // loop_rate.sleep();
                 if(abs(q1)<safetylimit && abs(q2)<safetylimit){
                     if(!safeclose){
                         ROS_WARN("Arm extended! Initiating safe close...");
@@ -232,8 +232,8 @@ int main(int argc, char **argv) {
                         q3safeclose = q3;
                     }
                 }
-                if(!safeclose){
-                    fext(0) = abs(mt*calcacc(1/hz,xtdot,prevxtdot)); //override the plugin while experiment
+                if(!safeclose){ //1/200 = 0.005
+                    fext(0) = abs(mt*calcacc(0.005,xtdot,prevxtdot)); //override the plugin while experiment
                     curr_time = ros::Time::now();
                     dur_time = curr_time - t_beg;  //ksekinaei h metrhsh meta to initialization tou wrist, 30 sec gia wrist kai 30 sec gia ta alla
                     secs = dur_time.sec + dur_time.nsec * pow(10, -9);
@@ -378,7 +378,7 @@ int main(int argc, char **argv) {
             bag.close();
         }
 
-        //loop_rate.sleep(); to exo balei allou
+        loop_rate.sleep(); //to exo balei allou
 
     }
 

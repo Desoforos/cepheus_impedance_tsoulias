@@ -983,7 +983,7 @@ Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-64*kd*error-52*bd*error_dot-qex
 Eigen::VectorXd qbar=hbar*u+cbar-jebar*qe;
 
 
-Eigen::VectorXd tau = (jbar.inverse())*qbar;
+// Eigen::VectorXd tau = (jbar.inverse())*qbar;  //gia na kano to PD
 
 
 // tau = tau/100;
@@ -1000,10 +1000,10 @@ double ns = kprop*errorth0 + kder*errorth0dot;
 
 
 //diko moy pd, ta q1,q2 gia xy (se pososto), to q3 gia prosanatolismo
-// tau(0) = -0.5*error[0] - 20*error_dot[0];
-// tau(1) = -0.5*(0.3*error[1]+0.7*error[2]) - 20*(0.3*error_dot[1]+0.7*error_dot[2]);
-// tau(2) = -0.5*(0.7*error[1]+0.3*error[2]) - 20*(0.7*error_dot[1]+0.3*error_dot[2]);
-// tau(3) = -0.5*(thetach - thstep) - 20*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
+tau(0) = -0.5*error[0] - 20*error_dot[0];
+tau(1) = -0.5*(0.3*error[1]+0.7*error[2]) - 20*(0.3*error_dot[1]+0.7*error_dot[2]);
+tau(2) = -0.5*(0.7*error[1]+0.3*error[2]) - 20*(0.7*error_dot[1]+0.3*error_dot[2]);
+tau(3) = -0.5*(thetach - thstep) - 20*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
 
 // msg_RW.data = -tau(0); 
 // msg_RW.data = ns;

@@ -180,7 +180,12 @@ void lsPosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         q1 = rawq1 +  offsetq1;  
     //         }
     // }
-    q1 = moving_average(-(cmd->data), q1_window, window_size) + offsetq1;
+    if(offsetsdone){
+        q1 = moving_average(-(cmd->data), q1_window, window_size) + offsetq1;
+    }
+    else{
+        q1 = -(cmd->data) + offsetq1;
+    }
     // q1 =  -(cmd->data) +  offsetq1; // tha dokimaso to pano
 }
 
@@ -200,7 +205,12 @@ void lePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         q2 = rawq2 +  offsetq2;  
     //         }
     // }
-    q2 = moving_average(cmd->data, q2_window, window_size) + offsetq2;
+    if(offsetsdone){
+        q2 = moving_average(cmd->data, q2_window, window_size) + offsetq2;
+    }
+    else{
+        q2 = cmd->data + offsetq2;
+    }
     // q2 = cmd->data + offsetq2;
 }
 
@@ -219,7 +229,12 @@ void rePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         q3 = rawq3 +  offsetq3;  
     //         }
     // }
-    q3 = moving_average(-(cmd->data), q3_window, window_size) + offsetq3;
+    if(offsetsdone){
+        q3 = moving_average(-(cmd->data), q3_window, window_size) + offsetq3;
+    }
+    else{
+        q3 = -(cmd->data) + offsetq3;
+    }
     // q3 = -(cmd->data) + offsetq3;
 }
 
@@ -237,7 +252,7 @@ void leVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q2dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q1dot = moving_average(cmd->data, q2dot_window, window_size);
+    q2dot = moving_average(cmd->data, q2dot_window, window_size);
 	// q2dot = cmd->data;
 }
 
@@ -563,15 +578,14 @@ int main(int argc, char **argv) {
             // torq[2] = (6*errorq[2] + 0.6*errorqdot[2])/186;
             // torq[3] = -(6*errorq[3] + 0.6*errorqdot[3])/186;
             torq[0] = 0.5*errorq[0] + 2*errorqdot[0]; 
-            torq[1] = 0.6*errorq[1] + 0.3*errorqdot[1]; 
-            torq[2] = 0.6*errorq[2] + 0.3*errorqdot[2];
-            torq[3] = 0.6*errorq[3] + 0.3*errorqdot[3];
+            torq[1] = 1.3*errorq[1] + 0.6*errorqdot[1]; 
+            torq[2] = 1.3*errorq[2] + 0.6*errorqdot[2];
+            torq[3] = 0.8*errorq[3] + 0.3*errorqdot[3];  //APO 0.3 KAI 0.2
 
             /*gia diabasma apo interface*/
-            torq[0] = torq[0]/186;
             torq[1] = -torq[1]/186;
             torq[2] = torq[2]/186;
-            torq[3] = torq[3]/186;
+            torq[3] = -torq[3]/186;
 
 
 

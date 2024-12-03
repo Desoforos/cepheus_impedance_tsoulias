@@ -7,6 +7,25 @@ import sys
 from scipy.signal import savgol_filter
 from scipy.interpolate import interp1d
 import math
+from scipy.signal import butter, filtfilt
+
+
+def butter_lowpass_filter(data, cutoff, fs, order=4):
+    """
+    Apply a Butterworth low-pass filter to the data.
+    :param data: List of noisy data (time series).
+    :param cutoff: Cutoff frequency of the filter.
+    :param fs: Sampling frequency of the data.
+    :param order: Order of the filter. Higher order means steeper roll-off.
+    :return: Smoothed data list.
+    """
+    nyquist = 0.5 * fs  # Nyquist frequency
+    normal_cutoff = cutoff / nyquist  # Normalize cutoff frequency
+    b, a = butter(order, normal_cutoff, btype='low', analog=False)
+    return filtfilt(b, a, data)
+
+
+
 
 pi = math.pi
 
@@ -68,36 +87,92 @@ for topic, msg, t in bag.read_messages(topics=['/cepheus/q1','/cepheus/q2', '/ce
         theta0ddot.append(msg.data*180/pi)
 
     #gia gazebo (actual roph) 
+    # elif topic == "/cepheus/torquerw":
+    #     torquerw.append(msg.data)
+    # elif topic == "/cepheus/torqueq1":
+    #     torqueq1.append(msg.data)
+    # elif topic == "/cepheus/torqueq2":
+    #     torqueq2.append(msg.data)
+    # elif topic == "/cepheus/torqueq3":
+    #     torqueq3.append(msg.data)
+
+    # gia actual motors (*186 gia actual roph)
     elif topic == "/cepheus/torquerw":
         torquerw.append(msg.data)
     elif topic == "/cepheus/torqueq1":
-        torqueq1.append(msg.data)
+        torqueq1.append(186*msg.data)
     elif topic == "/cepheus/torqueq2":
-        torqueq2.append(msg.data)
+        torqueq2.append(186*msg.data)
     elif topic == "/cepheus/torqueq3":
-        torqueq3.append(msg.data)
-
-    # gia actual motors (*186 gia actual roph)
-    # elif topic == "/cepheus/torquerw":
-    #     torquerw.append(186*msg.data)
-    # elif topic == "/cepheus/torqueq1":
-    #     torqueq1.append(186*msg.data)
-    # elif topic == "/cepheus/torqueq2":
-    #     torqueq2.append(186*msg.data)
-    # elif topic == "/cepheus/torqueq3":
-    #     torqueq3.append(186*msg.data)
+        torqueq3.append(186*msg.data)
 
 bag.close()
 
+print("theta0 initial is: ",theta0[0])
+print("q1 initial is: ",q1[0])
+print("q2 initial is: ",q2[0])
+print("q3 initial is: ",q3[0])
 
 sampling_frequency = 200  # Hz
 time_stamps= np.arange(0, len(q1d)) / sampling_frequency
 time_stamps -= time_stamps[0]  # Start from 0
 
-desired_secs = 20
+# desired_secs = 20
 
 # des_len = sampling_frequency*desired_secs
 des_len = len(q1)
+
+
+for i in range(len(q1)):
+    if(i>23*200):
+        q1[i] = q1[i]+3
+
+for i in range(len(q2)):
+    if(i>15*200):
+        q2[i] = q2[i]+2
+
+
+
+#Savgol filter
+# theta0 = savgol_filter(theta0, window_length=51, polyorder=3)
+# q1 = savgol_filter(q1, window_length=51, polyorder=3)
+# q2 = savgol_filter(q2, window_length=51, polyorder=3)
+# q3 = savgol_filter(q3, window_length=51, polyorder=3)
+
+# theta0dot = savgol_filter(theta0dot, window_length=51, polyorder=3)
+# q1dot = savgol_filter(q1dot, window_length=51, polyorder=3)
+# q2dot = savgol_filter(q2dot, window_length=51, polyorder=3)
+# q3dot = savgol_filter(q3dot, window_length=51, polyorder=3)
+
+# torquerw = savgol_filter(torquerw, window_length=51, polyorder=3)
+# torqueq1 = savgol_filter(torqueq1, window_length=51, polyorder=3)
+# torqueq2 = savgol_filter(torqueq2, window_length=51, polyorder=3)
+# torqueq3 = savgol_filter(torqueq3, window_length=51, polyorder=3)
+
+#Butterworth  low pass filter
+
+# Example usage:
+fs = 200  # Sampling frequency in Hz (adjust based on your data's sampling rate)
+cutoff = 2.5 # Desired cutoff frequency in Hz #5 kai 10Hz idia douleia me savgol , kalo to 2.5, kako to 1.25
+
+# theta0 = butter_lowpass_filter(theta0, cutoff, fs)
+# q1 = butter_lowpass_filter(q1, cutoff, fs)
+# q2 = butter_lowpass_filter(q2, cutoff, fs)
+# q3 = butter_lowpass_filter(q3, cutoff, fs)
+
+# # theta0dot = butter_lowpass_filter(theta0, 5, fs)
+# q1dot = butter_lowpass_filter(q1dot, cutoff, fs)
+# q2dot = butter_lowpass_filter(q2dot, cutoff, fs)
+# q3dot = butter_lowpass_filter(q3dot, cutoff, fs)
+
+
+# torquerw = butter_lowpass_filter(torquerw, cutoff, fs)
+# torqueq1 = butter_lowpass_filter(torqueq1, cutoff, fs)
+# torqueq2 = butter_lowpass_filter(torqueq2, cutoff, fs)
+# torqueq3 = butter_lowpass_filter(torqueq3, cutoff, fs)
+
+#isos kalutera na paro tis raw ropes opos ontos egine
+
 
 
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))

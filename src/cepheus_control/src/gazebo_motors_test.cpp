@@ -362,9 +362,9 @@ int main(int argc, char **argv) {
             prev_torq[2] = torq[2];
             prev_torq[3] = torq[3];
             torq[0] = 0.5*errorq[0] + 2*errorqdot[0]; 
-            torq[1] = (0.6*errorq[1] + 0.3*errorqdot[1]); 
-            torq[2] = (0.6*errorq[2] + 0.3*errorqdot[2]);
-            torq[3] = (0.6*errorq[3] + 0.3*errorqdot[3]);
+            torq[1] = (1.3*errorq[1] + 0.6*errorqdot[1]); 
+            torq[2] = (1.3*errorq[2] + 0.6*errorqdot[2]);
+            torq[3] = (1.3*errorq[3] + 0.6*errorqdot[3]);
 
 
             base_wrench.torque.z = filter_torque(torq[0], prev_torq[0]);

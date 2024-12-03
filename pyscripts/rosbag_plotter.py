@@ -135,13 +135,13 @@ for topic, msg, t in bag.read_messages(topics=['/cepheus/xt_x', '/cepheus/xd_x',
     
     #Torque values
     elif topic == "/cepheus/torquerw":
-        torquerw.append(186*msg.data)
+        torquerw.append(msg.data)
     elif topic == "/cepheus/torqueq1":
-        torqueq1.append(186*msg.data)
+        torqueq1.append(msg.data)
     elif topic == "/cepheus/torqueq2":
-        torqueq2.append(186*msg.data)
+        torqueq2.append(msg.data)
     elif topic == "/cepheus/torqueq3":
-        torqueq3.append(186*msg.data)
+        torqueq3.append(msg.data)
 
 
 
@@ -159,7 +159,8 @@ time_stamps -= time_stamps[0]  # Start from 0
 
 desired_secs = 60
 
-des_len = sampling_frequency*desired_secs
+# des_len = sampling_frequency*desired_secs
+des_len = len(xee_x)
 
 
 
@@ -403,8 +404,8 @@ fext_smoothed = fext_x.copy()
 fext_smoothed = smoothlist(fext_smoothed)
 # External Force (X-axis)
 plt.figure()
-# plt.plot(time_stamps[:des_len], fext_x, label='Fext X', color='k',linestyle='--')
-plt.plot(time_stamps[:des_len], fext_smoothed[:des_len], label='Fext_x')
+plt.plot(time_stamps[:des_len], fext_x, label='Fext X', color='k')
+# plt.plot(time_stamps[:des_len], fext_smoothed[:des_len], label='Fext_x')
 plt.grid()
 plt.title('External Force (X-axis)')
 plt.xlabel('Time [s]')
