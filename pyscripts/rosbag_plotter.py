@@ -6,6 +6,8 @@ import numpy as np
 import sys
 from scipy.signal import savgol_filter
 from scipy.interpolate import interp1d
+import math
+pi = math.pi
 
 
 def smoothlist(rawlist):
@@ -82,19 +84,19 @@ for topic, msg, t in bag.read_messages(topics=['/cepheus/xt_x', '/cepheus/xd_x',
 
     # Theta values
     elif topic == "/cepheus/xt_theta":
-        xt_theta.append(msg.data)
+        xt_theta.append(msg.data*180/pi)
     elif topic == "/cepheus/xd_theta":
-        xd_theta.append(msg.data)
+        xd_theta.append(msg.data*180/pi)
     elif topic == "/cepheus/xee_theta":
-        xee_theta.append(msg.data)
+        xee_theta.append(msg.data*180/pi)
     
     # Theta0 values
     elif topic == "/cepheus/xt_theta0":
-        xt_theta0.append(msg.data)
+        xt_theta0.append(msg.data*180/pi)
     elif topic == "/cepheus/xd_theta0":
-        xd_theta0.append(msg.data)
+        xd_theta0.append(msg.data*180/pi)
     elif topic == "/cepheus/xee_theta0":
-        xee_theta0.append(msg.data)
+        xee_theta0.append(msg.data*180/pi)
 
 
     # Xdot values
@@ -115,19 +117,19 @@ for topic, msg, t in bag.read_messages(topics=['/cepheus/xt_x', '/cepheus/xd_x',
 
     # Thetadot values
     elif topic == "/cepheus/xt_theta_dot":
-        xt_theta_dot.append(msg.data)
+        xt_theta_dot.append(msg.data*180/pi)
     elif topic == "/cepheus/xd_theta_dot":
-        xd_theta_dot.append(msg.data)
+        xd_theta_dot.append(msg.data*180/pi)
     elif topic == "/cepheus/xee_theta_dot":
-        xee_theta_dot.append(msg.data)
+        xee_theta_dot.append(msg.data*180/pi)
     
     #Theta0dot values
     elif topic == "/cepheus/xt_theta0_dot":
-        xt_theta0_dot.append(msg.data)
+        xt_theta0_dot.append(msg.data*180/pi)
     elif topic == "/cepheus/xd_theta0_dot":
-        xd_theta0_dot.append(msg.data)
+        xd_theta0_dot.append(msg.data*180/pi)
     elif topic == "/cepheus/xee_theta0_dot":
-        xee_theta0_dot.append(msg.data)    
+        xee_theta0_dot.append(msg.data*180/pi)    
     
     #Fextx values
     elif topic == "/cepheus/ft_sensor_topic":
@@ -159,8 +161,8 @@ time_stamps -= time_stamps[0]  # Start from 0
 
 desired_secs = 60
 
-# des_len = sampling_frequency*desired_secs
-des_len = len(xee_x)
+des_len = sampling_frequency*desired_secs
+# des_len = len(xee_x)
 
 
 
@@ -196,37 +198,37 @@ if len(contact_indices) > 0:
 
 # # Create plots
 
-# # X Coordinates (Target, Desired, Actual)
+# # X values (Target, Desired, Actual)
 # plt.figure()
 # plt.plot(time_stamps[:des_len], xt_x, label='Target X', color='r')
 # plt.plot(time_stamps[:des_len], xd_x, label='Desired X', color='g')
 # plt.plot(time_stamps[:des_len], xee_x, label='Actual X', color='b')
 # plt.grid()
-# plt.title('X Coordinates')
+# plt.title('X values')
 # plt.xlabel('Time [s]')
 # plt.ylabel('X Position [m]')
 # plt.legend()
 
-# # Y Coordinates (Target, Desired, Actual)
+# # Y values (Target, Desired, Actual)
 # plt.figure()
 # plt.plot(time_stamps[:des_len], xt_y, label='Target Y', color='r')
 # plt.plot(time_stamps[:des_len], xd_y, label='Desired Y', color='g')
 # plt.plot(time_stamps[:des_len], xee_y, label='Actual Y', color='b')
 # plt.grid()
-# plt.title('Y Coordinates')
+# plt.title('Y values')
 # plt.xlabel('Time [s]')
 # plt.ylabel('Y Position [m]')
 # plt.legend()
 
-# # Theta Coordinates (Target, Desired, Actual)
+# # Theta values (Target, Desired, Actual)
 # plt.figure()
 # plt.plot(time_stamps[:des_len], xt_theta, label='Target Theta', color='r')
 # plt.plot(time_stamps[:des_len], xd_theta, label='Desired Theta', color='g')
 # plt.plot(time_stamps[:des_len], xee_theta, label='Actual Theta', color='b')
 # plt.grid()
-# plt.title('Theta Coordinates')
+# plt.title('Theta values')
 # plt.xlabel('Time [s]')
-# plt.ylabel('Theta [rad]')
+# plt.ylabel('Theta [deg]')
 # plt.legend()
 
 # # External Force (X-axis)
@@ -244,44 +246,44 @@ if len(contact_indices) > 0:
 # Create a figure and a 2x2 grid of subplots
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
-# Plot X Coordinates (Target, Desired, Actual)
-axs[0, 0].plot(time_stamps[:des_len], xt_x[:des_len], label='Target X', color='r')
+# Plot X values (Target, Desired, Actual)
+# axs[0, 0].plot(time_stamps[:des_len], xt_x[:des_len], label='Target X', color='r')
 axs[0, 0].plot(time_stamps[:des_len], xd_x[:des_len], label='Desired X', color='g',linestyle='--')
 axs[0, 0].plot(time_stamps[:des_len], xee_x[:des_len], label='Actual X', color='b')
 axs[0, 0].grid()
-axs[0, 0].set_title('X Coordinates')
+axs[0, 0].set_title('X values')
 axs[0, 0].set_xlabel('Time [s]')
 axs[0, 0].set_ylabel('X Position [m]')
 axs[0, 0].legend()
 
-# Plot Y Coordinates (Target, Desired, Actual)
-axs[0, 1].plot(time_stamps[:des_len], xt_y[:des_len], label='Target Y', color='r')
+# Plot Y values (Target, Desired, Actual)
+# axs[0, 1].plot(time_stamps[:des_len], xt_y[:des_len], label='Target Y', color='r')
 axs[0, 1].plot(time_stamps[:des_len], xd_y[:des_len], label='Desired Y', color='g',linestyle='--')
 axs[0, 1].plot(time_stamps[:des_len], xee_y[:des_len], label='Actual Y', color='b')
 axs[0, 1].grid()
-axs[0, 1].set_title('Y Coordinates')
+axs[0, 1].set_title('Y values')
 axs[0, 1].set_xlabel('Time [s]')
 axs[0, 1].set_ylabel('Y Position [m]')
 axs[0, 1].legend()
 
-# Plot Theta Coordinates (Target, Desired, Actual)
-axs[1, 0].plot(time_stamps[:des_len], xt_theta[:des_len], label='Target Theta', color='r')
+# Plot Theta values (Target, Desired, Actual)
+# axs[1, 0].plot(time_stamps[:des_len], xt_theta[:des_len], label='Target Theta', color='r')
 axs[1, 0].plot(time_stamps[:des_len], xd_theta[:des_len], label='Desired Theta', color='g',linestyle='--')
 axs[1, 0].plot(time_stamps[:des_len], xee_theta[:des_len], label='Actual Theta', color='b')
 axs[1, 0].grid()
-axs[1, 0].set_title('Theta Coordinates')
+axs[1, 0].set_title('Theta values')
 axs[1, 0].set_xlabel('Time [s]')
-axs[1, 0].set_ylabel('Theta [rad]')
+axs[1, 0].set_ylabel('Theta [deg]')
 axs[1, 0].legend()
 
-# Plot Theta0 Coordinates (Target, Desired, Actual)
-axs[1, 1].plot(time_stamps[:des_len], xt_theta0[:des_len], label='Target Theta0', color='r')
+# Plot Theta0 values (Target, Desired, Actual)
+# axs[1, 1].plot(time_stamps[:des_len], xt_theta0[:des_len], label='Target Theta0', color='r')
 axs[1, 1].plot(time_stamps[:des_len], xd_theta0[:des_len], label='Desired Theta0', color='g',linestyle='--')
 axs[1, 1].plot(time_stamps[:des_len], xee_theta0[:des_len], label='Actual Theta0', color='b')
 axs[1, 1].grid()
-axs[1, 1].set_title('Theta0 Coordinates')
+axs[1, 1].set_title('Theta0 values')
 axs[1, 1].set_xlabel('Time [s]')
-axs[1, 1].set_ylabel('Theta0 [rad]')
+axs[1, 1].set_ylabel('Theta0 [deg]')
 axs[1, 1].legend()
 
 
@@ -302,8 +304,8 @@ plt.show()
 
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
-# Plot Xdot Coordinates (Target, Desired, Actual)
-axs[0, 0].plot(time_stamps[:des_len], xt_x_dot[:des_len], label='Target Xdot', color='r')
+# Plot Xdot values (Target, Desired, Actual)
+# axs[0, 0].plot(time_stamps[:des_len], xt_x_dot[:des_len], label='Target Xdot', color='r')
 axs[0, 0].plot(time_stamps[:des_len], xd_x_dot[:des_len], label='Desired Xdot', color='g',linestyle='--')
 axs[0, 0].plot(time_stamps[:des_len], xee_x_dot[:des_len], label='Actual Xdot', color='b')
 axs[0, 0].grid()
@@ -312,8 +314,8 @@ axs[0, 0].set_xlabel('Time [s]')
 axs[0, 0].set_ylabel('X Velcotiy [m/sec]')
 axs[0, 0].legend()
 
-# Plot Ydot Coordinates (Target, Desired, Actual)
-axs[0, 1].plot(time_stamps[:des_len], xt_y_dot[:des_len], label='Target Ydot', color='r')
+# Plot Ydot values (Target, Desired, Actual)
+# axs[0, 1].plot(time_stamps[:des_len], xt_y_dot[:des_len], label='Target Ydot', color='r')
 axs[0, 1].plot(time_stamps[:des_len], xd_y_dot[:des_len], label='Desired Ydot', color='g',linestyle='--')
 axs[0, 1].plot(time_stamps[:des_len], xee_y_dot[:des_len], label='Actual Ydot', color='b')
 axs[0, 1].grid()
@@ -322,24 +324,24 @@ axs[0, 1].set_xlabel('Time [s]')
 axs[0, 1].set_ylabel('Y Velocity [m/sec]')
 axs[0, 1].legend()
 
-# Plot Thetadot Coordinates (Target, Desired, Actual)
-axs[1, 0].plot(time_stamps[:des_len], xt_theta_dot[:des_len], label='Target Thetadot', color='r')
+# Plot Thetadot values (Target, Desired, Actual)
+# axs[1, 0].plot(time_stamps[:des_len], xt_theta_dot[:des_len], label='Target Thetadot', color='r')
 axs[1, 0].plot(time_stamps[:des_len], xd_theta_dot[:des_len], label='Desired Thetadot', color='g',linestyle='--')
 axs[1, 0].plot(time_stamps[:des_len], xee_theta_dot[:des_len], label='Actual Thetadot', color='b')
 axs[1, 0].grid()
 axs[1, 0].set_title('Thetadot')
 axs[1, 0].set_xlabel('Time [s]')
-axs[1, 0].set_ylabel('Thetadot [rad/sec]')
+axs[1, 0].set_ylabel('Thetadot [deg/sec]')
 axs[1, 0].legend()
 
-# Plot Thetadot Coordinates (Target, Desired, Actual)
-axs[1, 1].plot(time_stamps[:des_len], xt_theta0_dot[:des_len], label='Target Theta0dot', color='r')
+# Plot Thetadot values (Target, Desired, Actual)
+# axs[1, 1].plot(time_stamps[:des_len], xt_theta0_dot[:des_len], label='Target Theta0dot', color='r')
 axs[1, 1].plot(time_stamps[:des_len], xd_theta0_dot[:des_len], label='Desired Theta0dot', color='g',linestyle='--')
 axs[1, 1].plot(time_stamps[:des_len], xee_theta0_dot[:des_len], label='Actual Theta0dot', color='b')
 axs[1, 1].grid()
 axs[1, 1].set_title('Theta0dot')
 axs[1, 1].set_xlabel('Time [s]')
-axs[1, 1].set_ylabel('Theta0dot [rad/sec]')
+axs[1, 1].set_ylabel('Theta0dot [deg/sec]')
 axs[1, 1].legend()
 
 
@@ -402,9 +404,13 @@ plt.tight_layout()
 plt.show()
 fext_smoothed = fext_x.copy()
 fext_smoothed = smoothlist(fext_smoothed)
+
+for i in range(0,200*10):
+    fext_x[i] = 0
+
 # External Force (X-axis)
 plt.figure()
-plt.plot(time_stamps[:des_len], fext_x, label='Fext X', color='k')
+plt.plot(time_stamps[:des_len], fext_x[:des_len], label='Fext X', color='k')
 # plt.plot(time_stamps[:des_len], fext_smoothed[:des_len], label='Fext_x')
 plt.grid()
 plt.title('External Force (X-axis)')

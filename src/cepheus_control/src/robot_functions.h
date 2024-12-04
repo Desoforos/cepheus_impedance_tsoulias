@@ -187,17 +187,17 @@ void finalTrajectories(double t,double tf){
 
 
 
-    msg_xd_x.data = xstep;
-    msg_xd_y.data = ystep;
-    msg_xd_theta.data = thstep;
+    // msg_xd_x.data = xstep;
+    // msg_xd_y.data = ystep;
+    // msg_xd_theta.data = thstep;
 
-    msg_xt_x.data = xt;
-    msg_xt_y.data = yt;
-    msg_xt_theta.data = thetat;
+    // msg_xt_x.data = xt;
+    // msg_xt_y.data = yt;
+    // msg_xt_theta.data = thetat;
 
-    msg_xee_x.data = xee(0);
-    msg_xee_y.data = xee(1);
-    msg_xee_theta.data = xee(2);
+    // msg_xee_x.data = ee_x;
+    // msg_xee_y.data = ee_y;
+    // msg_xee_theta.data = thetach;
 }
 
 void updateVel(double dt){
@@ -225,30 +225,30 @@ double filter_torque(double torq, double prev) {
 	return torq;
 }
 
-void PDcontroller(){
-  Eigen::VectorXd error(4); //ta sxolia einai gia aplo PD xoris ton xrono
+// void PDcontroller(){
+//   Eigen::VectorXd error(4); //ta sxolia einai gia aplo PD xoris ton xrono
 
-  error << (theta0 - theta0step), (ee_x - xstep), (ee_y - ystep), (thetach - thstep);
-  // error << (theta0 - theta0in), (ee_x - xt), (ee_y - yt), (thetach - thetat);
+//   error << (theta0 - theta0step), (ee_x - xstep), (ee_y - ystep), (thetach - thstep);
+//   // error << (theta0 - theta0in), (ee_x - xt), (ee_y - yt), (thetach - thetat);
 
-  Eigen::VectorXd error_dot(4);
-  error_dot << (theta0dot - theta0stepdot), (xeedot(0) - xstepdot), (xeedot(1) - ystepdot), (xeedot(2) - thstepdot);
-  // error_dot << (theta0dot - 0), (xeedot(0) - 0), (xeedot(1) - 0), (xeedot(2) - 0);
-  prev_tau(0) = tau(0);
-  prev_tau(1) = tau(1);
-  prev_tau(2) = tau(2);
-  prev_tau(3) = tau(3);
+//   Eigen::VectorXd error_dot(4);
+//   error_dot << (theta0dot - theta0stepdot), (xeedot(0) - xstepdot), (xeedot(1) - ystepdot), (xeedot(2) - thstepdot);
+//   // error_dot << (theta0dot - 0), (xeedot(0) - 0), (xeedot(1) - 0), (xeedot(2) - 0);
+//   prev_tau(0) = tau(0);
+//   prev_tau(1) = tau(1);
+//   prev_tau(2) = tau(2);
+//   prev_tau(3) = tau(3);
 
-  tau(0) = 0.6*(theta0in - theta0) + 20*(0-theta0dot);
-  tau(1) = -0.5*(0.3*error[1]+0.7*error[2]) - 20*(0.3*error_dot[1]+0.7*error_dot[2]);
-  tau(2) = -0.5*(0.7*error[1]+0.3*error[2]) - 20*(0.7*error_dot[1]+0.3*error_dot[2]);
-  tau(3) = -0.5*(thetach - thstep) - 20*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
-  msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
-  // msg_RW.data = ns;
-  msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
-  msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
-  msg_LW.data = filter_torque(tau(3),prev_tau(3)); //tau(3);
-}
+//   tau(0) = 0.6*(theta0in - theta0) + 20*(0-theta0dot);
+//   tau(1) = -0.5*(0.3*error[1]+0.7*error[2]) - 20*(0.3*error_dot[1]+0.7*error_dot[2]);
+//   tau(2) = -0.5*(0.7*error[1]+0.3*error[2]) - 20*(0.7*error_dot[1]+0.3*error_dot[2]);
+//   tau(3) = -0.5*(thetach - thstep) - 20*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
+//   msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
+//   // msg_RW.data = ns;
+//   msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
+//   msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
+//   msg_LW.data = filter_torque(tau(3),prev_tau(3)); //tau(3);
+// }
 
 
 
@@ -917,7 +917,7 @@ Eigen::VectorXd qext(4);
 qext << 0, 0, force_x, 0;
 
 
-Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-kd*error-bd*error_dot-qext + fdes); 
+Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-6.4*kd*error-5.2*bd*error_dot-qext + fdes); 
 
 
 
@@ -959,11 +959,16 @@ base_wrench.torque.z = tau(0);//ns;
 // msg_LE.data = tau(2);
 // msg_LW.data = tau(3);
 
-msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
-// msg_RW.data = ns;
-msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
-msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
-msg_LW.data = filter_torque(tau(3),prev_tau(3));
+/*metatropi gia tous motors kai meiothres*/
+tau(1) = -tau(1)/186;
+tau(2) = tau(2)/186;
+tau(3) = -tau(3)/186;
+
+// msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
+// // msg_RW.data = ns;
+// msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
+// msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
+// msg_LW.data = filter_torque(tau(3),prev_tau(3));
 
 
 //std::cout<<"/////////////////"<<std::endl;
@@ -1009,9 +1014,9 @@ if(count%100 == 0){
   std::cout<<"errordot is: "<<error_dot<<std::endl;
 
   std::cout<<"rw torque is:  "<<tau(0)<<" Nm. "<< std::endl;
-  std::cout<<"q1 torque is:  "<<tau(1)<<" Nm. "<< std::endl;
-  std::cout<<"q2 torque is:  "<<tau(2)<<" Nm. "<< std::endl;
-  std::cout<<"q3 torque is:  "<<tau(3)<<" Nm. "<< std::endl;
+  std::cout<<"q1 torque is:  "<<-tau(1)*186<<" Nm. "<< std::endl;
+  std::cout<<"q2 torque is:  "<<tau(2)*186<<" Nm. "<< std::endl;
+  std::cout<<"q3 torque is:  "<<-tau(3)*186<<" Nm. "<< std::endl;
 
 
   // std::cout<<"h is: "<<h<<std::endl;

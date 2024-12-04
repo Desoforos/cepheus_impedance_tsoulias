@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
     ros::Publisher ls_torque_pub = nh.advertise<std_msgs::Float64>("set_left_shoulder_effort", 1);   //ropi se q1
 	ros::Publisher le_torque_pub = nh.advertise<std_msgs::Float64>("set_left_elbow_effort", 1);      //ropi se q2
   	ros::Publisher re_torque_pub = nh.advertise<std_msgs::Float64>("set_right_elbow_effort", 1);     //ropi se q3 (ki omos to right elbow ousiastika einai to wrist)
-    ros::Publisher rw_torque_pub = nh.advertise<std_msgs::Float64>("set_reaction_wheel_effort", 1);  //ropi se reaction wheel    (ola afta ta akouei to interface)
+    ros::Publisher rw_torque_pub = nh.advertise<std_msgs::Float64>("cmd_torque", 1);  //ropi se reaction wheel    (ola afta ta akouei to interface)
   
 
 
@@ -137,8 +137,23 @@ int main(int argc, char **argv) {
     std::string path = "/home/desoforos/cepheus_impedance_tsoulias/rosbags/" ;
     std::string bag_file_name;
 
-    ROS_INFO("[new_foros_simcontroller]: You want to record to a bag? Press Y for yes, anything else for no. \n");
+    while(!offsetsdone){
+        ROS_INFO("[Motors test]: Press Y to calculate angle offsets.");
+        std::cin>>cmd;
+        if(cmd == 'Y'){
+            ros::spinOnce();
+            loop_rate.sleep();
+            offsetq1 = q1known - q1;
+            offsetq2 = q2known - q2;
+            offsetq3 = q3known - q3;
+            ROS_INFO("Angle offsets have been calculated.");
+            offsetsdone = true;
 
+        }
+        ros::Duration(2.0).sleep();
+    }
+
+    ROS_INFO("[new_foros_simcontroller]: You want to record to a bag? Press Y for yes, anything else for no. \n");
     std::cin>>command;
     if(command == 'Y'){
         record = true;
@@ -190,13 +205,17 @@ int main(int argc, char **argv) {
             }
             /*MAIN CONTROL BODY*/
             ros::spinOnce();
-            loop_rate.sleep();
+            // loop_rate.sleep();
             updateVel(0.005); // 200hz
             curr_time = ros::Time::now();
 		    dur_time = curr_time - t_beg;
             secs = dur_time.sec + dur_time.nsec * pow(10, -9);
-            finalTrajectories(secs,tf); //apo last_controller.h
-            controller(count,tf,secs); //apo last_controller.h
+            finalTrajectories(secs,tf); //apo last_controller.h, tora se robot_functions.h
+            controller(count,tf,secs); //apo last_controller.h, tora se robot_functions.h
+            msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
+            msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
+            msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
+            msg_LW.data = filter_torque(tau(3),prev_tau(3));
             count++;
             if(incontact){
                 contactCounter++;
@@ -217,7 +236,7 @@ int main(int argc, char **argv) {
                 //ROS PUBLISH SOFTGRIP MIA FORA META DEN KSANASTELNEI
             }
             ros::spinOnce(); //to callback tou arduino tha kanei true to softFinished, an den doulevei apla perimeno 2 sec
-            loop_rate.sleep();
+            // loop_rate.sleep();
             if(softFinished){
                 if(!beginHard){
                     beginHard = true;
@@ -227,7 +246,7 @@ int main(int argc, char **argv) {
                     //ROSPUBLISH HARDGRIP MIA FORA META DEN KSANASTELNEI
                 }
                 ros::spinOnce(); //perimeno callback gia true to hardFinished
-                loop_rate.sleep();
+                // loop_rate.sleep();
             }
            }
            if (hardFinished){
@@ -243,18 +262,39 @@ int main(int argc, char **argv) {
                 le_torque_pub.publish(msg_LE);
                 re_torque_pub.publish(msg_LW); //ousiastika einai to left wrist alla tespa
             }
-            msg_fextx.data = fext(0);
-            xd_x_pub.publish(msg_xd_x);
-            xd_y_pub.publish(msg_xd_y);
-            xd_theta_pub.publish(msg_xd_theta);
-            xt_x_pub.publish(msg_xt_x);
-            xt_y_pub.publish(msg_xt_y);
-            xt_theta_pub.publish(msg_xt_theta);
-            xee_x_pub.publish(msg_xee_x);
-            xee_y_pub.publish(msg_xee_y);
-            xee_theta_pub.publish(msg_xee_theta);
+            
+
 
             if(record){
+
+                msg_xd_x.data = xstep;
+                msg_xd_y.data = ystep;
+                msg_xd_theta.data = thstep;
+
+                msg_xt_x.data = xt;
+                msg_xt_y.data = yt;
+                msg_xt_theta.data = thetat;
+
+                msg_xee_x.data = ee_x;
+                msg_xee_y.data = ee_y;
+                msg_xee_theta.data = thetach;
+
+                msg_fextx.data = force_x;
+
+                msg_q1.data = q1;
+                msg_q2.data = q2;
+                msg_q3.data = q3;
+                msg_theta0.data = theta0;
+
+                msg_q1dot.data = q1dot;
+                msg_q2dot.data = q2dot;
+                msg_q3dot.data = q3dot;
+                msg_theta0dot.data = theta0dot;
+                
+                msg_torquerw.data = tau(0);
+                msg_torqueq1.data = tau(1);
+                msg_torqueq2.data = tau(2);
+                msg_torqueq3.data = tau(3);   
 
                 bag.write("/cepheus/xt_x", ros::Time::now(), msg_xt_x);
                 bag.write("/cepheus/xd_x", ros::Time::now(), msg_xd_x);
@@ -269,10 +309,25 @@ int main(int argc, char **argv) {
                 bag.write("/cepheus/xee_theta", ros::Time::now(), msg_xee_theta);   
 
                 bag.write("/cepheus/ft_sensor_topic", ros::Time::now(), msg_fextx);
+        
+                bag.write("/cepheus/torquerw", ros::Time::now(), msg_torquerw);
+                bag.write("/cepheus/torqueq1", ros::Time::now(), msg_torqueq1);
+                bag.write("/cepheus/torqueq2", ros::Time::now(), msg_torqueq2);
+                bag.write("/cepheus/torqueq3", ros::Time::now(), msg_torqueq3); 
+
+                bag.write("/cepheus/q1", ros::Time::now(), msg_q1);
+                bag.write("/cepheus/q2", ros::Time::now(), msg_q2);
+                bag.write("/cepheus/q3", ros::Time::now(), msg_q3);
+                bag.write("/cepheus/theta0", ros::Time::now(), msg_theta0);
+
+                bag.write("/cepheus/q1dot", ros::Time::now(), msg_q1dot);
+                bag.write("/cepheus/q2dot", ros::Time::now(), msg_q2dot);
+                bag.write("/cepheus/q3dot", ros::Time::now(), msg_q3dot);
+                bag.write("/cepheus/theta0dot", ros::Time::now(), msg_theta0dot); 
                
             }
         }
-        //loop_rate.sleep();  exei bei allou
+        loop_rate.sleep();  //exei bei allou, vasika kalytera edo
 
     }
 

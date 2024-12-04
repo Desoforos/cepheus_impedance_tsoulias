@@ -132,6 +132,35 @@ bool gripperListenedHard = false;
 
 int contactCounter = 0;
 
+bool firstTimeq1 = true;
+bool firstTimeq2 = true;
+bool firstTimeq3 = true;
+bool offsetsdone = false;
+double offsetq1 = 0.0;
+double offsetq2 = 0.0;
+double offsetq3 = 0.0;
+double q1known = 1.84447;  //gonies analoga me tin gnosti diataksi, ego ekana omos thetiko akro, agonas karpos arnitika akra
+double q2known = -0.9542;
+double q3known = -0.2856;
+
+std_msgs::Float64 msg_q1;
+std_msgs::Float64 msg_q2;
+std_msgs::Float64 msg_q3;
+std_msgs::Float64 msg_theta0;
+
+std_msgs::Float64 msg_q1dot;
+std_msgs::Float64 msg_q2dot;
+std_msgs::Float64 msg_q3dot;
+std_msgs::Float64 msg_theta0dot;
+
+
+std_msgs::Float64 msg_torqueq1;
+std_msgs::Float64 msg_torqueq2;
+std_msgs::Float64 msg_torqueq3;
+std_msgs::Float64 msg_torquerw;
+
+Eigen::VectorXd tau(4);
+Eigen::VectorXd prev_tau(4);
 
  
 /////////////// GLOBAL VARIABLES DECLARATION END////////////////////////

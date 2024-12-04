@@ -37,11 +37,18 @@ std::deque<double> q3dot_window;  // Stores the last N values
 
 const int window_size = 20;     // Size of the sliding window
 
-double moving_average(double new_value, std::deque<double>& window, int size) {
+double sumq1 = 0, sumq2 = 0, sumq3 =0;
+double sumq1dot = 0, sumq2dot = 0, sumq3dot =  0;
+
+
+
+double moving_average(double new_value, std::deque<double>& window, int size, double& sum) {
+    sum += new_value;
     window.push_back(new_value);               // Add the new value
-    if (window.size() > size) window.pop_front();  // Remove oldest value if window exceeds size
-    double sum = 0;
-    for (double val : window) sum += val;      // Sum all values in the window
+    if (window.size() > size){
+        sum -= window[0];
+        window.pop_front();  // Remove oldest value if window exceeds size
+    }
     return sum / window.size();                // Return the average
 }
 
@@ -181,7 +188,7 @@ void lsPosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         }
     // }
     if(offsetsdone){
-        q1 = moving_average(-(cmd->data), q1_window, window_size) + offsetq1;
+        q1 = moving_average(-(cmd->data), q1_window, window_size,sumq1) + offsetq1;
     }
     else{
         q1 = -(cmd->data) + offsetq1;
@@ -206,7 +213,7 @@ void lePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         }
     // }
     if(offsetsdone){
-        q2 = moving_average(cmd->data, q2_window, window_size) + offsetq2;
+        q2 = moving_average(cmd->data, q2_window, window_size,sumq2) + offsetq2;
     }
     else{
         q2 = cmd->data + offsetq2;
@@ -230,7 +237,7 @@ void rePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         }
     // }
     if(offsetsdone){
-        q3 = moving_average(-(cmd->data), q3_window, window_size) + offsetq3;
+        q3 = moving_average(-(cmd->data), q3_window, window_size,sumq3) + offsetq3;
     }
     else{
         q3 = -(cmd->data) + offsetq3;
@@ -243,7 +250,7 @@ void lsVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q1dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q1dot = moving_average(-(cmd->data), q1dot_window, window_size);
+    q1dot = moving_average(-(cmd->data), q1dot_window, window_size,sumq1dot);
 	// q1dot = -(cmd->data);
 }
 
@@ -252,7 +259,7 @@ void leVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q2dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q2dot = moving_average(cmd->data, q2dot_window, window_size);
+    q2dot = moving_average(cmd->data, q2dot_window, window_size,sumq2dot);
 	// q2dot = cmd->data;
 }
 
@@ -261,7 +268,7 @@ void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q3dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q3dot = moving_average(-(cmd->data), q3dot_window, window_size);
+    q3dot = moving_average(-(cmd->data), q3dot_window, window_size,sumq3dot);
 	// q3dot = -(cmd->data);
 }
 
