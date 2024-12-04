@@ -100,11 +100,11 @@ for topic, msg, t in bag.read_messages(topics=['/cepheus/q1','/cepheus/q2', '/ce
     elif topic == "/cepheus/torquerw":
         torquerw.append(msg.data)
     elif topic == "/cepheus/torqueq1":
-        torqueq1.append(186*msg.data)
+        torqueq1.append(-186*msg.data)
     elif topic == "/cepheus/torqueq2":
         torqueq2.append(186*msg.data)
     elif topic == "/cepheus/torqueq3":
-        torqueq3.append(186*msg.data)
+        torqueq3.append(-186*msg.data)
 
 bag.close()
 

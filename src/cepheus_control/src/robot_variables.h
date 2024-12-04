@@ -162,6 +162,33 @@ std_msgs::Float64 msg_torquerw;
 Eigen::VectorXd tau(4);
 Eigen::VectorXd prev_tau(4);
 
+
+std_msgs::Float64 msg_xd_x_dot; //xd_x
+std_msgs::Float64 msg_xd_y_dot; //xd_y
+std_msgs::Float64 msg_xd_theta_dot; //xd_y
+std_msgs::Float64 msg_xd_theta0_dot; //xd_y
+
+
+std_msgs::Float64 msg_xt_x_dot; 
+std_msgs::Float64 msg_xt_y_dot; 
+std_msgs::Float64 msg_xt_theta_dot; 
+std_msgs::Float64 msg_xt_theta0_dot; 
+
+std_msgs::Float64 msg_xee_x_dot; 
+std_msgs::Float64 msg_xee_y_dot; 
+std_msgs::Float64 msg_xee_theta_dot; 
+std_msgs::Float64 msg_xee_theta0_dot; 
+
+std_msgs::Float64 msg_xt_theta0, msg_xd_theta0, msg_xee_theta0;
+
+bool safeclose = false;
+double maxtorque = 2;
+double theta0safeclose;// = 0;  //telikes synthikes gia safeclose
+double q1safeclose ;//= 45*M_PI/180; 
+double q2safeclose ;//= 45*M_PI/180; 
+double q3safeclose ;//= 10*M_PI/180;
+double xsafeclose, ysafeclose,thetasafeclose;
+
  
 /////////////// GLOBAL VARIABLES DECLARATION END////////////////////////
 

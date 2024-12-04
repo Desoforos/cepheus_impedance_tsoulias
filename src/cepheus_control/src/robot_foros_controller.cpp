@@ -33,6 +33,7 @@ void sigintHandler(int sig) {
 
 int main(int argc, char **argv) {
 
+    double safetylimit = 20*M_PI/180; 
     int count = 0;
     bool hasbegun = false;
     bool paramsinit = false;
@@ -126,6 +127,7 @@ int main(int argc, char **argv) {
     ros::Rate loop_rate(200); //200Hz
 
     char command;
+    char cmd;
     
     reachedTarget = false;
     start_movement = false;
@@ -167,10 +169,6 @@ int main(int argc, char **argv) {
 
     std::cin>>tf;
 
-    q1 = q1_init;
-    q2 = q2_init;
-    q3 = q3_init;
-
     while(ros::ok() && !shutdown_requested){
         // ros::spinOnce(); //once it spins it will read the current rw, le, ls and the callbacks will update the values q1,q2,q3 and the velocities
         //now we update the errors and we recalculate the desired efforts to publish as msg_LE,msg_LS
@@ -179,7 +177,7 @@ int main(int argc, char **argv) {
             ROS_INFO("[new_foros_simcontroller]: Press Y to start the controller. \n");
             std::cin>> command;
             ros::spinOnce();
-            loop_rate.sleep()
+            loop_rate.sleep();
             if(command == 'Y'){
                 start_movement= true;
                 start_moving.data = true;
@@ -207,16 +205,28 @@ int main(int argc, char **argv) {
             ros::spinOnce();
             // loop_rate.sleep();
             updateVel(0.005); // 200hz
-            curr_time = ros::Time::now();
-		    dur_time = curr_time - t_beg;
-            secs = dur_time.sec + dur_time.nsec * pow(10, -9);
-            finalTrajectories(secs,tf); //apo last_controller.h, tora se robot_functions.h
-            controller(count,tf,secs); //apo last_controller.h, tora se robot_functions.h
-            msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
-            msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
-            msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
-            msg_LW.data = filter_torque(tau(3),prev_tau(3));
-            count++;
+            if(abs(q1)<safetylimit && abs(q2)<safetylimit){
+                    if(!safeclose){
+                        ROS_WARN("Arm extended! Initiating safe close...");
+                        safeclose = true;
+                        theta0fin = theta0;
+                        theta0safeclose = theta0;
+                        q1safeclose = q1;
+                        q2safeclose = q2;
+                        q3safeclose = q3;
+                        xsafeclose = ee_x;
+                        ysafeclose = ee_y;
+                        thetasafeclose = thetach;
+                    }
+            } //proto test asfaleias na min tentosei to xeri
+            else{
+                curr_time = ros::Time::now();
+                dur_time = curr_time - t_beg;
+                secs = dur_time.sec + dur_time.nsec * pow(10, -9);
+                finalTrajectories(secs,tf); //apo last_controller.h, tora se robot_functions.h
+                controller(count,tf,secs); //apo last_controller.h, tora se robot_functions.h
+                count++;
+            }
             if(incontact){
                 contactCounter++;
             }
@@ -249,81 +259,160 @@ int main(int argc, char **argv) {
                 // loop_rate.sleep();
             }
            }
-           if (hardFinished){
+        if (hardFinished){
             ROS_INFO("Task completed. Ending now.");
-            start_moving.data = false;
-            start_moving_pub.publish(start_moving);
+            // start_moving.data = false; //den to xrhsimopoio telika
+            // start_moving_pub.publish(start_moving);
             shutdown_requested = true;
+            ROS_INFO("[robot_foros_controller] Hardgrip ended! Starting safeclose...");
+            safeclose = true;
+            theta0fin = theta0;
+            theta0safeclose = theta0;
+            q1safeclose = q1; //gia na meinei akinhto
+            q2safeclose = q2;
+            q3safeclose = q3;
+            xsafeclose = ee_x;
+            ysafeclose = ee_y;
+            thetasafeclose = thetach;
            }
+        if(safeclose){//edo ginetai overwrite timon gia to safeclose            
+            tau(0) = 0.5*(theta0safeclose - theta0) + 2*(0-theta0dot);
+            tau(1) = 1.3*(q1safeclose-q1) + 0.6*(0-q1dot);
+            tau(2) = 1.3*(q2safeclose-q2) + 0.6*(0-q2dot);
+            tau(3) = 0.8*(q3safeclose-q3) + 0.6*(0-q3dot);
 
-            if(!hardFinished){//EDO ZYNEXIZETAI NA STELNONTAI TIMES ROPON
-                rw_torque_pub.publish(msg_RW);
-                ls_torque_pub.publish(msg_LS);
-                le_torque_pub.publish(msg_LE);
-                re_torque_pub.publish(msg_LW); //ousiastika einai to left wrist alla tespa
+            tau(1) = -tau(1)/186;
+            tau(2) = tau(2)/186;
+            tau(3) = -tau(3)/186;
+            msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
+            msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
+            msg_LW.data = filter_torque(tau(3),prev_tau(3));
+            rw_torque_pub.publish(msg_RW);
+            ls_torque_pub.publish(msg_LS);
+            le_torque_pub.publish(msg_LE);
+            re_torque_pub.publish(msg_LW); //ousiastika einai to left wrist alla tespa
+        }
+        else{//edo stelnontai oi times poy ypologistikan apo ton controller
+            msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
+            msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
+            msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
+            msg_LW.data = filter_torque(tau(3),prev_tau(3));
+            rw_torque_pub.publish(msg_RW);
+            ls_torque_pub.publish(msg_LS);
+            le_torque_pub.publish(msg_LE);
+            re_torque_pub.publish(msg_LW); //ousiastika einai to left wrist alla tespa
+        }
+        if(record){
+
+            if(safeclose){
+                xstep = xsafeclose;
+                ystep = ysafeclose;
+                thstep = thetasafeclose;
+                xstepdot = 0;
+                ystepdot = 0;
+                thstepdot = 0;
+                theta0step = theta0safeclose;
+                theta0stepdot = 0;
+
             }
-            
+            msg_xd_x.data = xstep;
+            msg_xd_y.data = ystep;
+            msg_xd_theta.data = thstep;
+            msg_xd_theta0.data = theta0step;
 
 
-            if(record){
+            msg_xt_x.data = xt;
+            msg_xt_y.data = yt;
+            msg_xt_theta.data = thetat;
+            msg_xt_theta0.data = theta0in;
 
-                msg_xd_x.data = xstep;
-                msg_xd_y.data = ystep;
-                msg_xd_theta.data = thstep;
 
-                msg_xt_x.data = xt;
-                msg_xt_y.data = yt;
-                msg_xt_theta.data = thetat;
+            msg_xee_x.data = xee(0);
+            msg_xee_y.data = xee(1);
+            msg_xee_theta.data = xee(2);
+            msg_xee_theta0.data = theta0;
 
-                msg_xee_x.data = ee_x;
-                msg_xee_y.data = ee_y;
-                msg_xee_theta.data = thetach;
+            msg_xd_x_dot.data = xstepdot;
+            msg_xd_y_dot.data = ystepdot;
+            msg_xd_theta_dot.data = thstepdot;
+            msg_xd_theta0_dot.data = theta0stepdot;
 
-                msg_fextx.data = force_x;
 
-                msg_q1.data = q1;
-                msg_q2.data = q2;
-                msg_q3.data = q3;
-                msg_theta0.data = theta0;
+            msg_xt_x_dot.data = xtdot;
+            msg_xt_y_dot.data = ytdot;
+            msg_xt_theta_dot.data = thetatdot;
+            msg_xt_theta0_dot.data = 0;
 
-                msg_q1dot.data = q1dot;
-                msg_q2dot.data = q2dot;
-                msg_q3dot.data = q3dot;
-                msg_theta0dot.data = theta0dot;
+            msg_xee_x_dot.data = xeedot(0);
+            msg_xee_y_dot.data = xeedot(1);
+            msg_xee_theta_dot.data = xeedot(2);
+            msg_xee_theta0_dot.data = theta0dot;
+
+            msg_fextx.data = force_x;
+
+            msg_q1.data = q1;
+            msg_q2.data = q2;
+            msg_q3.data = q3;
+
+
+            msg_q1dot.data = q1dot;
+            msg_q2dot.data = q2dot;
+            msg_q3dot.data = q3dot;
+
                 
-                msg_torquerw.data = tau(0);
-                msg_torqueq1.data = tau(1);
-                msg_torqueq2.data = tau(2);
-                msg_torqueq3.data = tau(3);   
+            msg_torquerw.data = tau(0);
+            msg_torqueq1.data = tau(1);
+            msg_torqueq2.data = tau(2);
+            msg_torqueq3.data = tau(3);   
 
-                bag.write("/cepheus/xt_x", ros::Time::now(), msg_xt_x);
-                bag.write("/cepheus/xd_x", ros::Time::now(), msg_xd_x);
-                bag.write("/cepheus/xee_x", ros::Time::now(), msg_xee_x);
+            bag.write("/cepheus/xt_x", ros::Time::now(), msg_xt_x);
+            bag.write("/cepheus/xd_x", ros::Time::now(), msg_xd_x);
+            bag.write("/cepheus/xee_x", ros::Time::now(), msg_xee_x);
 
-                bag.write("/cepheus/xt_y", ros::Time::now(), msg_xt_y);
-                bag.write("/cepheus/xd_y", ros::Time::now(), msg_xd_y);
-                bag.write("/cepheus/xee_y", ros::Time::now(), msg_xee_y);      
+            bag.write("/cepheus/xt_y", ros::Time::now(), msg_xt_y);
+            bag.write("/cepheus/xd_y", ros::Time::now(), msg_xd_y);
+            bag.write("/cepheus/xee_y", ros::Time::now(), msg_xee_y);      
 
-                bag.write("/cepheus/xt_theta", ros::Time::now(), msg_xt_theta);
-                bag.write("/cepheus/xd_theta", ros::Time::now(), msg_xd_theta);
-                bag.write("/cepheus/xee_theta", ros::Time::now(), msg_xee_theta);   
+            bag.write("/cepheus/xt_theta", ros::Time::now(), msg_xt_theta);
+            bag.write("/cepheus/xd_theta", ros::Time::now(), msg_xd_theta);
+            bag.write("/cepheus/xee_theta", ros::Time::now(), msg_xee_theta);
 
-                bag.write("/cepheus/ft_sensor_topic", ros::Time::now(), msg_fextx);
+            bag.write("/cepheus/xt_theta0", ros::Time::now(), msg_xt_theta0);
+            bag.write("/cepheus/xd_theta0", ros::Time::now(), msg_xd_theta0);
+            bag.write("/cepheus/xee_theta0", ros::Time::now(), msg_xee_theta0); 
+
+            bag.write("/cepheus/xt_x_dot", ros::Time::now(), msg_xt_x_dot);
+            bag.write("/cepheus/xd_x_dot", ros::Time::now(), msg_xd_x_dot);
+            bag.write("/cepheus/xee_x_dot", ros::Time::now(), msg_xee_x_dot);
+
+            bag.write("/cepheus/xt_y_dot", ros::Time::now(), msg_xt_y_dot);
+            bag.write("/cepheus/xd_y_dot", ros::Time::now(), msg_xd_y_dot);
+            bag.write("/cepheus/xee_y_dot", ros::Time::now(), msg_xee_y_dot);      
+
+            bag.write("/cepheus/xt_theta_dot", ros::Time::now(), msg_xt_theta_dot);
+            bag.write("/cepheus/xd_theta_dot", ros::Time::now(), msg_xd_theta_dot);
+            bag.write("/cepheus/xee_theta_dot", ros::Time::now(), msg_xee_theta_dot);
+
+            bag.write("/cepheus/xt_theta0_dot", ros::Time::now(), msg_xt_theta0_dot);
+            bag.write("/cepheus/xd_theta0_dot", ros::Time::now(), msg_xd_theta0_dot);
+            bag.write("/cepheus/xee_theta0_dot", ros::Time::now(), msg_xee_theta0_dot);      
+
+            bag.write("/cepheus/ft_sensor_topic", ros::Time::now(), msg_fextx);
         
-                bag.write("/cepheus/torquerw", ros::Time::now(), msg_torquerw);
-                bag.write("/cepheus/torqueq1", ros::Time::now(), msg_torqueq1);
-                bag.write("/cepheus/torqueq2", ros::Time::now(), msg_torqueq2);
-                bag.write("/cepheus/torqueq3", ros::Time::now(), msg_torqueq3); 
+            bag.write("/cepheus/torquerw", ros::Time::now(), msg_torquerw);
+            bag.write("/cepheus/torqueq1", ros::Time::now(), msg_torqueq1);
+            bag.write("/cepheus/torqueq2", ros::Time::now(), msg_torqueq2);
+            bag.write("/cepheus/torqueq3", ros::Time::now(), msg_torqueq3); 
 
-                bag.write("/cepheus/q1", ros::Time::now(), msg_q1);
-                bag.write("/cepheus/q2", ros::Time::now(), msg_q2);
-                bag.write("/cepheus/q3", ros::Time::now(), msg_q3);
-                bag.write("/cepheus/theta0", ros::Time::now(), msg_theta0);
+            bag.write("/cepheus/q1", ros::Time::now(), msg_q1);
+            bag.write("/cepheus/q2", ros::Time::now(), msg_q2);
+            bag.write("/cepheus/q3", ros::Time::now(), msg_q3);
+ 
 
-                bag.write("/cepheus/q1dot", ros::Time::now(), msg_q1dot);
-                bag.write("/cepheus/q2dot", ros::Time::now(), msg_q2dot);
-                bag.write("/cepheus/q3dot", ros::Time::now(), msg_q3dot);
-                bag.write("/cepheus/theta0dot", ros::Time::now(), msg_theta0dot); 
+            bag.write("/cepheus/q1dot", ros::Time::now(), msg_q1dot);
+            bag.write("/cepheus/q2dot", ros::Time::now(), msg_q2dot);
+            bag.write("/cepheus/q3dot", ros::Time::now(), msg_q3dot);
+ 
                
             }
         }
@@ -334,8 +423,8 @@ int main(int argc, char **argv) {
     if(shutdown_requested && record){
         bag.close();
     } 
-    start_moving.data = false;
-    start_moving_pub.publish(start_moving);
+    // start_moving.data = false;
+    // start_moving_pub.publish(start_moving);
 
 
     return 0;

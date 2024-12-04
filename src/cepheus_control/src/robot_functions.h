@@ -852,28 +852,6 @@ jebar << je21star-h21star*(h11star.inverse())*je11star, je22star-h21star*(h11sta
 // Qext=[0;0;Fext;0); na to ftiakso
 
 qe << 0, force_x, 0;  //den eimai sigouros gia afto
-//std::cout<<"qe is: "<<qe<<std::endl;
-////std::cout<<"qe check "<<std::endl;
-
-//borei na xreiazetai if-else
-
-//tha ta anoikso meta tora ta kleino gia free space mono
-
-// Eigen::MatrixXd kd=kd_f*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+kd_c*(abs(force_x)/(abs(force_x)+a22));
-//std::cout<<"kd is: "<<kd<<std::endl;
-////std::cout<<"kd check "<<std::endl;
-
-
-// Eigen::MatrixXd md=md_f*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+md_c*(abs(force_x)/(abs(force_x)+a22));
-//std::cout<<"md is :"<<md<<std::endl;
-////std::cout<<"md check "<<std::endl;
-
-
-// Eigen::MatrixXd bd=bd_f*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+bd_c*(abs(force_x)/(abs(force_x)+a22));
-//std::cout<<"bd is: "<<bd<<std::endl;
-////std::cout<<"bd check "<<std::endl;
-
-
 
 if(!incontact){
   bd = bd_f;
@@ -931,38 +909,29 @@ prev_tau(3) = tau(3);
 
 tau = (jbar.inverse())*qbar;
 
-
-// tau = tau/100;
-double errorth0, errorth0dot;
-
-errorth0 = theta0step -theta0;
-errorth0dot = theta0stepdot - theta0dot;
-double ns = kprop*errorth0 + kder*errorth0dot;
-
-/* apo eross apla blepo tous pollaplasiastes:*/
-		// torq[0]=-tau(1)/186;
-		// torq[1]=tau(2)/186;
-		// torq[2]=-tau(3)/186;
-
-
-
-		// torq[3] = tau(0);
-  /*telos eross*/
-
-// base_wrench.force.x = 0;  //fx;
-// base_wrench.force.y = 0;  //fy;
-base_wrench.torque.z = tau(0);//ns;
-
-// msg_RW.data = tau(0); 
-// // msg_RW.data = ns;
-// msg_LS.data = tau(1);
-// msg_LE.data = tau(2);
-// msg_LW.data = tau(3);
-
 /*metatropi gia tous motors kai meiothres*/
 tau(1) = -tau(1)/186;
 tau(2) = tau(2)/186;
 tau(3) = -tau(3)/186;
+
+if((abs(tau(0))> maxtorque) || (abs(tau(1))>maxtorque) || (abs(tau(2))>maxtorque) || (abs(tau(3))>maxtorque)){
+  /*initiate safety closure*/
+  ROS_WARN("Reached Critical Torques! Initiating safe close..");
+  safeclose = true;
+  theta0safeclose = theta0;
+  q1safeclose = q1;
+  q2safeclose = q2;
+  q3safeclose = q3;
+  xsafeclose = ee_x;
+  ysafeclose = ee_y;
+  thetasafeclose = thetach;
+  std::cout<<"rw torque is:  "<<tau(0)<<" Nm. "<< std::endl;
+  std::cout<<"q1 torque is:  "<<tau(1)<<" Nm. "<< std::endl;
+  std::cout<<"q2 torque is:  "<<tau(2)<<" Nm. "<< std::endl;
+  std::cout<<"q3 torque is:  "<<tau(3)<<" Nm. "<< std::endl;
+}
+
+
 
 // msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
 // // msg_RW.data = ns;

@@ -35,22 +35,31 @@ std::deque<double> q2dot_window;  // Stores the last N values
 std::deque<double> q3dot_window;  // Stores the last N values
 
 
-const int window_size = 20;     // Size of the sliding window
+const int window_size = 10;     // Size of the sliding window
 
 double sumq1 = 0, sumq2 = 0, sumq3 =0;
 double sumq1dot = 0, sumq2dot = 0, sumq3dot =  0;
 
 
 
-double moving_average(double new_value, std::deque<double>& window, int size, double& sum) {
-    sum += new_value;
+// double moving_average(double new_value, std::deque<double>& window, int size, double &sum) {
+//     sum += new_value;
+//     window.push_back(new_value);               // Add the new value
+//     if (window.size() > size){
+//         sum -= window[0];
+//         window.pop_front();  // Remove oldest value if window exceeds size
+//     }
+//     return sum / window.size();                // Return the average
+// }
+
+double moving_average(double new_value, std::deque<double>& window, int size) {
     window.push_back(new_value);               // Add the new value
-    if (window.size() > size){
-        sum -= window[0];
-        window.pop_front();  // Remove oldest value if window exceeds size
-    }
+    if (window.size() > size) window.pop_front();  // Remove oldest value if window exceeds size
+    double sum = 0;
+    for (double val : window) sum += val;      // Sum all values in the window
     return sum / window.size();                // Return the average
 }
+
 
 
 
@@ -188,7 +197,7 @@ void lsPosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         }
     // }
     if(offsetsdone){
-        q1 = moving_average(-(cmd->data), q1_window, window_size,sumq1) + offsetq1;
+        q1 = moving_average(-(cmd->data), q1_window, window_size) + offsetq1;
     }
     else{
         q1 = -(cmd->data) + offsetq1;
@@ -213,7 +222,7 @@ void lePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         }
     // }
     if(offsetsdone){
-        q2 = moving_average(cmd->data, q2_window, window_size,sumq2) + offsetq2;
+        q2 = moving_average(cmd->data, q2_window, window_size) + offsetq2;
     }
     else{
         q2 = cmd->data + offsetq2;
@@ -237,7 +246,7 @@ void rePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         }
     // }
     if(offsetsdone){
-        q3 = moving_average(-(cmd->data), q3_window, window_size,sumq3) + offsetq3;
+        q3 = moving_average(-(cmd->data), q3_window, window_size) + offsetq3;
     }
     else{
         q3 = -(cmd->data) + offsetq3;
@@ -250,7 +259,7 @@ void lsVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q1dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q1dot = moving_average(-(cmd->data), q1dot_window, window_size,sumq1dot);
+    q1dot = moving_average(-(cmd->data), q1dot_window, window_size);
 	// q1dot = -(cmd->data);
 }
 
@@ -259,7 +268,7 @@ void leVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q2dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q2dot = moving_average(cmd->data, q2dot_window, window_size,sumq2dot);
+    q2dot = moving_average(cmd->data, q2dot_window, window_size);
 	// q2dot = cmd->data;
 }
 
@@ -268,7 +277,7 @@ void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q3dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q3dot = moving_average(-(cmd->data), q3dot_window, window_size,sumq3dot);
+    q3dot = moving_average(-(cmd->data), q3dot_window, window_size);
 	// q3dot = -(cmd->data);
 }
 
@@ -585,8 +594,8 @@ int main(int argc, char **argv) {
             // torq[2] = (6*errorq[2] + 0.6*errorqdot[2])/186;
             // torq[3] = -(6*errorq[3] + 0.6*errorqdot[3])/186;
             torq[0] = 0.5*errorq[0] + 2*errorqdot[0]; 
-            torq[1] = 1.3*errorq[1] + 0.6*errorqdot[1]; 
-            torq[2] = 1.3*errorq[2] + 0.6*errorqdot[2];
+            torq[1] = 1.8*errorq[1] + 0.6*errorqdot[1]; 
+            torq[2] = 1.7*errorq[2] + 0.4*errorqdot[2];
             torq[3] = 0.8*errorq[3] + 0.3*errorqdot[3];  //APO 0.3 KAI 0.2
 
             /*gia diabasma apo interface*/
