@@ -13,9 +13,24 @@ bool gripperListenedHard = false;
 
 bool shutdown_requested = false;
 
-double force_x;
+double force_x, raw_force_x;
 
 std_msgs::String arduino_msg; 
+
+double forcesum = 0;
+int force_window_size = 10;
+std::deque<double> force_window; 
+
+double moving_average(double new_value, std::deque<double>& window, int size, double& running_sum) {
+    if (window.size() == size) {
+        running_sum -= window.front();
+        window.pop_front();
+    }
+    window.push_back(new_value);
+    running_sum += new_value;
+    return running_sum / window.size();
+}
+
 
 void sigintHandler(int sig) {
     ROS_INFO("Shutdown request received. Performing cleanup tasks...");
@@ -40,8 +55,9 @@ void arduinoCallbacktest(const std_msgs::String::ConstPtr &msg){
 }
 
 void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
-    force_x = msg->wrench.force.x; //etsi einai mapped apo to botasys
+    raw_force_x = abs(msg->wrench.force.x); //etsi einai mapped apo to botasys
     // std::cout<<"(forceCallback) I read: "<<force_X<<" N. "<<std::endl;
+    force_x = moving_average(raw_force_x, force_window, force_window_size, forcesum);
 	if(abs(force_x)<0.25){
 		incontact = false;
 	}
@@ -66,12 +82,28 @@ int main(int argc, char **argv) {
     ros::Subscriber force_sub = nh.subscribe("/filtered_botasys", 1, forceCallback);
 
     ros::Rate loop_rate(200); //200Hz
+    std_msgs::Float64 force_msg;
+    std_msgs::Float64 raw_force_msg;
+
+    bool record = false;
 
     int secs = 0; //not actually seconds
     int contactCounter = 0;
-
-    
     char cmd;
+    rosbag::Bag bag;
+    std::string path = "/home/desoforos/cepheus_impedance_tsoulias/rosbags/" ;
+    std::string bag_file_name;
+
+    ROS_INFO("[Arduino test]: You want to record to a bag? Press Y for yes, anything else for no. \n");
+
+    std::cin>>cmd;
+    if(cmd == 'Y'){
+        record = true;
+        ROS_INFO("[Motors test]: Please provide the name of the bag (dont put .bag). \n");
+        std::cin >>  bag_file_name;
+        bag.open(path + bag_file_name + ".bag", rosbag::bagmode::Write);
+    }
+
     std::cout<<"Press any key to start."<<std::endl;
     std::cin>>cmd;
 
@@ -83,7 +115,7 @@ int main(int argc, char **argv) {
         else{
             contactCounter = 0;
             }
-        if(contactCounter > 0.8*200){ // contact for 0.8 sec
+        if(contactCounter > 1*200){ // contact for 1 sec
             beginGrab = true;
            }
         if(beginGrab){ 
@@ -122,9 +154,20 @@ int main(int argc, char **argv) {
                 std::cout<<"fext x is: "<<force_x<<" N. "<<std::endl;
             }
             secs++;
+
+            if(record){
+                force_msg.data = force_x;
+                raw_force_msg.data = raw_force_x;
+                bag.write("/cepheus/raw_force_x", ros::Time::now(), raw_force_msg);
+                bag.write("/cepheus/force_x", ros::Time::now(), force_msg);
+            }
             ros::spinOnce();
             loop_rate.sleep();
     }
+    if(record){
+        bag.close();
+    }
 
 
+    return 0;
 }

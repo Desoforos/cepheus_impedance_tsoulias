@@ -151,7 +151,7 @@ void finalTrajectories(double t,double tf){
     // theta0stepdot = theta0stepdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+theta0stepdotc*(abs(force_x)/(abs(force_x)+a22));
     // theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+theta0stepdotdotc*(abs(force_x)/(abs(force_x)+a22));
 
-    if(incontact){ //tha to ksananikso afto fysika
+    if(incontact){ //allios boro na balo t<=tfree, isos kalytera me xrono
       xstep = xstepfr;
       ystep = ystepfr;
       thstep = thstepfr;
@@ -853,7 +853,7 @@ jebar << je21star-h21star*(h11star.inverse())*je11star, je22star-h21star*(h11sta
 
 qe << 0, force_x, 0;  //den eimai sigouros gia afto
 
-if(!incontact){
+if(!incontact){ //allios boro na balo t=<tfree, isos kalytera me xrono
   bd = bd_f;
   kd = kd_f;
   md = md_f;
@@ -895,7 +895,7 @@ Eigen::VectorXd qext(4);
 qext << 0, 0, force_x, 0;
 
 
-Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-6.4*kd*error-5.2*bd*error_dot-qext + fdes); 
+Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-64*kd*error-52*bd*error_dot-qext + fdes); //borei na thelei 6.4 kai 5.2 alla den pernaei ta oria sto gazebo
 
 
 
