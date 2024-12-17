@@ -27,7 +27,6 @@ double q1dot;    // rate of first joint [rad/s] from callback
 double q2dot;    // rate of second joint [rad/s] from callback
 double theta0dot;   // reaction wheel velocity [rad/s]  h allios theta0dot
 double theta0,thetaee;
-double force_x,force_y,torque_z;
 double ee_x, ee_y; //ee_Z not needed
 double xc0, yc0, xc0dot, yc0dot; //center of mass of base
 double thetach; //orientation of chaser (end effector)
@@ -189,6 +188,22 @@ double q2safeclose ;//= 45*M_PI/180;
 double q3safeclose ;//= 10*M_PI/180;
 double xsafeclose, ysafeclose,thetasafeclose;
 
+double sumq1 = 0, sumq2 = 0, sumq3 =0;
+double sumq1dot = 0, sumq2dot = 0, sumq3dot =  0;
+double force_x, raw_force_x;
+double forcesum = 0;
+int force_window_size = 10;
+int q_window_size = 10;
+
+std::deque<double> q1_window;  // Stores the last N values
+std::deque<double> q2_window;  // Stores the last N values
+std::deque<double> q3_window;  // Stores the last N values
+
+std::deque<double> q1dot_window;  // Stores the last N values
+std::deque<double> q2dot_window;  // Stores the last N values
+std::deque<double> q3dot_window;  // Stores the last N values
+
+std::deque<double> force_window; 
  
 /////////////// GLOBAL VARIABLES DECLARATION END////////////////////////
 

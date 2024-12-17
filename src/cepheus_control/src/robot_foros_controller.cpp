@@ -220,11 +220,12 @@ int main(int argc, char **argv) {
                     }
             } //proto test asfaleias na min tentosei to xeri
             else{
+                /*control function takes place here, PD/impedance etc*/
                 curr_time = ros::Time::now();
                 dur_time = curr_time - t_beg;
                 secs = dur_time.sec + dur_time.nsec * pow(10, -9);
-                finalTrajectories(secs,tf); //apo last_controller.h, tora se robot_functions.h
-                controller(count,tf,secs); //apo last_controller.h, tora se robot_functions.h
+                finalTrajectories(secs,tf); //gia polyonymikh troxia, tin theloume gia olous tous controllers
+                controller(count,tf,secs); //impedance controller
                 count++;
             }
             if(incontact){
@@ -233,7 +234,7 @@ int main(int argc, char **argv) {
             else{
                 contactCounter = 0;
             }
-           if(contactCounter > 0.8*200){ // contact for 0.8 sec
+           if(contactCounter > 1*200){ // contact for 1 sec
             beginGrab = true;
            }
 

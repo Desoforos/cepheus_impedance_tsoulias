@@ -4,30 +4,28 @@
 #include "robot_variables.h"
 
 /////////////// CALLBACK FUNCTIONS DEFINITION START////////////////////////
-// geometry_msgs/TransformStamped
-
-std::deque<double> q1_window;  // Stores the last N values
-std::deque<double> q2_window;  // Stores the last N values
-std::deque<double> q3_window;  // Stores the last N values
-
-std::deque<double> q1dot_window;  // Stores the last N values
-std::deque<double> q2dot_window;  // Stores the last N values
-std::deque<double> q3dot_window;  // Stores the last N values
 
 
-const int window_size = 20;     // Size of the sliding window
 
-double sumq1 = 0, sumq2 = 0, sumq3 =0;
-double sumq1dot = 0, sumq2dot = 0, sumq3dot =  0;
 
-double moving_average(double new_value, std::deque<double>& window, int size, double& sum) {
-    sum += new_value;
-    window.push_back(new_value);               // Add the new value
-    if (window.size() > size){
-        sum -= window[0];
-        window.pop_front();  // Remove oldest value if window exceeds size
+// double moving_average(double new_value, std::deque<double>& window, int size, double& sum) {
+//     sum += new_value;
+//     window.push_back(new_value);               // Add the new value
+//     if (window.size() > size){
+//         sum -= window[0];
+//         window.pop_front();  // Remove oldest value if window exceeds size
+//     }
+//     return sum / window.size();                // Return the average
+// }
+
+double moving_average(double new_value, std::deque<double>& window, int size, double& running_sum) {
+    if (window.size() == size) {
+        running_sum -= window.front();
+        window.pop_front();
     }
-    return sum / window.size();                // Return the average
+    window.push_back(new_value);
+    running_sum += new_value;
+    return running_sum / window.size();
 }
 
 
@@ -167,7 +165,7 @@ void lsPosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         }
     // }
     if(offsetsdone){
-        q1 = moving_average(-(cmd->data), q1_window, window_size,sumq1) + offsetq1;
+        q1 = moving_average(-(cmd->data), q1_window, q_window_size,sumq1) + offsetq1;
     }
     else{
         q1 = -(cmd->data) + offsetq1;
@@ -192,7 +190,7 @@ void lePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         }
     // }
     if(offsetsdone){
-        q2 = moving_average(cmd->data, q2_window, window_size,sumq2) + offsetq2;
+        q2 = moving_average(cmd->data, q2_window, q_window_size,sumq2) + offsetq2;
     }
     else{
         q2 = cmd->data + offsetq2;
@@ -216,7 +214,7 @@ void rePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         }
     // }
     if(offsetsdone){
-        q3 = moving_average(-(cmd->data), q3_window, window_size,sumq3) + offsetq3;
+        q3 = moving_average(-(cmd->data), q3_window, q_window_size,sumq3) + offsetq3;
     }
     else{
         q3 = -(cmd->data) + offsetq3;
@@ -229,7 +227,7 @@ void lsVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q1dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q1dot = moving_average(-(cmd->data), q1dot_window, window_size,sumq1dot);
+    q1dot = moving_average(-(cmd->data), q1dot_window, q_window_size,sumq1dot);
 	// q1dot = -(cmd->data);
 }
 
@@ -238,7 +236,7 @@ void leVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q2dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q2dot = moving_average(cmd->data, q2dot_window, window_size,sumq2dot);
+    q2dot = moving_average(cmd->data, q2dot_window, q_window_size,sumq2dot);
 	// q2dot = cmd->data;
 }
 
@@ -247,7 +245,7 @@ void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q3dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q3dot = moving_average(-(cmd->data), q3dot_window, window_size,sumq3dot);
+    q3dot = moving_average(-(cmd->data), q3dot_window, q_window_size,sumq3dot);
 	// q3dot = -(cmd->data);
 }
 
@@ -255,7 +253,7 @@ void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 
 
 void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
-    force_x = abs(msg->wrench.force.x);  //etsi einai mapped apo to bota  filtered.
+    raw_force_x = abs(msg->wrench.force.x);  //etsi einai mapped apo to bota  filtered.
     // force_y = msg->wrench.force.y;
 	// torque_z = msg->wrench.torque.z;
 	// fext(0) = force_x;
@@ -268,8 +266,9 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
 	// fext(2) =0; //for testing
     // if(force_y>10){
     //     ROS_INFO("[foros_simcontroller]: force_y detected: %f N \n",force_y);
-    // } 
-	if(abs(force_x)<0.25){
+    // }
+    force_x = moving_average(raw_force_x, force_window, force_window_size, forcesum);
+	if(abs(force_x)<0.5){
 		incontact = false;
 	}
 	else{

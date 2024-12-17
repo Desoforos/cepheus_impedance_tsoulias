@@ -73,6 +73,20 @@ void calculateTrajecotryPolynomials(double tf){
 
 
 void finalTrajectories(double t,double tf){
+  /*PROTA KANO OVERRIDE TON STOXO GIA TEST XORIS STOXO*/
+    // xt_in =
+    // yt_in =
+    // thetat_in =
+    // xt =
+    // yt =
+    // thetat =
+    // xtdot =
+    // ytdot =
+    // thetatdot =
+  /*TELOS OVERRIDE, VGALTO OTAN BEI O STOXOS STO TRAPEZI*/
+
+
+
     double s,sdot, sdotdot;
 
     s = a0 + a1*t + a2*pow(t,2) + a3*pow(t,3) + a4*pow(t,4) + a5*pow(t,5);
@@ -120,8 +134,8 @@ void finalTrajectories(double t,double tf){
       theta0stepdotdotfr = 0;
     }
 
-    xstepc = xt;
-    ystepc = yt;
+    xstepc = xt + 0.0005; //gia na ginei h synexhs epafh, vevaiosou oti einai plhros orizontia , allios 0.0001*cos(xee(2));
+    ystepc = yt;           //allios 0.0001*sin(xee(2));
     thstepc = thetat;
     theta0stepc = theta0fin;
 
@@ -151,7 +165,7 @@ void finalTrajectories(double t,double tf){
     // theta0stepdot = theta0stepdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+theta0stepdotc*(abs(force_x)/(abs(force_x)+a22));
     // theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+theta0stepdotdotc*(abs(force_x)/(abs(force_x)+a22));
 
-    if(incontact){ //allios boro na balo t<=tfree, isos kalytera me xrono
+    if(t<=tf){ //allios incontact isos kalytera me xrono
       xstep = xstepfr;
       ystep = ystepfr;
       thstep = thstepfr;
@@ -225,30 +239,34 @@ double filter_torque(double torq, double prev) {
 	return torq;
 }
 
-// void PDcontroller(){
-//   Eigen::VectorXd error(4); //ta sxolia einai gia aplo PD xoris ton xrono
+void PDcontroller(){
+  Eigen::VectorXd error(4); //ta sxolia einai gia aplo PD xoris ton xrono
 
-//   error << (theta0 - theta0step), (ee_x - xstep), (ee_y - ystep), (thetach - thstep);
-//   // error << (theta0 - theta0in), (ee_x - xt), (ee_y - yt), (thetach - thetat);
+  error << (theta0 - theta0step), (ee_x - xstep), (ee_y - ystep), (thetach - thstep);
+  // error << (theta0 - theta0in), (ee_x - xt), (ee_y - yt), (thetach - thetat);
 
-//   Eigen::VectorXd error_dot(4);
-//   error_dot << (theta0dot - theta0stepdot), (xeedot(0) - xstepdot), (xeedot(1) - ystepdot), (xeedot(2) - thstepdot);
-//   // error_dot << (theta0dot - 0), (xeedot(0) - 0), (xeedot(1) - 0), (xeedot(2) - 0);
-//   prev_tau(0) = tau(0);
-//   prev_tau(1) = tau(1);
-//   prev_tau(2) = tau(2);
-//   prev_tau(3) = tau(3);
+  Eigen::VectorXd error_dot(4);
+  error_dot << (theta0dot - theta0stepdot), (xeedot(0) - xstepdot), (xeedot(1) - ystepdot), (xeedot(2) - thstepdot);
+  // error_dot << (theta0dot - 0), (xeedot(0) - 0), (xeedot(1) - 0), (xeedot(2) - 0);
+  prev_tau(0) = tau(0);
+  prev_tau(1) = tau(1);
+  prev_tau(2) = tau(2);
+  prev_tau(3) = tau(3);
 
-//   tau(0) = 0.6*(theta0in - theta0) + 20*(0-theta0dot);
-//   tau(1) = -0.5*(0.3*error[1]+0.7*error[2]) - 20*(0.3*error_dot[1]+0.7*error_dot[2]);
-//   tau(2) = -0.5*(0.7*error[1]+0.3*error[2]) - 20*(0.7*error_dot[1]+0.3*error_dot[2]);
-//   tau(3) = -0.5*(thetach - thstep) - 20*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
-//   msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
-//   // msg_RW.data = ns;
-//   msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
-//   msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
-//   msg_LW.data = filter_torque(tau(3),prev_tau(3)); //tau(3);
-// }
+  tau(0) = 0.5*(theta0in - theta0) + 2*(0-theta0dot);
+  tau(1) = -1.8*(0.3*error[1]+0.7*error[2]) - 0.6*(0.3*error_dot[1]+0.7*error_dot[2]);
+  tau(2) = -1.7*(0.7*error[1]+0.3*error[2]) - 0.4*(0.7*error_dot[1]+0.3*error_dot[2]);
+  tau(3) = -0.8*(thetach - thstep) - 0.3*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
+  /*metatropi gia tous motors kai meiothres*/
+  tau(1) = -tau(1)/186;
+  tau(2) = tau(2)/186;
+  tau(3) = -tau(3)/186;
+  msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
+  // msg_RW.data = ns;
+  msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
+  msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
+  msg_LW.data = filter_torque(tau(3),prev_tau(3)); //tau(3);
+}
 
 
 
@@ -853,7 +871,7 @@ jebar << je21star-h21star*(h11star.inverse())*je11star, je22star-h21star*(h11sta
 
 qe << 0, force_x, 0;  //den eimai sigouros gia afto
 
-if(!incontact){ //allios boro na balo t=<tfree, isos kalytera me xrono
+if(t<=tf){ //allios !incontact
   bd = bd_f;
   kd = kd_f;
   md = md_f;
