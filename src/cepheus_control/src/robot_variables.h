@@ -7,9 +7,10 @@
 /*Boolean flags*/
 bool reachedTarget;// = false;
 bool start_movement;// = false;
-bool eefirstTime;// = true; //boolean for first time listening
-bool targetfirstTime;
-bool basefirstTime;
+// bool eefirstTime;// = true; //boolean for first time listening
+// bool targetfirstTime;
+// bool basefirstTime;
+bool firstTime;
 
 bool ls_initialized = false;
 bool le_initialized = false;
@@ -31,7 +32,7 @@ double ee_x, ee_y; //ee_Z not needed
 double xc0, yc0, xc0dot, yc0dot; //center of mass of base
 double thetach; //orientation of chaser (end effector)
 double xE_prev,yE_prev, thetaE_prev;
-double xt_prev, yt_prev, thetat_prev;
+double xt_prev = 0, yt_prev = 0, thetat_prev = 0;
 double xc0_prev, yc0_prev, theta0_prev;
 
 
@@ -181,7 +182,7 @@ std_msgs::Float64 msg_xee_theta0_dot;
 std_msgs::Float64 msg_xt_theta0, msg_xd_theta0, msg_xee_theta0;
 
 bool safeclose = false;
-double maxtorque = 2;
+double maxtorque = 10;
 double theta0safeclose;// = 0;  //telikes synthikes gia safeclose
 double q1safeclose ;//= 45*M_PI/180; 
 double q2safeclose ;//= 45*M_PI/180; 
@@ -190,7 +191,7 @@ double xsafeclose, ysafeclose,thetasafeclose;
 
 double sumq1 = 0, sumq2 = 0, sumq3 =0;
 double sumq1dot = 0, sumq2dot = 0, sumq3dot =  0;
-double force_x, raw_force_x;
+double force_x = 0, raw_force_x = 0;
 double forcesum = 0;
 int force_window_size = 10;
 int q_window_size = 10;
@@ -203,7 +204,24 @@ std::deque<double> q1dot_window;  // Stores the last N values
 std::deque<double> q2dot_window;  // Stores the last N values
 std::deque<double> q3dot_window;  // Stores the last N values
 
+std::deque<double> xdot_window;  // Stores the last N values
+std::deque<double> ydot_window;  // Stores the last N values
+std::deque<double> thetadot_window;  // Stores the last N values
+
+std::deque<double> xc0dot_window;  // Stores the last N values
+std::deque<double> yc0dot_window;  // Stores the last N values
+std::deque<double> theta0dot_window;
+
+
 std::deque<double> force_window; 
+
+
+Eigen::MatrixXd kp_multiplier(4,4);
+Eigen::MatrixXd bd_multiplier(4,4);
+
+
+
+
  
 /////////////// GLOBAL VARIABLES DECLARATION END////////////////////////
 

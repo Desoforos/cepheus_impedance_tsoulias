@@ -169,7 +169,7 @@ sampling_frequency = 200  # Hz
 time_stamps= np.arange(0, len(xt_x)) / sampling_frequency
 time_stamps -= time_stamps[0]  # Start from 0
 
-desired_secs = 60
+desired_secs = 50
 
 des_len = sampling_frequency*desired_secs
 # des_len = len(xee_x)
@@ -177,33 +177,33 @@ des_len = sampling_frequency*desired_secs
 
 
 #smoothen the plots:
-xee_x = savgol_filter(xee_x, window_length=51, polyorder=3)
-xee_y = savgol_filter(xee_y, window_length=51, polyorder=3)
-xee_theta = savgol_filter(xee_theta, window_length=51, polyorder=3)
-xee_theta0 = savgol_filter(xee_theta0, window_length=51, polyorder=3)
-# # fext_x = savgol_filter(fext_x, window_length=51, polyorder=3)  #mou xalaei ta arnhtika
-xee_x_dot = savgol_filter(xee_x_dot, window_length=51, polyorder=3)
-xee_y_dot = savgol_filter(xee_y_dot, window_length=51, polyorder=3)
-xee_theta_dot = savgol_filter(xee_theta_dot, window_length=51, polyorder=3)
-xee_theta0_dot = savgol_filter(xee_theta0_dot, window_length=51, polyorder=3)
-torquerw = savgol_filter(torquerw, window_length=51, polyorder=3)
-torqueq1 = savgol_filter(torqueq1, window_length=51, polyorder=3)
-torqueq2 = savgol_filter(torqueq2, window_length=51, polyorder=3)
-torqueq3 = savgol_filter(torqueq3, window_length=51, polyorder=3)
+# xee_x = savgol_filter(xee_x, window_length=51, polyorder=3)
+# xee_y = savgol_filter(xee_y, window_length=51, polyorder=3)
+# xee_theta = savgol_filter(xee_theta, window_length=51, polyorder=3)
+# xee_theta0 = savgol_filter(xee_theta0, window_length=51, polyorder=3)
+# # # fext_x = savgol_filter(fext_x, window_length=51, polyorder=3)  #mou xalaei ta arnhtika
+# xee_x_dot = savgol_filter(xee_x_dot, window_length=51, polyorder=3)
+# xee_y_dot = savgol_filter(xee_y_dot, window_length=51, polyorder=3)
+# xee_theta_dot = savgol_filter(xee_theta_dot, window_length=51, polyorder=3)
+# xee_theta0_dot = savgol_filter(xee_theta0_dot, window_length=51, polyorder=3)
+# torquerw = savgol_filter(torquerw, window_length=51, polyorder=3)
+# torqueq1 = savgol_filter(torqueq1, window_length=51, polyorder=3)
+# torqueq2 = savgol_filter(torqueq2, window_length=51, polyorder=3)
+# torqueq3 = savgol_filter(torqueq3, window_length=51, polyorder=3)
 
 # 1. Threshold to detect the contact phase
-threshold = -0.5
-fext_xarr = np.array(fext_x)
-contact_indices = np.where(fext_xarr < threshold)[0]
+# threshold = -0.5
+# fext_xarr = np.array(fext_x)
+# contact_indices = np.where(fext_xarr < threshold)[0]
 
 # 2. Interpolate only within the contact phase
-fext_interp = fext_xarr.copy()
-if len(contact_indices) > 0:
-    # Replace non-contact values within the contact phase with interpolated values
-    contact_times = np.arange(len(fext_xarr))[contact_indices]
-    interpolator = interp1d(contact_times, fext_xarr[contact_indices], kind='linear', fill_value="extrapolate")
-    non_contact_indices = np.where((fext_xarr >= threshold) & (np.arange(len(fext_xarr)) > contact_indices[0]))[0]
-    fext_interp[non_contact_indices] = interpolator(non_contact_indices)
+# fext_interp = fext_xarr.copy()
+# if len(contact_indices) > 0:
+#     # Replace non-contact values within the contact phase with interpolated values
+#     contact_times = np.arange(len(fext_xarr))[contact_indices]
+#     interpolator = interp1d(contact_times, fext_xarr[contact_indices], kind='linear', fill_value="extrapolate")
+#     non_contact_indices = np.where((fext_xarr >= threshold) & (np.arange(len(fext_xarr)) > contact_indices[0]))[0]
+#     fext_interp[non_contact_indices] = interpolator(non_contact_indices)
 
 
 # # Create plots

@@ -99,9 +99,9 @@ int main(int argc, char **argv) {
 
     ros::Subscriber force_sub = nh.subscribe("/filtered_botasys", 1, forceCallback);
     
-    ros::Subscriber ee_pos_sub = nh.subscribe("/vicon/end_effector_new/end_effector_new", 1, ee_posCallback);
+    ros::Subscriber ee_pos_sub = nh.subscribe("/vicon/cepheus_endeffector/cepheus_endeffector", 1, ee_posCallback);
     ros::Subscriber target_pos_sub = nh.subscribe("/vicon/target_new/target_new", 1, target_posCallback);
-    ros::Subscriber base_pos_sub = nh.subscribe("/vicon/base/base", 1, base_posCallback);
+    ros::Subscriber base_pos_sub = nh.subscribe("/vicon/cepheusbase/cepheusbase", 1, base_posCallback);
 
 
     /* init messages */ 
@@ -131,16 +131,18 @@ int main(int argc, char **argv) {
     
     reachedTarget = false;
     start_movement = false;
-    eefirstTime = true;
-    targetfirstTime = true;
-    basefirstTime = true;
+    // eefirstTime = true;
+    // targetfirstTime = true;
+    // targetfirstTime = false; //apla gia test
+    // basefirstTime = true;
+    firstTime = true;
 
     rosbag::Bag bag;
     std::string path = "/home/desoforos/cepheus_impedance_tsoulias/rosbags/" ;
     std::string bag_file_name;
 
     while(!offsetsdone){
-        ROS_INFO("[Motors test]: Press Y to calculate angle offsets.");
+        ROS_INFO("[robot_foros_controller]: Press Y to calculate angle offsets.");
         std::cin>>cmd;
         if(cmd == 'Y'){
             ros::spinOnce();
@@ -155,7 +157,7 @@ int main(int argc, char **argv) {
         ros::Duration(2.0).sleep();
     }
 
-    ROS_INFO("[new_foros_simcontroller]: You want to record to a bag? Press Y for yes, anything else for no. \n");
+    ROS_INFO("[robot_foros_simcontroller]: You want to record to a bag? Press Y for yes, anything else for no. \n");
     std::cin>>command;
     if(command == 'Y'){
         record = true;
@@ -193,7 +195,7 @@ int main(int argc, char **argv) {
             if(!paramsinit){
                 initialiseParameters();
                 ros::spinOnce();
-                loop_rate.sleep();
+                // loop_rate.sleep();
                 // ros::Duration(2).sleep();
                 ROS_INFO("[new_foros_simcontroller]: Initializing parameters... \n");
                 calculateTrajecotryPolynomials(tf);
@@ -206,18 +208,18 @@ int main(int argc, char **argv) {
             // loop_rate.sleep();
             updateVel(0.005); // 200hz
             if(abs(q1)<safetylimit && abs(q2)<safetylimit){
-                    if(!safeclose){
-                        ROS_WARN("Arm extended! Initiating safe close...");
-                        safeclose = true;
-                        theta0fin = theta0;
-                        theta0safeclose = theta0;
-                        q1safeclose = q1;
-                        q2safeclose = q2;
-                        q3safeclose = q3;
-                        xsafeclose = ee_x;
-                        ysafeclose = ee_y;
-                        thetasafeclose = thetach;
-                    }
+                    // if(!safeclose){
+                    //     ROS_WARN("Arm extended! Initiating safe close...");
+                    //     // safeclose = true; //to svino gia ligo
+                    //     theta0fin = theta0;
+                    //     theta0safeclose = theta0;
+                    //     q1safeclose = q1;
+                    //     q2safeclose = q2;
+                    //     q3safeclose = q3;
+                    //     xsafeclose = ee_x;
+                    //     ysafeclose = ee_y;
+                    //     thetasafeclose = thetach;
+                    // } //ta bazo se sxolio gia na min asxolitho me automato safeclose
             } //proto test asfaleias na min tentosei to xeri
             else{
                 /*control function takes place here, PD/impedance etc*/
@@ -266,7 +268,7 @@ int main(int argc, char **argv) {
             // start_moving_pub.publish(start_moving);
             shutdown_requested = true;
             ROS_INFO("[robot_foros_controller] Hardgrip ended! Starting safeclose...");
-            safeclose = true;
+            // safeclose = true; //to sbino gia ligo
             theta0fin = theta0;
             theta0safeclose = theta0;
             q1safeclose = q1; //gia na meinei akinhto
@@ -328,9 +330,9 @@ int main(int argc, char **argv) {
             msg_xt_theta0.data = theta0in;
 
 
-            msg_xee_x.data = xee(0);
-            msg_xee_y.data = xee(1);
-            msg_xee_theta.data = xee(2);
+            msg_xee_x.data = ee_x;
+            msg_xee_y.data = ee_y;
+            msg_xee_theta.data = thetach;
             msg_xee_theta0.data = theta0;
 
             msg_xd_x_dot.data = xstepdot;

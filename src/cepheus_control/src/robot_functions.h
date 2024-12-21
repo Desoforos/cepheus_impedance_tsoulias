@@ -6,19 +6,20 @@
 
 void initialiseParameters(){
     /*gia peirama me kosta 25/7/24*/
-    m0 = 53;
-    l0 = 0;
+    // m0 = 53/5;
+    // l0 = 0;
     r0x=0.1425;
-    r0y=-0.08225;
-    m1 = 0.2314;
-    l1 = r1 = 0.185;
-    m2 = 0.1;
-    // l2 = r2 = 0.143;
-    l2 = r2 = 0.184;
-    m3 = 0.046;
-    // l3 = r3 = 0.0411/2;
-    l3 = r3 = 0.0411;
-    mt = 20; //kyriolektika axristo
+    // r0y=-0.08225;
+    r0y =0; //to efthigramisa pisteyo
+    // m1 = 0.2314;
+    // l1 = r1 = 0.185;
+    // m2 = 0.1;
+    // // l2 = r2 = 0.143;
+    // l2 = r2 = 0.184;
+    // m3 = 0.046;
+    // // l3 = r3 = 0.0411/2;
+    // l3 = r3 = 0.0411;
+    mt = 10; //kyriolektika axristo
     q01 = -0.5236;
     s01 = 0.5;
     s02 = 0.2;
@@ -28,11 +29,27 @@ void initialiseParameters(){
     // i2zz = 1.487/100000;
     // // i3zz = 9.61/100000;
     // i3zz = 1.2287/100000;
+
+    /*apo alex*/
+    m1 = 0.4409;
+    m2 = 0.1304;
+    m3 = 0.45;  //peripou
     
-    ibzz = 1.06;
-    i1zz = 0.0026476;
-    i2zz = 0.0011318;
-    i3zz = 2.73/100000;
+    l1 = 0.269;
+    l2 = 0.143;
+    l3 = 0.15; //peripoy
+
+    r1 = 0.1010;
+    r2 = 0.143;
+    r3 = 0.15;  //peripoy
+
+    
+    ibzz = 2.24/5; //peripou
+    i1zz = 0.0068;
+    i2zz = 0.010;
+    i3zz = 0.006; //peripoy
+
+    /*telos alex*/
 
 
 
@@ -45,7 +62,39 @@ void initialiseParameters(){
 
     M = m0 + m1 + m2 + m3;
 
+    kp_multiplier << 9.5, 0, 0, 0,
+                0, 9.5, 0, 0,
+                0, 0, 9.5, 0,
+                0, 0, 0, 10;
 
+    bd_multiplier << 1.8, 0, 0, 0,
+                0, 1.8, 0, 0,
+                0, 0, 1.8, 0,
+                0, 0, 0, 1.8;
+
+
+}
+
+double movingMedian(double new_value, std::deque<double>& window, int window_size) {
+    // Add the new value to the window
+    window.push_back(new_value);
+
+    // Remove the oldest value if the window exceeds the size
+    if (window.size() > window_size) {
+        window.pop_front();
+    }
+
+    // Create a temporary vector to sort and find the median
+    std::vector<double> sorted_window(window.begin(), window.end());
+    std::sort(sorted_window.begin(), sorted_window.end());
+
+    // Find the median
+    int n = sorted_window.size();
+    if (n % 2 == 0) {
+        return (sorted_window[n / 2 - 1] + sorted_window[n / 2]) / 2.0;
+    } else {
+        return sorted_window[n / 2];
+    }
 }
 
 void calculateTrajecotryPolynomials(double tf){
@@ -74,16 +123,25 @@ void calculateTrajecotryPolynomials(double tf){
 
 void finalTrajectories(double t,double tf){
   /*PROTA KANO OVERRIDE TON STOXO GIA TEST XORIS STOXO*/
-    // xt_in =
-    // yt_in =
-    // thetat_in =
-    // xt =
-    // yt =
-    // thetat =
-    // xtdot =
-    // ytdot =
-    // thetatdot =
+    xt = 0;
+    yt = 0;
+    thetat = 0;
+    xtdot = 0;
+    ytdot = 0;
+    thetatdot = 0;
   /*TELOS OVERRIDE, VGALTO OTAN BEI O STOXOS STO TRAPEZI*/
+  	if(firstTime){   //initialize the postiion of chaser and target for the first time ONLY
+      xE_in = ee_x;
+      yE_in = ee_y;
+      xt_in = xt;
+      yt_in = yt;
+      thetaE_in = thetach;
+      thetat_in = thetat;// - M_PI/4; //gia na yparxei mia diafora hehe
+      theta0in = theta0;
+      theta0fin = theta0;
+      firstTime = false;
+      ROS_INFO("[in final trajectories]: First positions have been recorded (xE_in etc). \n");
+    }
 
 
 
@@ -165,7 +223,41 @@ void finalTrajectories(double t,double tf){
     // theta0stepdot = theta0stepdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+theta0stepdotc*(abs(force_x)/(abs(force_x)+a22));
     // theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+theta0stepdotdotc*(abs(force_x)/(abs(force_x)+a22));
 
-    if(t<=tf){ //allios incontact isos kalytera me xrono
+  /*NA TO ANOIKSO META!!!!!!!!!*/
+    // if(t<=tf){ //allios incontact isos kalytera me xrono
+    //   xstep = xstepfr;
+    //   ystep = ystepfr;
+    //   thstep = thstepfr;
+    //   theta0step = theta0stepfr;
+
+    //   xstepdot = xstepdotfr;
+    //   ystepdot = ystepdotfr;
+    //   thstepdot = thstepdotfr;
+    //   theta0stepdot = theta0stepdotfr;
+
+    //   xstepdotdot = xstepdotdotfr;
+    //   ystepdotdot = ystepdotdotfr;
+    //   thstepdotdot = thstepdotdotfr;
+    //   theta0stepdotdot = theta0stepdotdotfr;
+    // }
+    // else{
+    //   xstep = xstepc;
+    //   ystep = ystepc;
+    //   thstep = thstepc;
+    //   theta0step = theta0stepc;
+
+    //   xstepdot = xstepdotc;
+    //   ystepdot = ystepdotc;
+    //   thstepdot = thstepdotc;
+    //   theta0stepdot = theta0stepdotc;
+
+    //   xstepdotdot = xstepdotdotc;
+    //   ystepdotdot = ystepdotdotc;
+    //   thstepdotdot = thstepdotdotc;
+    //   theta0stepdotdot = theta0stepdotdotc;
+    // }
+
+  /*gia dokimi*/
       xstep = xstepfr;
       ystep = ystepfr;
       thstep = thstepfr;
@@ -180,23 +272,6 @@ void finalTrajectories(double t,double tf){
       ystepdotdot = ystepdotdotfr;
       thstepdotdot = thstepdotdotfr;
       theta0stepdotdot = theta0stepdotdotfr;
-    }
-    else{
-      xstep = xstepc;
-      ystep = ystepc;
-      thstep = thstepc;
-      theta0step = theta0stepc;
-
-      xstepdot = xstepdotc;
-      ystepdot = ystepdotc;
-      thstepdot = thstepdotc;
-      theta0stepdot = theta0stepdotc;
-
-      xstepdotdot = xstepdotdotc;
-      ystepdotdot = ystepdotdotc;
-      thstepdotdot = thstepdotdotc;
-      theta0stepdotdot = theta0stepdotdotc;
-    }
 
 
 
@@ -215,6 +290,18 @@ void finalTrajectories(double t,double tf){
 }
 
 void updateVel(double dt){
+  if(firstTime){
+    xeedot(0) = 0;
+    xeedot(1) = 0;
+    xeedot(2) = 0;
+    xtdot = 0;
+    ytdot = 0;
+    thetatdot =0;
+    xc0dot = 0;
+    yc0dot = 0;
+    theta0dot = 0;
+  }
+  else{
     xeedot(0) = (ee_x-xE_prev)/dt;
     xeedot(1) = (ee_y-yE_prev)/dt;
     xeedot(2) = (thetach-thetaE_prev)/dt;
@@ -226,6 +313,15 @@ void updateVel(double dt){
     xc0dot = (xc0-xc0_prev)/dt;
     yc0dot = (yc0-yc0_prev)/dt;
     theta0dot = (theta0-theta0_prev)/dt;
+
+    xeedot(0) = movingMedian(xeedot(0), xdot_window, 10); //window size = 10
+    xeedot(1) = movingMedian(xeedot(1), ydot_window, 10); //window size = 10
+    xeedot(2) = movingMedian(xeedot(2), thetadot_window, 10); //window size = 10
+
+    xc0dot = movingMedian(xc0dot, xc0dot_window, 10); //window size = 10
+    yc0dot = movingMedian(yc0dot, yc0dot_window, 10); //window size = 10
+    theta0dot = movingMedian(theta0dot, theta0dot_window, 10); //window size = 10
+  }
 }
 
 double filter_torque(double torq, double prev) {
@@ -239,34 +335,34 @@ double filter_torque(double torq, double prev) {
 	return torq;
 }
 
-void PDcontroller(){
-  Eigen::VectorXd error(4); //ta sxolia einai gia aplo PD xoris ton xrono
+// void PDcontroller(){
+//   Eigen::VectorXd error(4); //ta sxolia einai gia aplo PD xoris ton xrono
 
-  error << (theta0 - theta0step), (ee_x - xstep), (ee_y - ystep), (thetach - thstep);
-  // error << (theta0 - theta0in), (ee_x - xt), (ee_y - yt), (thetach - thetat);
+//   error << (theta0 - theta0step), (ee_x - xstep), (ee_y - ystep), (thetach - thstep);
+//   // error << (theta0 - theta0in), (ee_x - xt), (ee_y - yt), (thetach - thetat);
 
-  Eigen::VectorXd error_dot(4);
-  error_dot << (theta0dot - theta0stepdot), (xeedot(0) - xstepdot), (xeedot(1) - ystepdot), (xeedot(2) - thstepdot);
-  // error_dot << (theta0dot - 0), (xeedot(0) - 0), (xeedot(1) - 0), (xeedot(2) - 0);
-  prev_tau(0) = tau(0);
-  prev_tau(1) = tau(1);
-  prev_tau(2) = tau(2);
-  prev_tau(3) = tau(3);
+//   Eigen::VectorXd error_dot(4);
+//   error_dot << (theta0dot - theta0stepdot), (xeedot(0) - xstepdot), (xeedot(1) - ystepdot), (xeedot(2) - thstepdot);
+//   // error_dot << (theta0dot - 0), (xeedot(0) - 0), (xeedot(1) - 0), (xeedot(2) - 0);
+//   prev_tau(0) = tau(0);
+//   prev_tau(1) = tau(1);
+//   prev_tau(2) = tau(2);
+//   prev_tau(3) = tau(3);
 
-  tau(0) = 0.5*(theta0in - theta0) + 2*(0-theta0dot);
-  tau(1) = -1.8*(0.3*error[1]+0.7*error[2]) - 0.6*(0.3*error_dot[1]+0.7*error_dot[2]);
-  tau(2) = -1.7*(0.7*error[1]+0.3*error[2]) - 0.4*(0.7*error_dot[1]+0.3*error_dot[2]);
-  tau(3) = -0.8*(thetach - thstep) - 0.3*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
-  /*metatropi gia tous motors kai meiothres*/
-  tau(1) = -tau(1)/186;
-  tau(2) = tau(2)/186;
-  tau(3) = -tau(3)/186;
-  msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
-  // msg_RW.data = ns;
-  msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
-  msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
-  msg_LW.data = filter_torque(tau(3),prev_tau(3)); //tau(3);
-}
+//   tau(0) = 0.5*(theta0in - theta0) + 2*(0-theta0dot);
+//   tau(1) = -1.8*(0.3*error[1]+0.7*error[2]) - 0.6*(0.3*error_dot[1]+0.7*error_dot[2]);
+//   tau(2) = -1.7*(0.7*error[1]+0.3*error[2]) - 0.4*(0.7*error_dot[1]+0.3*error_dot[2]);
+//   tau(3) = -0.8*(thetach - thstep) - 0.3*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
+//   /*metatropi gia tous motors kai meiothres*/
+//   tau(1) = -tau(1)/186;
+//   tau(2) = tau(2)/186;
+//   tau(3) = -tau(3)/186;
+//   msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
+//   // msg_RW.data = ns;
+//   msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
+//   msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
+//   msg_LW.data = filter_torque(tau(3),prev_tau(3)); //tau(3);
+// }
 
 
 
@@ -871,23 +967,23 @@ jebar << je21star-h21star*(h11star.inverse())*je11star, je22star-h21star*(h11sta
 
 qe << 0, force_x, 0;  //den eimai sigouros gia afto
 
-if(t<=tf){ //allios !incontact
-  bd = bd_f;
-  kd = kd_f;
-  md = md_f;
-  fdes << 0, 0, 0, 0;
-}
-else{
-  bd = bd_c;
-  kd = kd_c;
-  md = md_c;
-  fdes << 0, 0, fd, 0;
-}
+// if(t<=tf){ //allios !incontact
+//   bd = bd_f;
+//   kd = kd_f;
+//   md = md_f;
+//   fdes << 0, 0, 0, 0;
+// }
+// else{
+//   bd = bd_c;
+//   kd = kd_c;
+//   md = md_c;
+//   fdes << 0, 0, fd, 0;
+// }
 /*NA TO BGALO META!!!!!*/
-// Eigen::MatrixXd kd = kd_f;
-// Eigen::MatrixXd md = md_f;
-// Eigen::MatrixXd bd = bd_f;
-// fdes << 0, 0, 0, 0;
+kd = kd_f;
+md = md_f;
+bd = bd_f;
+fdes << 0, 0, 0, 0;
 /* MHN TO KSEXASEIS!!!!!*/
 
 // fdes << 0, 0, fd*abs(force_x)/(abs(force_x)+a22), 0;
@@ -913,7 +1009,7 @@ Eigen::VectorXd qext(4);
 qext << 0, 0, force_x, 0;
 
 
-Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-64*kd*error-52*bd*error_dot-qext + fdes); //borei na thelei 6.4 kai 5.2 alla den pernaei ta oria sto gazebo
+Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-kp_multiplier*kd*error-bd_multiplier*bd*error_dot-qext + fdes); //borei na thelei 6.4 kai 5.2 alla den pernaei ta oria sto gazebo
 
 
 
@@ -927,27 +1023,28 @@ prev_tau(3) = tau(3);
 
 tau = (jbar.inverse())*qbar;
 
+
+// if((abs(tau(0))> maxtorque) || (abs(tau(1))>maxtorque) || (abs(tau(2))>maxtorque) || (abs(tau(3))>maxtorque)){
+//   /*initiate safety closure*/
+//   ROS_WARN("Reached Critical Torques! Initiating safe close..");
+//   // safeclose = true; //to svino gia ligo
+//   theta0safeclose = theta0;
+//   q1safeclose = q1;
+//   q2safeclose = q2;
+//   q3safeclose = q3;
+//   xsafeclose = ee_x;
+//   ysafeclose = ee_y;
+//   thetasafeclose = thetach;
+//   std::cout<<"rw torque is:  "<<tau(0)<<" Nm. "<< std::endl;
+//   std::cout<<"q1 torque is:  "<<tau(1)<<" Nm. "<< std::endl;
+//   std::cout<<"q2 torque is:  "<<tau(2)<<" Nm. "<< std::endl;
+//   std::cout<<"q3 torque is:  "<<tau(3)<<" Nm. "<< std::endl;
+// }
+
 /*metatropi gia tous motors kai meiothres*/
 tau(1) = -tau(1)/186;
 tau(2) = tau(2)/186;
 tau(3) = -tau(3)/186;
-
-if((abs(tau(0))> maxtorque) || (abs(tau(1))>maxtorque) || (abs(tau(2))>maxtorque) || (abs(tau(3))>maxtorque)){
-  /*initiate safety closure*/
-  ROS_WARN("Reached Critical Torques! Initiating safe close..");
-  safeclose = true;
-  theta0safeclose = theta0;
-  q1safeclose = q1;
-  q2safeclose = q2;
-  q3safeclose = q3;
-  xsafeclose = ee_x;
-  ysafeclose = ee_y;
-  thetasafeclose = thetach;
-  std::cout<<"rw torque is:  "<<tau(0)<<" Nm. "<< std::endl;
-  std::cout<<"q1 torque is:  "<<tau(1)<<" Nm. "<< std::endl;
-  std::cout<<"q2 torque is:  "<<tau(2)<<" Nm. "<< std::endl;
-  std::cout<<"q3 torque is:  "<<tau(3)<<" Nm. "<< std::endl;
-}
 
 
 

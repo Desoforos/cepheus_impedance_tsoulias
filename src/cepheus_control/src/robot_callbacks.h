@@ -30,7 +30,7 @@ double moving_average(double new_value, std::deque<double>& window, int size, do
 
 
 void ee_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
-    if(!eefirstTime){
+    if(!firstTime){
         xE_prev = ee_x;
         yE_prev = ee_y;
         thetaE_prev = thetach;
@@ -46,18 +46,11 @@ void ee_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
     double rollee, pitchee, yawee;
 	m_ee.getRPY(rollee, pitchee, yawee);
 	thetach = yawee; //angle of chaser(ee)
-	if(eefirstTime){   //initialize the postiion of chaser and target for the first time ONLY
-		xE_in = ee_x;
-		yE_in = ee_y;
-		thetaE_in = thetach; 
-		eefirstTime = false;
-        std::cout<<"Initial position of end effector is: xe_in: "<<xE_in<<" yE_in: "<<yE_in<<" thetaE_in: "<<thetaE_in<<std::endl;
-		}
 }
 
 
 void target_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
-    if(!targetfirstTime){
+    if(!firstTime){
         xt_prev = xt;
         yt_prev = yt;
         thetat_prev = thetat;
@@ -73,17 +66,10 @@ void target_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
     double rollt, pitcht, yawt;
 	m_t.getRPY(rollt, pitcht, yawt);
 	thetat = yawt; //angle of chaser(ee)
-	if(targetfirstTime){   //initialize the postiion of chaser and target for the first time ONLY
-		xt_in = xt;
-		yt_in = yt;
-		thetat_in = thetat;
-		targetfirstTime = false;
-        std::cout<<"Initial position of target is: xt_in: "<<xt_in<<" yt_in: "<<yt_in<<" thetat_in: "<<thetat_in<<std::endl;
-		}
 }
 
 void base_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
-    if(!basefirstTime){
+    if(!firstTime){
         xc0_prev = xc0;
         yc0_prev = yc0;
         theta0_prev = theta0;
@@ -98,10 +84,14 @@ void base_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
     tf::Matrix3x3 m_c0(qc0);	
     double rollc0, pitchc0, yawc0;
 	m_c0.getRPY(rollc0, pitchc0, yawc0);
-	theta0 = yawc0; //angle of chaser(ee)
-	if(basefirstTime){
-		basefirstTime = false;   
-		}
+    if(firstTime){
+        theta0 = yawc0;
+    }
+    else{
+        if(abs(yawc0 - theta0) < 15*M_PI/180){
+            theta0 = yawc0; //angle of chaser(ee)
+        }
+    }
 }
 	
 
@@ -253,7 +243,7 @@ void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 
 
 void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
-    raw_force_x = abs(msg->wrench.force.x);  //etsi einai mapped apo to bota  filtered.
+    raw_force_x = abs(msg->wrench.force.z);  //etsi einai mapped apo to bota  filtered.
     // force_y = msg->wrench.force.y;
 	// torque_z = msg->wrench.torque.z;
 	// fext(0) = force_x;
@@ -267,8 +257,9 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     // if(force_y>10){
     //     ROS_INFO("[foros_simcontroller]: force_y detected: %f N \n",force_y);
     // }
-    force_x = moving_average(raw_force_x, force_window, force_window_size, forcesum);
-	if(abs(force_x)<0.5){
+    // force_x = moving_average(raw_force_x, force_window, force_window_size, forcesum);
+    force_x = raw_force_x; //ase to filtro giati den einai kalo stin arxi
+	if(abs(force_x)<0.35){
 		incontact = false;
 	}
 	else{

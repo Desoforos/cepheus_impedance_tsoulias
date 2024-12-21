@@ -170,10 +170,10 @@ for topic, msg, t in bag.read_messages(topics=['/cepheus/q1','/cepheus/q2', '/ce
 
 bag.close()
 
-print("theta0 initial is: ",theta0[0])
-print("q1 initial is: ",q1[0])
-print("q2 initial is: ",q2[0])
-print("q3 initial is: ",q3[0])
+# print("theta0 initial is: ",theta0[0])
+# print("q1 initial is: ",q1[0])
+# print("q2 initial is: ",q2[0])
+# print("q3 initial is: ",q3[0])
 
 sampling_frequency = 200  # Hz
 time_stamps= np.arange(0, len(q1d)) / sampling_frequency
