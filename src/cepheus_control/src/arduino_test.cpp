@@ -58,7 +58,7 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     raw_force_x = abs(msg->wrench.force.z); //etsi einai mapped apo to botasys
     // std::cout<<"(forceCallback) I read: "<<force_X<<" N. "<<std::endl;
     force_x = moving_average(raw_force_x, force_window, force_window_size, forcesum);
-	if(abs(raw_force_x)<0.3){
+	if(abs(raw_force_x)<0.4){
 		incontact = false;
 	}
 	else{

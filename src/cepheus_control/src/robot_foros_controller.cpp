@@ -182,8 +182,8 @@ int main(int argc, char **argv) {
             loop_rate.sleep();
             if(command == 'Y'){
                 start_movement= true;
-                start_moving.data = true;
-                start_moving_pub.publish(start_moving);
+                // start_moving.data = true;
+                // start_moving_pub.publish(start_moving);
             }
         }
         else{
@@ -207,95 +207,13 @@ int main(int argc, char **argv) {
             ros::spinOnce();
             // loop_rate.sleep();
             updateVel(0.005); // 200hz
-            if(abs(q1)<safetylimit && abs(q2)<safetylimit){
-                    // if(!safeclose){
-                    //     ROS_WARN("Arm extended! Initiating safe close...");
-                    //     // safeclose = true; //to svino gia ligo
-                    //     theta0fin = theta0;
-                    //     theta0safeclose = theta0;
-                    //     q1safeclose = q1;
-                    //     q2safeclose = q2;
-                    //     q3safeclose = q3;
-                    //     xsafeclose = ee_x;
-                    //     ysafeclose = ee_y;
-                    //     thetasafeclose = thetach;
-                    // } //ta bazo se sxolio gia na min asxolitho me automato safeclose
-            } //proto test asfaleias na min tentosei to xeri
-            else{
-                /*control function takes place here, PD/impedance etc*/
-                curr_time = ros::Time::now();
-                dur_time = curr_time - t_beg;
-                secs = dur_time.sec + dur_time.nsec * pow(10, -9);
-                finalTrajectories(secs,tf); //gia polyonymikh troxia, tin theloume gia olous tous controllers
-                controller(count,tf,secs); //impedance controller
-                count++;
-            }
-            if(incontact){
-                contactCounter++;
-            }
-            else{
-                contactCounter = 0;
-            }
-           if(contactCounter > 1*200){ // contact for 1 sec
-            beginGrab = true;
-           }
-
-           if(beginGrab){ 
-            if(!beginSoft){
-                beginSoft = true;
-                ROS_INFO("[robot_foros_controller] Starting softgrip...");
-                arduino_msg.data = "softgrip";
-                arduino_pub.publish(arduino_msg);
-                //ROS PUBLISH SOFTGRIP MIA FORA META DEN KSANASTELNEI
-            }
-            ros::spinOnce(); //to callback tou arduino tha kanei true to softFinished, an den doulevei apla perimeno 2 sec
-            // loop_rate.sleep();
-            if(softFinished){
-                if(!beginHard){
-                    beginHard = true;
-                    ROS_INFO("[robot_foros_controller] Softgrip ended! Starting hardgrip...");
-                    arduino_msg.data = "hardgrip";
-                    arduino_pub.publish(arduino_msg);
-                    //ROSPUBLISH HARDGRIP MIA FORA META DEN KSANASTELNEI
-                }
-                ros::spinOnce(); //perimeno callback gia true to hardFinished
-                // loop_rate.sleep();
-            }
-           }
-        if (hardFinished){
-            ROS_INFO("Task completed. Ending now.");
-            // start_moving.data = false; //den to xrhsimopoio telika
-            // start_moving_pub.publish(start_moving);
-            shutdown_requested = true;
-            ROS_INFO("[robot_foros_controller] Hardgrip ended! Starting safeclose...");
-            // safeclose = true; //to sbino gia ligo
-            theta0fin = theta0;
-            theta0safeclose = theta0;
-            q1safeclose = q1; //gia na meinei akinhto
-            q2safeclose = q2;
-            q3safeclose = q3;
-            xsafeclose = ee_x;
-            ysafeclose = ee_y;
-            thetasafeclose = thetach;
-           }
-        if(safeclose){//edo ginetai overwrite timon gia to safeclose            
-            tau(0) = 0.5*(theta0safeclose - theta0) + 2*(0-theta0dot);
-            tau(1) = 1.3*(q1safeclose-q1) + 0.6*(0-q1dot);
-            tau(2) = 1.3*(q2safeclose-q2) + 0.6*(0-q2dot);
-            tau(3) = 0.8*(q3safeclose-q3) + 0.6*(0-q3dot);
-
-            tau(1) = -tau(1)/186;
-            tau(2) = tau(2)/186;
-            tau(3) = -tau(3)/186;
-            msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
-            msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
-            msg_LW.data = filter_torque(tau(3),prev_tau(3));
-            rw_torque_pub.publish(msg_RW);
-            ls_torque_pub.publish(msg_LS);
-            le_torque_pub.publish(msg_LE);
-            re_torque_pub.publish(msg_LW); //ousiastika einai to left wrist alla tespa
-        }
-        else{//edo stelnontai oi times poy ypologistikan apo ton controller
+            /*control function takes place here, PD/impedance etc*/
+            curr_time = ros::Time::now();
+            dur_time = curr_time - t_beg;
+            secs = dur_time.sec + dur_time.nsec * pow(10, -9);
+            finalTrajectories(secs,tf); //gia polyonymikh troxia, tin theloume gia olous tous controllers, kanei kai arxikopoihsh metavlhton
+            controller(count,tf,secs); //impedance controller
+            count++;
             msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
             msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
             msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
@@ -307,17 +225,17 @@ int main(int argc, char **argv) {
         }
         if(record){
 
-            if(safeclose){
-                xstep = xsafeclose;
-                ystep = ysafeclose;
-                thstep = thetasafeclose;
-                xstepdot = 0;
-                ystepdot = 0;
-                thstepdot = 0;
-                theta0step = theta0safeclose;
-                theta0stepdot = 0;
+            // if(safeclose){
+            //     xstep = xsafeclose;
+            //     ystep = ysafeclose;
+            //     thstep = thetasafeclose;
+            //     xstepdot = 0;
+            //     ystepdot = 0;
+            //     thstepdot = 0;
+            //     theta0step = theta0safeclose;
+            //     theta0stepdot = 0;
 
-            }
+            // }
             msg_xd_x.data = xstep;
             msg_xd_y.data = ystep;
             msg_xd_theta.data = thstep;
@@ -418,14 +336,15 @@ int main(int argc, char **argv) {
  
                
             }
-        }
+        
         loop_rate.sleep();  //exei bei allou, vasika kalytera edo
-
     }
+    
 
     if(shutdown_requested && record){
         bag.close();
     } 
+
     // start_moving.data = false;
     // start_moving_pub.publish(start_moving);
 
@@ -434,3 +353,70 @@ int main(int argc, char **argv) {
 
 }
 
+/*
+if(incontact){
+                contactCounter++;
+            }
+            else{
+                contactCounter = 0;
+            }
+           if(contactCounter > 1*200){ // contact for 1 sec
+            beginGrab = true;
+           }
+
+           if(beginGrab){ 
+            if(!beginSoft){
+                beginSoft = true;
+                ROS_INFO("[robot_foros_controller] Starting softgrip...");
+                arduino_msg.data = "softgrip";
+                arduino_pub.publish(arduino_msg);
+                //ROS PUBLISH SOFTGRIP MIA FORA META DEN KSANASTELNEI
+            }
+            ros::spinOnce(); //to callback tou arduino tha kanei true to softFinished, an den doulevei apla perimeno 2 sec
+            // loop_rate.sleep();
+            if(softFinished){
+                if(!beginHard){
+                    beginHard = true;
+                    ROS_INFO("[robot_foros_controller] Softgrip ended! Starting hardgrip...");
+                    arduino_msg.data = "hardgrip";
+                    arduino_pub.publish(arduino_msg);
+                    //ROSPUBLISH HARDGRIP MIA FORA META DEN KSANASTELNEI
+                }
+                ros::spinOnce(); //perimeno callback gia true to hardFinished
+                // loop_rate.sleep();
+            }
+           }
+        if (hardFinished){
+            ROS_INFO("Task completed. Ending now.");
+            // start_moving.data = false; //den to xrhsimopoio telika
+            // start_moving_pub.publish(start_moving);
+            shutdown_requested = true;
+            ROS_INFO("[robot_foros_controller] Hardgrip ended! Starting safeclose...");
+            // safeclose = true; //to sbino gia ligo
+            theta0fin = theta0;
+            theta0safeclose = theta0;
+            q1safeclose = q1; //gia na meinei akinhto
+            q2safeclose = q2;
+            q3safeclose = q3;
+            xsafeclose = ee_x;
+            ysafeclose = ee_y;
+            thetasafeclose = thetach;
+           }
+        if(safeclose){//edo ginetai overwrite timon gia to safeclose            
+            tau(0) = 0.5*(theta0safeclose - theta0) + 2*(0-theta0dot);
+            tau(1) = 1.3*(q1safeclose-q1) + 0.6*(0-q1dot);
+            tau(2) = 1.3*(q2safeclose-q2) + 0.6*(0-q2dot);
+            tau(3) = 0.8*(q3safeclose-q3) + 0.6*(0-q3dot);
+
+            tau(1) = -tau(1)/186;
+            tau(2) = tau(2)/186;
+            tau(3) = -tau(3)/186;
+            msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
+            msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
+            msg_LW.data = filter_torque(tau(3),prev_tau(3));
+            rw_torque_pub.publish(msg_RW);
+            ls_torque_pub.publish(msg_LS);
+            le_torque_pub.publish(msg_LE);
+            re_torque_pub.publish(msg_LW); //ousiastika einai to left wrist alla tespa
+        }
+*/
