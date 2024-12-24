@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
     ros::Subscriber force_sub = nh.subscribe("/filtered_botasys", 1, forceCallback);
     
     ros::Subscriber ee_pos_sub = nh.subscribe("/vicon/cepheus_endeffector/cepheus_endeffector", 1, ee_posCallback);
-    ros::Subscriber target_pos_sub = nh.subscribe("/vicon/target_new/target_new", 1, target_posCallback);
+    ros::Subscriber target_pos_sub = nh.subscribe("/vicon/cepheus_target/cepheus_target", 1, target_posCallback);
     ros::Subscriber base_pos_sub = nh.subscribe("/vicon/cepheusbase/cepheusbase", 1, base_posCallback);
 
 

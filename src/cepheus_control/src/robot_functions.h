@@ -67,10 +67,10 @@ void initialiseParameters(){
                 0, 0, 9.5, 0,
                 0, 0, 0, 10;
 
-    bd_multiplier << 1.8, 0, 0, 0,
-                0, 1.8, 0, 0,
-                0, 0, 1.8, 0,
-                0, 0, 0, 1.8;
+    bd_multiplier << 2, 0, 0, 0,
+                0, 0.2, 0, 0,
+                0, 0, 0.2, 0,
+                0, 0, 0, 0.2;
 
 
 }
@@ -123,12 +123,12 @@ void calculateTrajecotryPolynomials(double tf){
 
 void finalTrajectories(double t,double tf){
   /*PROTA KANO OVERRIDE TON STOXO GIA TEST XORIS STOXO*/
-    xt = 0;
-    yt = 0;
-    thetat = 0;
-    xtdot = 0;
-    ytdot = 0;
-    thetatdot = 0;
+    // xt = 0;
+    // yt = 0;
+    // thetat = 0;
+    // xtdot = 0;
+    // ytdot = 0;
+    // thetatdot = 0;
   /*TELOS OVERRIDE, VGALTO OTAN BEI O STOXOS STO TRAPEZI*/
   	if(firstTime){   //initialize the postiion of chaser and target for the first time ONLY
       xE_in = ee_x;
@@ -192,7 +192,7 @@ void finalTrajectories(double t,double tf){
       theta0stepdotdotfr = 0;
     }
 
-    xstepc = xt + 0.0005; //gia na ginei h synexhs epafh, vevaiosou oti einai plhros orizontia , allios 0.0001*cos(xee(2));
+    xstepc = xt + 0.001; //gia na ginei h synexhs epafh, vevaiosou oti einai plhros orizontia , allios 0.0001*cos(xee(2));
     ystepc = yt;           //allios 0.0001*sin(xee(2));
     thstepc = thetat;
     theta0stepc = theta0fin;
@@ -224,40 +224,7 @@ void finalTrajectories(double t,double tf){
     // theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+theta0stepdotdotc*(abs(force_x)/(abs(force_x)+a22));
 
   /*NA TO ANOIKSO META!!!!!!!!!*/
-    // if(t<=tf){ //allios incontact isos kalytera me xrono
-    //   xstep = xstepfr;
-    //   ystep = ystepfr;
-    //   thstep = thstepfr;
-    //   theta0step = theta0stepfr;
-
-    //   xstepdot = xstepdotfr;
-    //   ystepdot = ystepdotfr;
-    //   thstepdot = thstepdotfr;
-    //   theta0stepdot = theta0stepdotfr;
-
-    //   xstepdotdot = xstepdotdotfr;
-    //   ystepdotdot = ystepdotdotfr;
-    //   thstepdotdot = thstepdotdotfr;
-    //   theta0stepdotdot = theta0stepdotdotfr;
-    // }
-    // else{
-    //   xstep = xstepc;
-    //   ystep = ystepc;
-    //   thstep = thstepc;
-    //   theta0step = theta0stepc;
-
-    //   xstepdot = xstepdotc;
-    //   ystepdot = ystepdotc;
-    //   thstepdot = thstepdotc;
-    //   theta0stepdot = theta0stepdotc;
-
-    //   xstepdotdot = xstepdotdotc;
-    //   ystepdotdot = ystepdotdotc;
-    //   thstepdotdot = thstepdotdotc;
-    //   theta0stepdotdot = theta0stepdotdotc;
-    // }
-
-  /*gia dokimi*/
+    if(t<=tf){ //allios incontact isos kalytera me xrono
       xstep = xstepfr;
       ystep = ystepfr;
       thstep = thstepfr;
@@ -272,6 +239,39 @@ void finalTrajectories(double t,double tf){
       ystepdotdot = ystepdotdotfr;
       thstepdotdot = thstepdotdotfr;
       theta0stepdotdot = theta0stepdotdotfr;
+    }
+    else{
+      xstep = xstepc;
+      ystep = ystepc;
+      thstep = thstepc;
+      theta0step = theta0stepc;
+
+      xstepdot = xstepdotc;
+      ystepdot = ystepdotc;
+      thstepdot = thstepdotc;
+      theta0stepdot = theta0stepdotc;
+
+      xstepdotdot = xstepdotdotc;
+      ystepdotdot = ystepdotdotc;
+      thstepdotdot = thstepdotdotc;
+      theta0stepdotdot = theta0stepdotdotc;
+    }
+
+  /*gia dokimi*/
+      // xstep = xstepfr;
+      // ystep = ystepfr;
+      // thstep = thstepfr;
+      // theta0step = theta0stepfr;
+
+      // xstepdot = xstepdotfr;
+      // ystepdot = ystepdotfr;
+      // thstepdot = thstepdotfr;
+      // theta0stepdot = theta0stepdotfr;
+
+      // xstepdotdot = xstepdotdotfr;
+      // ystepdotdot = ystepdotdotfr;
+      // thstepdotdot = thstepdotdotfr;
+      // theta0stepdotdot = theta0stepdotdotfr;
 
 
 
@@ -314,13 +314,18 @@ void updateVel(double dt){
     yc0dot = (yc0-yc0_prev)/dt;
     theta0dot = (theta0-theta0_prev)/dt;
 
-    xeedot(0) = movingMedian(xeedot(0), xdot_window, 10); //window size = 10
-    xeedot(1) = movingMedian(xeedot(1), ydot_window, 10); //window size = 10
-    xeedot(2) = movingMedian(xeedot(2), thetadot_window, 10); //window size = 10
+    xeedot(0) = moving_average(xeedot(0), xdot_window, 20, sumxdot); //window size = 10
+    xeedot(1) = moving_average(xeedot(1), ydot_window, 20, sumydot); //window size = 10
+    xeedot(2) = moving_average(xeedot(2), thetadot_window, 20, sumthetadot); //window size = 10
 
-    xc0dot = movingMedian(xc0dot, xc0dot_window, 10); //window size = 10
-    yc0dot = movingMedian(yc0dot, yc0dot_window, 10); //window size = 10
-    theta0dot = movingMedian(theta0dot, theta0dot_window, 10); //window size = 10
+    xtdot = moving_average(xtdot, xtdot_window, 20, sumxtdot); //window size = 10
+    ytdot = moving_average(ytdot, ytdot_window, 20, sumytdot); //window size = 10
+    thetatdot = moving_average(thetatdot, thetatdot_window, 20, sumthetatdot); //window size = 10
+
+
+    // xc0dot = movingMedian(xc0dot, xc0dot_window, 10); //window size = 10
+    // yc0dot = movingMedian(yc0dot, yc0dot_window, 10); //window size = 10
+    // theta0dot = movingMedian(theta0dot, theta0dot_window, 10); //window size = 10
   }
 }
 
@@ -967,23 +972,23 @@ jebar << je21star-h21star*(h11star.inverse())*je11star, je22star-h21star*(h11sta
 
 qe << 0, force_x, 0;  //den eimai sigouros gia afto
 
-// if(t<=tf){ //allios !incontact
-//   bd = bd_f;
-//   kd = kd_f;
-//   md = md_f;
-//   fdes << 0, 0, 0, 0;
-// }
-// else{
-//   bd = bd_c;
-//   kd = kd_c;
-//   md = md_c;
-//   fdes << 0, 0, fd, 0;
-// }
+if(t<=tf){ //allios !incontact
+  bd = bd_f;
+  kd = kd_f;
+  md = md_f;
+  fdes << 0, 0, 0, 0;
+}
+else{
+  bd = bd_c;
+  kd = kd_c;
+  md = md_c;
+  fdes << 0, 0, fd, 0;
+}
 /*NA TO BGALO META!!!!!*/
-kd = kd_f;
-md = md_f;
-bd = bd_f;
-fdes << 0, 0, 0, 0;
+// kd = kd_f;
+// md = md_f;
+// bd = bd_f;
+// fdes << 0, 0, 0, 0;
 /* MHN TO KSEXASEIS!!!!!*/
 
 // fdes << 0, 0, fd*abs(force_x)/(abs(force_x)+a22), 0;
@@ -1009,7 +1014,7 @@ Eigen::VectorXd qext(4);
 qext << 0, 0, force_x, 0;
 
 
-Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-kp_multiplier*kd*error-bd_multiplier*bd*error_dot-qext + fdes); //borei na thelei 6.4 kai 5.2 alla den pernaei ta oria sto gazebo
+Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-20*kd*error-2*bd*error_dot-qext + fdes); 
 
 
 

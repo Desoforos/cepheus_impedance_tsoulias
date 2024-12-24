@@ -259,7 +259,7 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     // }
     // force_x = moving_average(raw_force_x, force_window, force_window_size, forcesum);
     force_x = raw_force_x; //ase to filtro giati den einai kalo stin arxi
-	if(abs(force_x)<0.35){
+	if(abs(force_x)<1){
 		incontact = false;
 	}
 	else{

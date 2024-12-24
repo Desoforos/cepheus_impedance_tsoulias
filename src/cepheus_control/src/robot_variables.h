@@ -191,10 +191,13 @@ double xsafeclose, ysafeclose,thetasafeclose;
 
 double sumq1 = 0, sumq2 = 0, sumq3 =0;
 double sumq1dot = 0, sumq2dot = 0, sumq3dot =  0;
-double force_x = 0, raw_force_x = 0;
+double force_x, raw_force_x;
 double forcesum = 0;
 int force_window_size = 10;
 int q_window_size = 10;
+double sumxdot = 0, sumydot = 0, sumthetadot =  0;
+double sumxtdot =0, sumytdot =0, sumthetatdot = 0;
+
 
 std::deque<double> q1_window;  // Stores the last N values
 std::deque<double> q2_window;  // Stores the last N values
@@ -208,12 +211,17 @@ std::deque<double> xdot_window;  // Stores the last N values
 std::deque<double> ydot_window;  // Stores the last N values
 std::deque<double> thetadot_window;  // Stores the last N values
 
+std::deque<double> xtdot_window;  // Stores the last N values
+std::deque<double> ytdot_window;  // Stores the last N values
+std::deque<double> thetatdot_window;  // Stores the last N values
+
 std::deque<double> xc0dot_window;  // Stores the last N values
 std::deque<double> yc0dot_window;  // Stores the last N values
 std::deque<double> theta0dot_window;
 
 
 std::deque<double> force_window; 
+
 
 
 Eigen::MatrixXd kp_multiplier(4,4);
