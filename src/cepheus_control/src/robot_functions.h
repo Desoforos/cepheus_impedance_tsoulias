@@ -123,12 +123,12 @@ void calculateTrajecotryPolynomials(double tf){
 
 void finalTrajectories(double t,double tf){
   /*PROTA KANO OVERRIDE TON STOXO GIA TEST XORIS STOXO*/
-    // xt = 0;
-    // yt = 0;
-    // thetat = 0;
-    // xtdot = 0;
-    // ytdot = 0;
-    // thetatdot = 0;
+    xt = 0.0;
+    yt = 0.0;
+    thetat = 0;
+    xtdot = 0;
+    ytdot = 0;
+    thetatdot = 0;
   /*TELOS OVERRIDE, VGALTO OTAN BEI O STOXOS STO TRAPEZI*/
   	if(firstTime){   //initialize the postiion of chaser and target for the first time ONLY
       xE_in = ee_x;
@@ -306,9 +306,9 @@ void updateVel(double dt){
     xeedot(1) = (ee_y-yE_prev)/dt;
     xeedot(2) = (thetach-thetaE_prev)/dt;
 
-    xtdot = (xt-xt_prev)/dt;
-    ytdot = (yt-yt_prev)/dt;
-    thetatdot = (thetat-thetat_prev)/dt;
+    rawxtdot = (rawxt-rawxt_prev)/dt;
+    rawytdot = (rawyt-rawyt_prev)/dt;
+    rawthetatdot = (rawthetat-rawthetat_prev)/dt;
 
     xc0dot = (xc0-xc0_prev)/dt;
     yc0dot = (yc0-yc0_prev)/dt;
@@ -318,9 +318,9 @@ void updateVel(double dt){
     xeedot(1) = moving_average(xeedot(1), ydot_window, 20, sumydot); //window size = 10
     xeedot(2) = moving_average(xeedot(2), thetadot_window, 20, sumthetadot); //window size = 10
 
-    xtdot = moving_average(xtdot, xtdot_window, 20, sumxtdot); //window size = 10
-    ytdot = moving_average(ytdot, ytdot_window, 20, sumytdot); //window size = 10
-    thetatdot = moving_average(thetatdot, thetatdot_window, 20, sumthetatdot); //window size = 10
+    rawxtdot = moving_average(rawxtdot, xtdot_window, 20, sumxtdot); //window size = 10
+    rawytdot = moving_average(rawytdot, ytdot_window, 20, sumytdot); //window size = 10
+    rawthetatdot = moving_average(rawthetatdot, thetatdot_window, 20, sumthetatdot); //window size = 10
 
 
     // xc0dot = movingMedian(xc0dot, xc0dot_window, 10); //window size = 10
@@ -1014,7 +1014,7 @@ Eigen::VectorXd qext(4);
 qext << 0, 0, force_x, 0;
 
 
-Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-20*kd*error-2*bd*error_dot-qext + fdes); 
+Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-9*kd*error-2*bd*error_dot-qext + fdes); 
 
 
 

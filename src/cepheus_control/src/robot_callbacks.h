@@ -45,18 +45,26 @@ void ee_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
     tf::Matrix3x3 m_ee(qee);	
     double rollee, pitchee, yawee;
 	m_ee.getRPY(rollee, pitchee, yawee);
-	thetach = yawee; //angle of chaser(ee)
+	// thetach = yawee; //angle of chaser(ee)
+    if(firstTime){
+        thetach = yawee;
+    }
+    else{
+        if(abs(yawee - thetach) < 15*M_PI/180){
+            thetach = yawee; //angle of chaser(ee)
+        }
+    }
 }
 
 
 void target_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
     if(!firstTime){
-        xt_prev = xt;
-        yt_prev = yt;
-        thetat_prev = thetat;
+        rawxt_prev = rawxt;
+        rawyt_prev = rawyt;
+        rawthetat_prev = rawthetat;
     }
-	xt = msg->transform.translation.x;
-	yt = msg->transform.translation.y;
+	rawxt = msg->transform.translation.x;
+	rawyt = msg->transform.translation.y;
 	tf::Quaternion qt( //for angle of ee
 		msg->transform.rotation.x,
 		msg->transform.rotation.y,
@@ -65,7 +73,15 @@ void target_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
     tf::Matrix3x3 m_t(qt);	
     double rollt, pitcht, yawt;
 	m_t.getRPY(rollt, pitcht, yawt);
-	thetat = yawt; //angle of chaser(ee)
+    if(firstTime){
+        rawthetat = yawt;
+    }
+    else{
+        if(abs(yawt - rawthetat) < 15*M_PI/180){
+            rawthetat = yawt; //angle of chaser(ee)
+        }
+    }
+	// thetat = yawt; //angle of chaser(ee)
 }
 
 void base_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
@@ -258,14 +274,14 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     //     ROS_INFO("[foros_simcontroller]: force_y detected: %f N \n",force_y);
     // }
     // force_x = moving_average(raw_force_x, force_window, force_window_size, forcesum);
-    force_x = raw_force_x; //ase to filtro giati den einai kalo stin arxi
+    // force_x = raw_force_x; //ase to filtro giati den einai kalo stin arxi
+    force_x = 0 ;
 	if(abs(force_x)<1){
 		incontact = false;
 	}
 	else{
 		incontact = true;
 	}
-
 }
 
 void arduinoCallbacktest(const std_msgs::String::ConstPtr &msg){

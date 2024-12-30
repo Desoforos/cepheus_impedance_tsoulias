@@ -245,6 +245,11 @@ int main(int argc, char **argv) {
             msg_xt_x.data = xt;
             msg_xt_y.data = yt;
             msg_xt_theta.data = thetat;
+
+            msg_xt_x_raw.data = rawxt;
+            msg_xt_y_raw.data = rawyt;
+            msg_xt_theta_raw.data = rawthetat;
+
             msg_xt_theta0.data = theta0in;
 
 
@@ -262,6 +267,11 @@ int main(int argc, char **argv) {
             msg_xt_x_dot.data = xtdot;
             msg_xt_y_dot.data = ytdot;
             msg_xt_theta_dot.data = thetatdot;
+
+            msg_xt_x_dot_raw.data = rawxtdot;
+            msg_xt_y_dot_raw.data = rawytdot;
+            msg_xt_theta_dot_raw.data = rawthetatdot;
+
             msg_xt_theta0_dot.data = 0;
 
             msg_xee_x_dot.data = xeedot(0);
@@ -285,6 +295,15 @@ int main(int argc, char **argv) {
             msg_torqueq1.data = tau(1);
             msg_torqueq2.data = tau(2);
             msg_torqueq3.data = tau(3);   
+
+            bag.write("/cepheus/xt_x_raw", ros::Time::now(), msg_xt_x_raw);
+            bag.write("/cepheus/xt_y_raw", ros::Time::now(), msg_xt_y_raw);
+            bag.write("/cepheus/xt_theta_raw", ros::Time::now(), msg_xt_theta_raw);
+
+            bag.write("/cepheus/xt_x_dot_raw", ros::Time::now(), msg_xt_x_dot_raw);
+            bag.write("/cepheus/xt_y_dot_raw", ros::Time::now(), msg_xt_y_dot_raw);
+            bag.write("/cepheus/xt_theta_dot_raw", ros::Time::now(), msg_xt_theta_dot_raw);
+
 
             bag.write("/cepheus/xt_x", ros::Time::now(), msg_xt_x);
             bag.write("/cepheus/xd_x", ros::Time::now(), msg_xd_x);

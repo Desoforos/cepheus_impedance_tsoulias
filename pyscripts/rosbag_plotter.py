@@ -48,6 +48,7 @@ torquerw, torqueq1, torqueq2, torqueq3 = [], [], [], []
 
 
 
+
 # Open bag file
 bag = rosbag.Bag(bag_file)
 
@@ -169,12 +170,13 @@ sampling_frequency = 200  # Hz
 time_stamps= np.arange(0, len(xt_x)) / sampling_frequency
 time_stamps -= time_stamps[0]  # Start from 0
 
-desired_secs = 50
+# desired_secs = 50
 
-des_len = sampling_frequency*desired_secs
-# des_len = len(xee_x)
+# des_len = sampling_frequency*desired_secs
+des_len = len(xee_x)
 
 
+print("xstep[0] is: ",xd_x[0])
 
 #smoothen the plots:
 # xee_x = savgol_filter(xee_x, window_length=51, polyorder=3)
@@ -412,11 +414,11 @@ plt.tight_layout()
 
 # Show all plots in one window
 plt.show()
-fext_smoothed = fext_x.copy()
-fext_smoothed = smoothlist(fext_smoothed)
+# fext_smoothed = fext_x.copy()
+# fext_smoothed = smoothlist(fext_smoothed)
 
-for i in range(0,200*10):
-    fext_x[i] = 0
+# for i in range(0,200*10):
+#     fext_x[i] = 0
 
 # External Force (X-axis)
 plt.figure()

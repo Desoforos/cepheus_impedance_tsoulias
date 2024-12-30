@@ -2,7 +2,7 @@
 #include <typeinfo>
 
 bool beginGrab = false;
-bool incontact =false;
+bool ardincontact =false;
 bool beginSoft = false;
 bool softFinished = false;
 bool beginHard = false;
@@ -57,12 +57,12 @@ void arduinoCallbacktest(const std_msgs::String::ConstPtr &msg){
 void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     raw_force_x = abs(msg->wrench.force.z); //etsi einai mapped apo to botasys
     // std::cout<<"(forceCallback) I read: "<<force_X<<" N. "<<std::endl;
-    force_x = moving_average(raw_force_x, force_window, force_window_size, forcesum);
+    // force_x = moving_average(raw_force_x, force_window, force_window_size, forcesum);
 	if(abs(raw_force_x)<0.4){
-		incontact = false;
+		ardincontact = false;
 	}
 	else{
-		incontact = true;
+		ardincontact = true;
 	}
 }
 
@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
 
 
     while(ros::ok() && !shutdown_requested){
-        if(incontact){
+        if(ardincontact){
             contactCounter++;
             }
         else{

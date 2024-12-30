@@ -32,14 +32,16 @@ double ee_x, ee_y; //ee_Z not needed
 double xc0, yc0, xc0dot, yc0dot; //center of mass of base
 double thetach; //orientation of chaser (end effector)
 double xE_prev,yE_prev, thetaE_prev;
-double xt_prev = 0, yt_prev = 0, thetat_prev = 0;
+double rawxt_prev = 0, rawyt_prev = 0, rawthetat_prev = 0;
 double xc0_prev, yc0_prev, theta0_prev;
 
 
 /*Target's variables*/
 double xt,yt;  //xtarget, ytarget, pros to paron einai idia me to ring_x,ring_y
 double thetat; //angle of target (orientation)
+double rawxt, rawyt, rawthetat;
 double xtdot, ytdot, thetatdot;
+double rawxtdot, rawytdot, rawthetatdot;
 double xt_in, yt_in, thetat_in;     //arxikh thesh target (ring)
 
 /*Messages to publish */
@@ -61,6 +63,10 @@ std_msgs::Float64 msg_xd_theta; //xd_y
 std_msgs::Float64 msg_xt_x; 
 std_msgs::Float64 msg_xt_y; 
 std_msgs::Float64 msg_xt_theta; 
+
+std_msgs::Float64 msg_xt_x_raw; 
+std_msgs::Float64 msg_xt_y_raw; 
+std_msgs::Float64 msg_xt_theta_raw; 
 
 std_msgs::Float64 msg_xee_x; 
 std_msgs::Float64 msg_xee_y; 
@@ -130,7 +136,7 @@ bool hardFinished = false;
 bool gripperListenedSoft = false;
 bool gripperListenedHard = false;
 
-int contactCounter = 0;
+// int contactCounter = 0;
 
 bool firstTimeq1 = true;
 bool firstTimeq2 = true;
@@ -172,6 +178,11 @@ std_msgs::Float64 msg_xd_theta0_dot; //xd_y
 std_msgs::Float64 msg_xt_x_dot; 
 std_msgs::Float64 msg_xt_y_dot; 
 std_msgs::Float64 msg_xt_theta_dot; 
+
+std_msgs::Float64 msg_xt_x_dot_raw; 
+std_msgs::Float64 msg_xt_y_dot_raw; 
+std_msgs::Float64 msg_xt_theta_dot_raw; 
+
 std_msgs::Float64 msg_xt_theta0_dot; 
 
 std_msgs::Float64 msg_xee_x_dot; 
