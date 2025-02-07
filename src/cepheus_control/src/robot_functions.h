@@ -3,10 +3,35 @@
 #include "includes.h"
 #include "robot_variables.h"
 
+const std::vector<double> SG_COEFFS = { 
+    -2.0 / 252, -1.0 / 126, 0, 1.0 / 84, 2.0 / 63, 3.0 / 56, 
+    2.0 / 63, 1.0 / 84, 0, -1.0 / 126, -2.0 / 252 
+};
+
+// Function to apply Savitzky-Golay filtering
+double savitzkyGolayFilter(std::deque<double>& history, double new_value, double dt) {
+    const int N = SG_COEFFS.size(); // Window size (should match coefficients)
+    
+    // Maintain history buffer
+    history.push_back(new_value);
+    if (history.size() > N) history.pop_front();
+
+    // Only apply filter when we have enough data points
+    if (history.size() < N) return 0.0;
+
+    // Compute filtered derivative
+    double velocity = 0.0;
+    for (int i = 0; i < N; ++i) {
+        velocity += SG_COEFFS[i] * history[i];
+    }
+    return velocity / dt;
+}
+
 
 void initialiseParameters(){
     /*gia peirama me kosta 25/7/24*/
     // m0 = 53/5;
+    m0 = 12;
     // l0 = 0;
     r0x=0.1425;
     // r0y=-0.08225;
@@ -33,21 +58,25 @@ void initialiseParameters(){
     /*apo alex*/
     m1 = 0.4409;
     m2 = 0.1304;
-    m3 = 0.45;  //peripou
+    m3 = 1; //0.45;  //peripou
     
     l1 = 0.269;
-    l2 = 0.143;
+    // l2 = 0.143;
+    l2 = 0.15
     l3 = 0.15; //peripoy
 
     r1 = 0.1010;
     r2 = 0.143;
+    // r2 = 0.15;
     r3 = 0.15;  //peripoy
 
     
-    ibzz = 2.24/5; //peripou
+    // ibzz = 2.24/5; //peripou
+    ibzz = 0.27;
     i1zz = 0.0068;
     i2zz = 0.010;
-    i3zz = 0.006; //peripoy
+    // i2zz = 0.00098475;
+    i3zz = 0.007908; //peripoy
 
     /*telos alex*/
 
@@ -62,20 +91,35 @@ void initialiseParameters(){
 
     M = m0 + m1 + m2 + m3;
 
-    kp_multiplier << 9.5, 0, 0, 0,
-                0, 9.5, 0, 0,
-                0, 0, 9.5, 0,
-                0, 0, 0, 10;
+    // kp_multiplier << 25, 0, 0, 0,
+    //             0, 25, 0, 0,
+    //             0, 0, 25, 0,
+    //             0, 0, 0, 25;
 
-    bd_multiplier << 2, 0, 0, 0,
-                0, 0.2, 0, 0,
-                0, 0, 0.2, 0,
-                0, 0, 0, 0.2;
+    // bd_multiplier << 1.5, 0, 0, 0,
+    //             0, 0.5, 0, 0,
+    //             0, 0, 0.5, 0,
+    //             0, 0, 0, 0.5;
+
+    kp_multiplier << 0.5, 0, 0, 0,
+                0, 2.5, 0, 0,
+                0, 0, 2.8, 0,
+                0, 0, 0, 1.5;
+
+    bd_multiplier << 20, 0, 0, 0,
+                0, 0.0, 0, 0,
+                0, 0, 0.0, 0,
+                0, 0, 0, 0.0;
+
+                  // tau(0) = 0.5*(theta0in - theta0) + 2*(0-theta0dot);
+  // tau(1) = -1.4*(0.75*error[1]+0.25*error[2]) - 0.0*(0.75*error_dot[1]+0.25*error_dot[2]); //q1 mono gia x
+  // tau(2) = -1.25*(0.25*error[1]+0.75*error[2]) - 0.0*(0.25*error_dot[1]+0.75*error_dot[2]); //q2 mono gia y
+  // tau(3) = -0.75*(thetach - thstep) - 0.0*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
 
 
 }
 
-double movingMedian(double new_value, std::deque<double>& window, int window_size) {
+double movingMedian(double new_value, std::deque<double>& window, int window_size, double alpha, double smoothed_value) {
     // Add the new value to the window
     window.push_back(new_value);
 
@@ -89,12 +133,16 @@ double movingMedian(double new_value, std::deque<double>& window, int window_siz
     std::sort(sorted_window.begin(), sorted_window.end());
 
     // Find the median
-    int n = sorted_window.size();
-    if (n % 2 == 0) {
-        return (sorted_window[n / 2 - 1] + sorted_window[n / 2]) / 2.0;
-    } else {
-        return sorted_window[n / 2];
-    }
+    // int n = sorted_window.size();
+    // if (n % 2 == 0) {
+    //     return (sorted_window[n / 2 - 1] + sorted_window[n / 2]) / 2.0;
+    // } else {
+    //     return sorted_window[n / 2];
+    // }
+    double median_value = sorted_window[sorted_window.size() / 2];
+    smoothed_value = alpha * median_value + (1 - alpha) * smoothed_value;
+    // return smoothed_value;
+    return median_value;
 }
 
 void calculateTrajecotryPolynomials(double tf){
@@ -123,14 +171,15 @@ void calculateTrajecotryPolynomials(double tf){
 
 void finalTrajectories(double t,double tf){
   /*PROTA KANO OVERRIDE TON STOXO GIA TEST XORIS STOXO*/
-    xt = 0.0;
-    yt = 0.0;
-    thetat = 0;
-    xtdot = 0;
-    ytdot = 0;
-    thetatdot = 0;
+  xt = 0.94;
+  yt = 0.86;
+  thetat = 0;//M_PI/4; // M_PI/2;
+  xtdot = 0.0;
+  ytdot = 0.0;
+  thetatdot = 0;
+  force_x = raw_force_x = 0;
   /*TELOS OVERRIDE, VGALTO OTAN BEI O STOXOS STO TRAPEZI*/
-  	if(firstTime){   //initialize the postiion of chaser and target for the first time ONLY
+  if(firstTime){   //initialize the postiion of chaser and target for the first time ONLY
       xE_in = ee_x;
       yE_in = ee_y;
       xt_in = xt;
@@ -141,10 +190,7 @@ void finalTrajectories(double t,double tf){
       theta0fin = theta0;
       firstTime = false;
       ROS_INFO("[in final trajectories]: First positions have been recorded (xE_in etc). \n");
-    }
-
-
-
+  }
     double s,sdot, sdotdot;
 
     s = a0 + a1*t + a2*pow(t,2) + a3*pow(t,3) + a4*pow(t,4) + a5*pow(t,5);
@@ -159,41 +205,23 @@ void finalTrajectories(double t,double tf){
     double a11 = pow(10,7);
     double a22 = pow(10,-7);
 
-    if(t<=tf){
-      xstepfr = xE_in + s*(xt_in - xE_in);
-      ystepfr = yE_in + s*(yt_in - yE_in);
-      thstepfr = thetaE_in + s*(thetat_in - thetaE_in);
-      theta0stepfr = theta0in + s*(theta0fin - theta0in);
+    xstepfr = xE_in + s*(xt_in - xE_in);
+    ystepfr = yE_in + s*(yt_in - yE_in);
+    thstepfr = thetaE_in + s*(thetat_in - thetaE_in);
+    theta0stepfr = theta0in + s*(theta0fin - theta0in);
 
-      xstepdotfr = sdot*(xt_in-xE_in);
-      ystepdotfr = sdot*(yt_in - yE_in);
-      thstepdotfr = sdot*(thetat_in - thetaE_in);
-      theta0stepdotfr =  sdot*(theta0fin - theta0in);
+    xstepdotfr = sdot*(xt_in-xE_in);
+    ystepdotfr = sdot*(yt_in - yE_in);
+    thstepdotfr = sdot*(thetat_in - thetaE_in);
+    theta0stepdotfr =  sdot*(theta0fin - theta0in);
 
-      xstepdotdotfr = sdotdot*(xt_in-xE_in);
-      ystepdotdotfr = sdotdot*(yt_in - yE_in);
-      thstepdotdotfr = sdotdot*(thetat_in - thetaE_in);
-      theta0stepdotdotfr =  sdotdot*(theta0fin - theta0in);
-    }
-    else{
-      xstepfr = xt_in;
-      ystepfr = yt_in;
-      thstepfr = thetat_in;
-      theta0stepfr = theta0fin;
-
-      xstepdotfr = 0;
-      ystepdotfr = 0;
-      thstepdotfr = 0;
-      theta0stepdotfr = 0;
-
-      xstepdotdotfr = 0;
-      ystepdotdotfr = 0;
-      thstepdotdotfr = 0;
-      theta0stepdotdotfr = 0;
-    }
-
-    xstepc = xt + 0.001; //gia na ginei h synexhs epafh, vevaiosou oti einai plhros orizontia , allios 0.0001*cos(xee(2));
-    ystepc = yt;           //allios 0.0001*sin(xee(2));
+    xstepdotdotfr = sdotdot*(xt_in-xE_in);
+    ystepdotdotfr = sdotdot*(yt_in - yE_in);
+    thstepdotdotfr = sdotdot*(thetat_in - thetaE_in);
+    theta0stepdotdotfr =  sdotdot*(theta0fin - theta0in);
+    
+    xstepc = xt; //na to balo + 0.001; //gia na ginei h synexhs epafh, vevaiosou oti einai plhros orizontia , allios 0.0001*cos(xee(2));
+    ystepc = yt;           //allios 0.0001*sin(xee(2)); na to valo sto y allaksa tous aksones
     thstepc = thetat;
     theta0stepc = theta0fin;
 
@@ -207,40 +235,24 @@ void finalTrajectories(double t,double tf){
     thstepdotdotc = 0;
     theta0stepdotdotc = 0;
 
-    // xstep = xstepfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+xstepc*(abs(force_x)/(abs(force_x)+a22));
-    // xstepdot = xstepdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+xstepdotc*(abs(force_x)/(abs(force_x)+a22));
-    // xstepdotdot = xstepdotdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+xstepdotdotc*(abs(force_x)/(abs(force_x)+a22));
+    xstep = xstepfr;
+    ystep = ystepfr;
+    thstep = thstepfr;
+    theta0step = theta0stepfr;
 
-    // ystep = ystepfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+ystepc*(abs(force_x)/(abs(force_x)+a22));
-    // ystepdot = ystepdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+ystepdotc*(abs(force_x)/(abs(force_x)+a22));
-    // ystepdotdot = ystepdotdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+ystepdotdotc*(abs(force_x)/(abs(force_x)+a22));
+    xstepdot = xstepdotfr;
+    ystepdot = ystepdotfr;
+    thstepdot = thstepdotfr;
+    theta0stepdot = theta0stepdotfr;
 
-    // thstep = thstepfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+thstepc*(abs(force_x)/(abs(force_x)+a22));
-    // thstepdot = thstepdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+thstepdotc*(abs(force_x)/(abs(force_x)+a22));
-    // thstepdotdot = thstepdotdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+thstepdotdotc*(abs(force_x)/(abs(force_x)+a22));
+    xstepdotdot = xstepdotdotfr;
+    ystepdotdot = ystepdotdotfr;
+    thstepdotdot = thstepdotdotfr;
+    theta0stepdotdot = theta0stepdotdotfr;
+  
 
-    // theta0step = theta0stepfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+theta0stepc*(abs(force_x)/(abs(force_x)+a22));
-    // theta0stepdot = theta0stepdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+theta0stepdotc*(abs(force_x)/(abs(force_x)+a22));
-    // theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(force_x)/a11)/(1+a11*abs(force_x)))+theta0stepdotdotc*(abs(force_x)/(abs(force_x)+a22));
 
-  /*NA TO ANOIKSO META!!!!!!!!!*/
-    if(t<=tf){ //allios incontact isos kalytera me xrono
-      xstep = xstepfr;
-      ystep = ystepfr;
-      thstep = thstepfr;
-      theta0step = theta0stepfr;
-
-      xstepdot = xstepdotfr;
-      ystepdot = ystepdotfr;
-      thstepdot = thstepdotfr;
-      theta0stepdot = theta0stepdotfr;
-
-      xstepdotdot = xstepdotdotfr;
-      ystepdotdot = ystepdotdotfr;
-      thstepdotdot = thstepdotdotfr;
-      theta0stepdotdot = theta0stepdotdotfr;
-    }
-    else{
+    if(t>tf){ //allios incontact isos kalytera me xrono
       xstep = xstepc;
       ystep = ystepc;
       thstep = thstepc;
@@ -255,7 +267,7 @@ void finalTrajectories(double t,double tf){
       ystepdotdot = ystepdotdotc;
       thstepdotdot = thstepdotdotc;
       theta0stepdotdot = theta0stepdotdotc;
-    }
+    } //to vgazo gia tora 
 
   /*gia dokimi*/
       // xstep = xstepfr;
@@ -289,7 +301,8 @@ void finalTrajectories(double t,double tf){
     // msg_xee_theta.data = thetach;
 }
 
-void updateVel(double dt){
+void updateVel(double dt, double t, double tf){
+  double xdottemp, ydottemp, thetadottemp, theta0dottemp;
   if(firstTime){
     xeedot(0) = 0;
     xeedot(1) = 0;
@@ -302,30 +315,83 @@ void updateVel(double dt){
     theta0dot = 0;
   }
   else{
-    xeedot(0) = (ee_x-xE_prev)/dt;
-    xeedot(1) = (ee_y-yE_prev)/dt;
-    xeedot(2) = (thetach-thetaE_prev)/dt;
+    xdotprev = xeedot(0);
+    ydotprev = xeedot(1);
+    thetadotprev = xeedot(2);
+    xtdotprev = xtdot;
+    ytdotprev = ytdot;
+    thetatdotprev = thetatdot;
+    xc0dotprev = xc0dot;
+    yc0dotprev = yc0dot;
+    theta0dotprev = theta0dot;
 
-    rawxtdot = (rawxt-rawxt_prev)/dt;
-    rawytdot = (rawyt-rawyt_prev)/dt;
-    rawthetatdot = (rawthetat-rawthetat_prev)/dt;
+    ee_x = moving_average(ee_x, xwindow, 6,sumx);
+    // ee_y = moving_average(ee_y, ywindow, 6,sumy);
+    thetach = moving_average(thetach, thetawindow, 6, sumtheta);
+
+    xdottemp = (ee_x-xE_prev)/dt;
+    ydottemp = (ee_y-yE_prev)/dt;
+    thetadottemp = (thetach-thetaE_prev)/dt;
+
+    // xtdot = (xt-xt_prev)/dt;
+    // ytdot = (yt-yt_prev)/dt;
+    // thetatdot = (thetat-thetat_prev)/dt;
 
     xc0dot = (xc0-xc0_prev)/dt;
     yc0dot = (yc0-yc0_prev)/dt;
-    theta0dot = (theta0-theta0_prev)/dt;
+    theta0dottemp = (theta0-theta0_prev)/dt;
 
-    xeedot(0) = moving_average(xeedot(0), xdot_window, 20, sumxdot); //window size = 10
-    xeedot(1) = moving_average(xeedot(1), ydot_window, 20, sumydot); //window size = 10
-    xeedot(2) = moving_average(xeedot(2), thetadot_window, 20, sumthetadot); //window size = 10
+    if(t<=tf){  //evgala to t<=tf
+      xtdot = 0;
+      ytdot = 0;
+      thetatdot = 0;
+    }
+    else{
+      xtdot = (xt-xt_prev)/dt;
+      ytdot = (yt-yt_prev)/dt;
+      thetatdot = (thetat-thetat_prev)/dt;
 
-    rawxtdot = moving_average(rawxtdot, xtdot_window, 20, sumxtdot); //window size = 10
-    rawytdot = moving_average(rawytdot, ytdot_window, 20, sumytdot); //window size = 10
-    rawthetatdot = moving_average(rawthetatdot, thetatdot_window, 20, sumthetatdot); //window size = 10
+      xtdot = movingMedian(xtdot, xtdot_window, 3, 0.1, xtdotprev); //window size = 10
+      ytdot = movingMedian(ytdot, ytdot_window, 3, 0.1, ytdotprev); //window size = 10
+      thetatdot = movingMedian(thetatdot, thetatdot_window, 3, 0.1, thetadotprev); //window size = 10
+    }
 
+    // xeedot(0) = movingMedian(xeedot(0), xdot_window, 11, 0.1, xdotprev); //window size = 10
+    // xeedot(1) = movingMedian(xeedot(1), ydot_window, 11, 0.1, ytdotprev); //window size = 10
+    // xeedot(2) = movingMedian(xeedot(2), thetadot_window, 11, 0.1, thetatdotprev); //window size = 10
 
-    // xc0dot = movingMedian(xc0dot, xc0dot_window, 10); //window size = 10
-    // yc0dot = movingMedian(yc0dot, yc0dot_window, 10); //window size = 10
-    // theta0dot = movingMedian(theta0dot, theta0dot_window, 10); //window size = 10
+    // if(abs(xeedot(0) - xdottemp)<0.01){
+    //   xeedot(0) = xdottemp;
+    //   // xeedot(0) = moving_average(xeedot(0), xdot_window, 10, sumxdot); //window size = 10
+    // }
+    // if(abs(xeedot(1) - ydottemp)<0.01){
+    //   xeedot(1) = ydottemp;
+    //   // xeedot(1) = moving_average(xeedot(1), ydot_window, 10, sumydot); //window size = 10
+    // }
+    // if(abs(xeedot(2) - thetadottemp)< 3*M_PI/180){
+    //   xeedot(2) = thetadottemp;
+    //   // xeedot(2) = moving_average(xeedot(2), thetadot_window, 10, sumthetadot); //window size = 10
+    // }
+    // if(abs(theta0dot - theta0dottemp)< 3*M_PI/180){
+    //   theta0dot = theta0dottemp;
+    //   // theta0dot = moving_average(theta0dot, theta0dot_window, 10, sumtheta0dot);
+    // }
+    xeedot(0) = moving_average(xdottemp, xdot_window, 6, sumxdot); //window size = 10
+    // xeedot(1) = moving_average(ydottemp, ydot_window, 6, sumydot); //window size = 10
+    xeedot(1) = ydottemp;
+    xeedot(2) = moving_average(thetadottemp, thetadot_window, 6, sumthetadot); //window size = 10
+    theta0dot = moving_average(theta0dottemp, theta0dot_window, 6, sumtheta0dot);
+    
+
+    
+
+    // xeedot(0) = savitzkyGolayFilter(xhistory, ee_x, 0.005); //N=11 values
+    // xeedot(1) = savitzkyGolayFilter(yhistory, ee_y, 0.005);
+    // xeedot(2) = savitzkyGolayFilter(thetahistory, thetach, 0.005);
+
+    xc0dot = movingMedian(xc0dot, xc0dot_window, 10, 0.1, xc0dotprev); //window size = 10
+    yc0dot = movingMedian(yc0dot, yc0dot_window, 10, 0.1, yc0dotprev); //window size = 10
+    // theta0dot = movingMedian(theta0dot, theta0dot_window, 11, 0.1, theta0dotprev); //window size = 10
   }
 }
 
@@ -335,39 +401,91 @@ double filter_torque(double torq, double prev) {
 		torq = 0.00001;
 		if (prev < 0.0)
 			torq = torq * -1;
-		printf("CHANGED ZERO TORQUE\n");
+		// printf("CHANGED ZERO TORQUE\n");
 	}
 	return torq;
 }
 
-// void PDcontroller(){
-//   Eigen::VectorXd error(4); //ta sxolia einai gia aplo PD xoris ton xrono
+void PDcontroller(double tf, double t){
+  double ts = 0.2*tf;
+  double z = 1;
+  double wn = 6/ts;
+  double jm = 8.85*pow(10,-7); //apo manual kinhthra braxiona
+  double tm = 3.4*pow(10,-3); //apo manual kinhthra braxiona
+  double bm = jm/tm;
 
-//   error << (theta0 - theta0step), (ee_x - xstep), (ee_y - ystep), (thetach - thstep);
-//   // error << (theta0 - theta0in), (ee_x - xt), (ee_y - yt), (thetach - thetat);
+  double kp = wn*wn*jm;
+  double kd = 2*z*wn*jm - bm;
 
-//   Eigen::VectorXd error_dot(4);
-//   error_dot << (theta0dot - theta0stepdot), (xeedot(0) - xstepdot), (xeedot(1) - ystepdot), (xeedot(2) - thstepdot);
-//   // error_dot << (theta0dot - 0), (xeedot(0) - 0), (xeedot(1) - 0), (xeedot(2) - 0);
-//   prev_tau(0) = tau(0);
-//   prev_tau(1) = tau(1);
-//   prev_tau(2) = tau(2);
-//   prev_tau(3) = tau(3);
+  Eigen::MatrixXd kp_multiplier(4,4);
+  Eigen::MatrixXd bd_multiplier(4,4);
 
-//   tau(0) = 0.5*(theta0in - theta0) + 2*(0-theta0dot);
-//   tau(1) = -1.8*(0.3*error[1]+0.7*error[2]) - 0.6*(0.3*error_dot[1]+0.7*error_dot[2]);
-//   tau(2) = -1.7*(0.7*error[1]+0.3*error[2]) - 0.4*(0.7*error_dot[1]+0.3*error_dot[2]);
-//   tau(3) = -0.8*(thetach - thstep) - 0.3*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
-//   /*metatropi gia tous motors kai meiothres*/
-//   tau(1) = -tau(1)/186;
-//   tau(2) = tau(2)/186;
-//   tau(3) = -tau(3)/186;
-//   msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
-//   // msg_RW.data = ns;
-//   msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
-//   msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
-//   msg_LW.data = filter_torque(tau(3),prev_tau(3)); //tau(3);
-// }
+
+  // kp_multiplier << 0.5, 0, 0, 0,
+  //               0, 100*kp, 0, 0,
+  //               0, 0, 100*kp, 0,
+  //               0, 0, 0, 100*kp;
+
+  // bd_multiplier << 20, 0, 0, 0,
+  //               0, kd, 0, 0,
+  //               0, 0, kd, 0,
+  //               0, 0, 0, kd;
+  kp_multiplier << 0.5, 0, 0, 0,
+                0, 2, 0.5, 0,
+                0, 0.5, 2.5, 0,
+                0, 0, 0, 1.5;
+
+  bd_multiplier << 20, 0, 0, 0,
+                0, 0.05, 0.001, 0,
+                0, 0.001, 0.05, 0,
+                0, 0, 0, 0.05;
+
+
+
+
+  Eigen::VectorXd error(4); //ta sxolia einai gia aplo PD xoris ton xrono
+
+  // error << (theta0 - theta0step), (ee_x - xstep), (ee_y - ystep), (thetach - thstep); //to sosto eos 24-1
+  // error << (theta0 - theta0in), (ee_x - xt), (ee_y - yt), (thetach - thetat);
+  error << (theta0in - theta0), (xstep - ee_x), (ystep - ee_y), (thstep - thetach);
+
+  Eigen::VectorXd error_dot(4);
+  error_dot << (0 - theta0dot), (xstepdot - xeedot(0)), (ystepdot - xeedot(1)), (thstepdot - xeedot(2)); 
+
+  // error_dot << (theta0dot - 0), (xeedot(0) - 0), (xeedot(1) - 0), (xeedot(2) - 0);
+  prev_tau(0) = tau(0);
+  prev_tau(1) = tau(1);
+  prev_tau(2) = tau(2);
+  prev_tau(3) = tau(3);
+
+  // tau(0) = 0.5*(theta0in - theta0) + 2*(0-theta0dot);
+  // tau(1) = -1.4*(0.75*error[1]+0.25*error[2]) - 0.0*(0.75*error_dot[1]+0.25*error_dot[2]); //q1 mono gia x
+  // tau(2) = -1.25*(0.25*error[1]+0.75*error[2]) - 0.0*(0.25*error_dot[1]+0.75*error_dot[2]); //q2 mono gia y
+  // tau(3) = -0.75*(thetach - thstep) - 0.0*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
+
+  tau = kp_multiplier*error + bd_multiplier*error_dot;
+
+  // tau(0) = 0.5*(theta0in - theta0) + 2*(0-theta0dot);
+  // tau(1) = -1.4*(0.75*error[1]+0.25*error[2]) - 0.0*(0.75*error_dot[1]+0.25*error_dot[2]); //q1 mono gia x
+  // tau(2) = -1.25*(0.25*error[1]+0.75*error[2]) - 0.0*(0.25*error_dot[1]+0.75*error_dot[2]); //q2 mono gia y
+  // tau(3) = -0.75*(thetach - thstep) - 0.0*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
+  // /*metatropi gia tous motors kai meiothres*/
+  tau(1) = -tau(1)/186;
+  tau(2) = tau(2)/186;
+  tau(3) = -tau(3)/186;
+  msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
+  // msg_RW.data = ns;
+  msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
+  msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
+  msg_LW.data = filter_torque(tau(3),prev_tau(3)); //tau(3);
+
+  if(!show){
+    std::cout << "Kp array is: "<< kp_multiplier<<std::endl;
+    std::cout << "Kd array is: "<< bd_multiplier<<std::endl;
+    
+    show = !show;
+  }
+}
 
 
 
@@ -461,8 +579,10 @@ void controller(int count, double tf, double t){
   double z_free=1;
   double ts_f=0.2*tf;
   double wn_free=6/ts_f;
-  double kdf=1;
-  double mdf=kdf/pow(wn_free,2);
+  // double kdf=1.5;
+  // double mdf=kdf/pow(wn_free,2);
+  double mdf = 2;
+  double kdf = mdf*pow(wn_free,2);
   double bdf=2*z_free*wn_free*mdf;
   Eigen::MatrixXd md_f = mdf*Eigen::MatrixXd::Identity(4,4);
   Eigen::MatrixXd bd_f = bdf*Eigen::MatrixXd::Identity(4,4);
@@ -972,23 +1092,25 @@ jebar << je21star-h21star*(h11star.inverse())*je11star, je22star-h21star*(h11sta
 
 qe << 0, force_x, 0;  //den eimai sigouros gia afto
 
-if(t<=tf){ //allios !incontact
-  bd = bd_f;
-  kd = kd_f;
-  md = md_f;
-  fdes << 0, 0, 0, 0;
-}
-else{
-  bd = bd_c;
-  kd = kd_c;
-  md = md_c;
-  fdes << 0, 0, fd, 0;
-}
+// if(t<=tf){ //allios !incontact //t<=tf
+//   force_x = 0;
+//   bd = bd_f;
+//   kd = kd_f;
+//   md = md_f;
+//   fdes << 0, 0, 0, 0;
+// }
+// else{
+//   bd = bd_c;
+//   kd = kd_c;
+//   md = md_c;
+//   fdes << 0, 0, fd, 0;
+//   force_x = 0; //(0.08 + raw_force_x)/2;
+// }
 /*NA TO BGALO META!!!!!*/
-// kd = kd_f;
-// md = md_f;
-// bd = bd_f;
-// fdes << 0, 0, 0, 0;
+kd = kd_f;
+md = md_f;
+bd = bd_f;
+fdes << 0, 0, 0, 0;
 /* MHN TO KSEXASEIS!!!!!*/
 
 // fdes << 0, 0, fd*abs(force_x)/(abs(force_x)+a22), 0;
@@ -998,6 +1120,19 @@ else{
 
 // xdotdot_des=[theta0dotdot_des;xEdotdot_des;thetaEdotdot_des);
 xdotdot_des<< theta0stepdotdot, xstepdotdot, ystepdotdot, thstepdotdot;
+
+
+// if(count <1){  //giati to xstep[0] einai 0, akyro vrhka ton logo sto record
+//   xstep = ee_x;
+//   ystep = ee_y;
+//   thstep = thetach;
+//   theta0step = theta0;
+
+//   xstepdot = 0;
+//   ystepdot = 0;
+//   thstepdot = 0;
+//   theta0stepdot = 0;
+// }
 
 
 
@@ -1014,19 +1149,28 @@ Eigen::VectorXd qext(4);
 qext << 0, 0, force_x, 0;
 
 
-Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-9*kd*error-2*bd*error_dot-qext + fdes); 
+Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-kd*error-bd*error_dot-qext + fdes);  //kd = 1, bd=2 kd=0.325 , bd = 0.2
 
 
 
 Eigen::VectorXd qbar=hbar*u+cbar-jebar*qe;
 
+
+
+
+tau = (jbar.inverse())*qbar;
+
+// if(count <1){  //giati to xstep[0] einai 0
+//   std::cout<<"frist torques zero"<<std::endl;
+//   tau(0) = tau(1) = tau(2) = tau(3) = 0.00001;
+// }
+
+// tau(0) = 0.5*(theta0in - theta0) + 2*(0 - theta0dot); 
+
 prev_tau(0) = tau(0);
 prev_tau(1) = tau(1);
 prev_tau(2) = tau(2);
 prev_tau(3) = tau(3);
-
-
-tau = (jbar.inverse())*qbar;
 
 
 // if((abs(tau(0))> maxtorque) || (abs(tau(1))>maxtorque) || (abs(tau(2))>maxtorque) || (abs(tau(3))>maxtorque)){
@@ -1062,97 +1206,105 @@ tau(3) = -tau(3)/186;
 
 //std::cout<<"/////////////////"<<std::endl;
 if(count%100 == 0){
-  std::cout<<"time is: "<<t<<" sec"<<std::endl;
-  std::cout<<"xstep is: "<<xstep<<std::endl;
-  std::cout<<"ystep is: "<<ystep<<std::endl;
-  std::cout<<"thstep is: "<<thstep<<std::endl;
+  show = !show;  //giati einaI 200Hz kai thelo na deixnei ana 1 sec 
+  if(show){
+    std::cout<<"time is: "<<t<<" sec"<<std::endl;
+    std::cout<<"xstep is: "<<xstep<<std::endl;
+    std::cout<<"ystep is: "<<ystep<<std::endl;
+    std::cout<<"thstep is: "<<thstep<<std::endl;
 
-  // std::cout<<"md is: "<<md<<std::endl;
-  // std::cout<<"kd is: "<<kd<<std::endl;
-  // std::cout<<"bd is: "<<bd<<std::endl;
+    // std::cout<<"md is: "<<md<<std::endl;
+    std::cout<<"kd_f is: "<<kd_f<<std::endl;
+    std::cout<<"bd_f is: "<<bd_f<<std::endl;
 
-  // std::cout<<" ee x is: "<<ee_x<<std::endl;
-	// std::cout<<" ee y is: "<<ee_y<<std::endl;
-	// std::cout<<" ee theta is: "<<thetach<<std::endl;
-  // std::cout<<"eex dot is: "<<xeedot(0)<<std::endl;
-  // std::cout<<"eey dot is: "<<xeedot(1)<<std::endl;
-  // std::cout<<"eetheta dot is: "<<xeedot(2)<<std::endl;
-
-  // std::cout<<"xt_in is: "<<xt_in<<std::endl;
-  // std::cout<<"yt_in is: "<<yt_in<<std::endl;
-  // std::cout<<"thetat_in is: "<<thetat_in<<std::endl;
-
-
-  // std::cout<<"theta0 is: "<<theta0<<std::endl;
-  // std::cout<<"theta0dot is: "<<theta0dot<<std::endl;
-  // std::cout<<"xc0 is: "<<xc0<<std::endl;
-  // std::cout<<"yc0 is: "<<yc0<<std::endl; 
-  // std::cout<<"xc0dot is: "<<xc0dot<<std::endl;
-  // std::cout<<"yc0dot is: "<<yc0dot<<std::endl;
-
-  // std::cout<<" q1 is: "<<q1<<std::endl;
-  // std::cout<<" q2 is: "<<q2<<std::endl;
-  // std::cout<<" q3 is: "<<q3<<std::endl;
-  // std::cout<<" q1dot is: "<<q1dot<<std::endl;
-  // std::cout<<" q2dot is: "<<q2dot<<std::endl;
-  // std::cout<<" q3dot is: "<<q3dot<<std::endl;
-
-  std::cout<<"fextx is: "<<force_x<<" N"<<std::endl;
-
-  std::cout<<"error is: "<<error<<std::endl;
-  std::cout<<"errordot is: "<<error_dot<<std::endl;
-
-  std::cout<<"rw torque is:  "<<tau(0)<<" Nm. "<< std::endl;
-  std::cout<<"q1 torque is:  "<<-tau(1)*186<<" Nm. "<< std::endl;
-  std::cout<<"q2 torque is:  "<<tau(2)*186<<" Nm. "<< std::endl;
-  std::cout<<"q3 torque is:  "<<-tau(3)*186<<" Nm. "<< std::endl;
-
-
-  // std::cout<<"h is: "<<h<<std::endl;
-  // std::cout<<"c is: "<<c<<std::endl;
-  // std::cout<<"je is: "<<je<<std::endl;
-  // std::cout<<"jedot is: "<<jedot<<std::endl;
-
-  // std::cout <<"jvw is: "<<jvw<<std::endl;
-  // std::cout <<"jvq is: "<<jvq<<std::endl;
-  // std::cout <<"jac1 is: "<<jac1<<std::endl;
-  // std::cout <<"jac1dot is: "<<jac1dot<<std::endl;
-  // std::cout <<"hstar is: "<<hstar<<std::endl;
-  // std::cout <<"v1 is: "<<v1<<std::endl;
-  // std::cout<<"cstar is: "<<cstar<<std::endl;
-  // std::cout<<"jstar is: "<<jstar<<std::endl;
-  // std::cout<<"jestar is: "<<jestar<<std::endl;
-  // std::cout<<"hbar is: "<<hbar<<std::endl;
-  // std::cout<<"cbar is: "<<cbar<<std::endl;
-  // std::cout<<"jbar is: "<<jbar<<std::endl;
-  // std::cout<<"jebar is: "<<jebar<<std::endl;
-  // std::cout<<"fes is: "<<fdes<<std::endl;
-  // std::cout<<"xdotdot_des is:  "<<xdotdot_des<<std::endl;
-  // std::cout<<"qext is: "<<qext<<std::endl;
-  // std::cout<<"u is: "<<u<<std::endl;
-  // std::cout<<"qbar is: "<<qbar<<std::endl;
-
-  // std::cout<<"***STARS*****"<<std::endl;
-  // std::cout<<"j12star is:"<<j12star<<std::endl;
-  // std::cout<<"j22star is:"<<j22star<<std::endl;
-  // std::cout<<"h11star is:"<<h11star<<std::endl;
-  // std::cout<<"h12star is:"<<h12star<<std::endl;
-  // std::cout<<"h21star is:"<<h21star<<std::endl;
-  // std::cout<<"h22star is:"<<h22star<<std::endl;
-  // std::cout<<"c1star is:"<<c1star<<std::endl;
-  // std::cout<<"c2star is:"<<c2star<<std::endl;
-  // std::cout<<"je11star is:"<<je11star<<std::endl;
-  // std::cout<<"je12star is:"<<je12star<<std::endl;
-  // std::cout<<"je21star is:"<<je21star<<std::endl;
-  // std::cout<<"je22star is:"<<je22star<<std::endl; 
-
- 
+    std::cout<<"kd_c is: "<<kd_c<<std::endl;
+    std::cout<<"bd_c is: "<<bd_c<<std::endl;
 
 
 
+    // std::cout<<" ee x is: "<<ee_x<<std::endl;
+    // std::cout<<" ee y is: "<<ee_y<<std::endl;
+    // std::cout<<" ee theta is: "<<thetach<<std::endl;
+    // std::cout<<"eex dot is: "<<xeedot(0)<<std::endl;
+    // std::cout<<"eey dot is: "<<xeedot(1)<<std::endl;
+    // std::cout<<"eetheta dot is: "<<xeedot(2)<<std::endl;
 
-  std::cout<<"/////////////////"<<std::endl;
-  std::cout<<" "<<std::endl;
+    // std::cout<<"xt_in is: "<<xt_in<<std::endl;
+    // std::cout<<"yt_in is: "<<yt_in<<std::endl;
+    // std::cout<<"thetat_in is: "<<thetat_in<<std::endl;
+
+
+    // std::cout<<"theta0 is: "<<theta0<<std::endl;
+    // std::cout<<"theta0dot is: "<<theta0dot<<std::endl;
+    // std::cout<<"xc0 is: "<<xc0<<std::endl;
+    // std::cout<<"yc0 is: "<<yc0<<std::endl; 
+    // std::cout<<"xc0dot is: "<<xc0dot<<std::endl;
+    // std::cout<<"yc0dot is: "<<yc0dot<<std::endl;
+
+    // std::cout<<" q1 is: "<<q1<<std::endl;
+    // std::cout<<" q2 is: "<<q2<<std::endl;
+    // std::cout<<" q3 is: "<<q3<<std::endl;
+    // std::cout<<" q1dot is: "<<q1dot<<std::endl;
+    // std::cout<<" q2dot is: "<<q2dot<<std::endl;
+    // std::cout<<" q3dot is: "<<q3dot<<std::endl;
+
+    std::cout<<"fextx is: "<<force_x<<" N"<<std::endl;
+
+    std::cout<<"error is: "<<error<<std::endl;
+    std::cout<<"errordot is: "<<error_dot<<std::endl;
+
+    std::cout<<"rw torque is:  "<<tau(0)<<" Nm. "<< std::endl;
+    std::cout<<"q1 torque is:  "<<-tau(1)*186<<" Nm. "<< std::endl;
+    std::cout<<"q2 torque is:  "<<tau(2)*186<<" Nm. "<< std::endl;
+    std::cout<<"q3 torque is:  "<<-tau(3)*186<<" Nm. "<< std::endl;
+
+
+    // std::cout<<"h is: "<<h<<std::endl;
+    // std::cout<<"c is: "<<c<<std::endl;
+    // std::cout<<"je is: "<<je<<std::endl;
+    // std::cout<<"jedot is: "<<jedot<<std::endl;
+
+    // std::cout <<"jvw is: "<<jvw<<std::endl;
+    // std::cout <<"jvq is: "<<jvq<<std::endl;
+    // std::cout <<"jac1 is: "<<jac1<<std::endl;
+    // std::cout <<"jac1dot is: "<<jac1dot<<std::endl;
+    // std::cout <<"hstar is: "<<hstar<<std::endl;
+    // std::cout <<"v1 is: "<<v1<<std::endl;
+    // std::cout<<"cstar is: "<<cstar<<std::endl;rate
+    // std::cout<<"jstar is: "<<jstar<<std::endl;
+    // std::cout<<"jestar is: "<<jestar<<std::endl;
+    // std::cout<<"hbar is: "<<hbar<<std::endl;
+    // std::cout<<"cbar is: "<<cbar<<std::endl;
+    // std::cout<<"jbar is: "<<jbar<<std::endl;
+    // std::cout<<"jebar is: "<<jebar<<std::endl;
+    // std::cout<<"fes is: "<<fdes<<std::endl;
+    // std::cout<<"xdotdot_des is:  "<<xdotdot_des<<std::endl;
+    // std::cout<<"qext is: "<<qext<<std::endl;
+    // std::cout<<"u is: "<<u<<std::endl;
+    // std::cout<<"qbar is: "<<qbar<<std::endl;
+
+    // std::cout<<"***STARS*****"<<std::endl;
+    // std::cout<<"j12star is:"<<j12star<<std::endl;
+    // std::cout<<"j22star is:"<<j22star<<std::endl;
+    // std::cout<<"h11star is:"<<h11star<<std::endl;
+    // std::cout<<"h12star is:"<<h12star<<std::endl;
+    // std::cout<<"h21star is:"<<h21star<<std::endl;
+    // std::cout<<"h22star is:"<<h22star<<std::endl;
+    // std::cout<<"c1star is:"<<c1star<<std::endl;
+    // std::cout<<"c2star is:"<<c2star<<std::endl;
+    // std::cout<<"je11star is:"<<je11star<<std::endl;
+    // std::cout<<"je12star is:"<<je12star<<std::endl;
+    // std::cout<<"je21star is:"<<je21star<<std::endl;
+    // std::cout<<"je22star is:"<<je22star<<std::endl; 
+
+  
+
+
+
+
+    std::cout<<"/////////////////"<<std::endl;
+    std::cout<<" "<<std::endl;
+  }
 }
 
 }

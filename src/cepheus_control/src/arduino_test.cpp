@@ -59,11 +59,18 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     // std::cout<<"(forceCallback) I read: "<<force_X<<" N. "<<std::endl;
     // force_x = moving_average(raw_force_x, force_window, force_window_size, forcesum);
 	if(abs(raw_force_x)<0.4){
-		ardincontact = false;
+		// ardincontact = false;
 	}
 	else{
-		ardincontact = true;
+		// ardincontact = true;
 	}
+}
+
+void grabCallback(const std_msgs::Bool::ConstPtr&msg){
+    // if(msg->data){
+    //     beginGrab = true; 
+    // }
+    beginGrab = msg->data;
 }
 
 
@@ -76,6 +83,7 @@ int main(int argc, char **argv) {
     ros::NodeHandle nh;
     signal(SIGINT, sigintHandler);
 
+    ros::Subscriber grab_sub = nh.subscribe("/start_grab", 1, grabCallback);
     ros::Subscriber arduino_sub = nh.subscribe("/tsoulias_speak", 1, arduinoCallbacktest);
     ros::Publisher arduino_pub = nh.advertise<std_msgs::String>("/tsoulias_hear", 1);
 
@@ -104,20 +112,23 @@ int main(int argc, char **argv) {
         bag.open(path + bag_file_name + ".bag", rosbag::bagmode::Write);
     }
 
+    ardincontact = false;
+    beginGrab = false; //tha perimenei to subscribe
+
     std::cout<<"Press any key to start."<<std::endl;
     std::cin>>cmd;
 
 
     while(ros::ok() && !shutdown_requested){
-        if(ardincontact){
-            contactCounter++;
-            }
-        else{
-            contactCounter = 0;
-            }
-        if(contactCounter > 1*200){ // contact for 1 sec
-            beginGrab = true;
-           }
+        // if(ardincontact){
+        //     contactCounter++;
+        //     }
+        // else{
+        //     contactCounter = 0;
+        //     }
+        // if(ardincontact){ // contact for 1 sec if(contactCounter > 1*200)
+        //     beginGrab = true;
+        //    } //to evgala giati tha perimenei na kanei subscribe
         if(beginGrab){ 
                 if(!beginSoft){
                     beginSoft = true;

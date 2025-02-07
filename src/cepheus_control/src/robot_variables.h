@@ -32,7 +32,7 @@ double ee_x, ee_y; //ee_Z not needed
 double xc0, yc0, xc0dot, yc0dot; //center of mass of base
 double thetach; //orientation of chaser (end effector)
 double xE_prev,yE_prev, thetaE_prev;
-double rawxt_prev = 0, rawyt_prev = 0, rawthetat_prev = 0;
+double xt_prev, yt_prev, thetat_prev;
 double xc0_prev, yc0_prev, theta0_prev;
 
 
@@ -53,6 +53,7 @@ std_msgs::Float64 msg_ex; //errorx
 std_msgs::Float64 msg_ey; //errory
 std_msgs::Float64 msg_etheta; //errortheta
 std_msgs::Float64 msg_fextx;
+std_msgs::Float64 msg_fextx_raw;
 // std_msgs::Float64 msg_TX; //thruster_x
 // std_msgs::Float64 msg_TY; //thruster_y
 geometry_msgs::Wrench base_wrench; //x,y force of thrusters
@@ -74,6 +75,8 @@ std_msgs::Float64 msg_xee_theta;
 
 std_msgs::String arduino_msg; 
 std_msgs::Bool start_moving;
+std_msgs::Bool start_grab_msg;
+
 
 
 
@@ -207,6 +210,7 @@ double forcesum = 0;
 int force_window_size = 10;
 int q_window_size = 10;
 double sumxdot = 0, sumydot = 0, sumthetadot =  0;
+double sumtheta0dot = 0;
 double sumxtdot =0, sumytdot =0, sumthetatdot = 0;
 
 
@@ -238,10 +242,26 @@ std::deque<double> force_window;
 Eigen::MatrixXd kp_multiplier(4,4);
 Eigen::MatrixXd bd_multiplier(4,4);
 
+bool targetcheck, eecheck, basecheck;
 
+bool show = false;
 
+double xdotprev = 0, ydotprev = 0, thetadotprev = 0;
+double xtdotprev = 0, ytdotprev = 0, thetatdotprev = 0;
+double xc0dotprev = 0, yc0dotprev = 0, theta0dotprev = 0;
 
+std::deque<double> xwindow;  // Stores the last N values
+std::deque<double> ywindow;  // Stores the last N values
+std::deque<double> thetawindow;  // Stores the last N values
+std::deque<double> theta0window;  // Stores the last N values
+
+double sumx = 0, sumy = 0, sumtheta = 0, sumtheta0 = 0;
+
+std::deque<double> xhistory;  // Stores the last N values
+std::deque<double> yhistory;  // Stores the last N values
+std::deque<double> thetahistory;  
  
+ double sumxc0dot = 0, sumyc0dot = 0 ;
 /////////////// GLOBAL VARIABLES DECLARATION END////////////////////////
 
 #endif

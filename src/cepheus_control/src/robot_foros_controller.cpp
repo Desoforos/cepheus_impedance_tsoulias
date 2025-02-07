@@ -33,11 +33,31 @@ void sigintHandler(int sig) {
 
 int main(int argc, char **argv) {
 
+    // ee_x = -0.5;
+    // ee_y = 0.175;
+    // thetach = -70*M_PI/180;
+
+    // xeedot(0) = xeedot(1) = xeedot(2) = 0;
+    // theta0 = 0;
+    // theta0dot = 0;
+    // xt = 0;
+    // yt = 0;
+    // thetat = 0;
+    // xtdot = 0;
+    // ytdot = 0;
+    // thetatdot = 0;
+
+
     double safetylimit = 20*M_PI/180; 
     int count = 0;
     bool hasbegun = false;
     bool paramsinit = false;
     bool record = false;
+    bool grabStarted = false;
+
+    targetcheck = false;
+    eecheck = false;
+    basecheck = false;
 
     /* ros init */
     ros::init(argc, argv, "robot_foros_controller_node");
@@ -81,6 +101,8 @@ int main(int argc, char **argv) {
     ros::Publisher re_offset_pub = nh.advertise<std_msgs::Float64>("set_right_elbow_offset", 1);
     ros::Publisher start_moving_pub = nh.advertise<std_msgs::Bool>("start_moving",1) ;//na dosei entolh ksereis kati ksekinao peirama
 
+    ros::Publisher grab_pub =  nh.advertise<std_msgs::Bool>("start_grab",1);
+
 
 
     ros::Subscriber arduino_sub = nh.subscribe("/tsoulias_speak", 1, arduinoCallbacktest);
@@ -116,15 +138,17 @@ int main(int argc, char **argv) {
     // msg_TX.data = 0.0;
     // msg_TY.data = 0.0;
 
-    prev_tau(0) = 0.0;
-    prev_tau(1) = 0.0;
-    prev_tau(2) = 0.0;
-    prev_tau(3) = 0.0;
+    tau(0) = tau(1) = tau(2) = tau(3) = 0.0001;
 
-    ROS_INFO("[new_foros_simcontroller]: Prev torques initialized to 0. \n");
+    prev_tau(0) = 0.0001;
+    prev_tau(1) = 0.0001;
+    prev_tau(2) = 0.0001;
+    prev_tau(3) = 0.0001;
+
+    ROS_INFO("[new_foros_simcontroller]: Prev and current torques initialized to 0. \n");
     
 
-    ros::Rate loop_rate(200); //200Hz
+    ros::Rate loop_rate(100); //100Hz
 
     char command;
     char cmd;
@@ -194,8 +218,10 @@ int main(int argc, char **argv) {
             }
             if(!paramsinit){
                 initialiseParameters();
-                ros::spinOnce();
-                // loop_rate.sleep();
+                // while(!(targetcheck && eecheck && basecheck)){
+                //     ros::spinOnce();
+                //     loop_rate.sleep();
+                // } // na sigourefto oti exei akousei tin vicon gia ola ta frames
                 // ros::Duration(2).sleep();
                 ROS_INFO("[new_foros_simcontroller]: Initializing parameters... \n");
                 calculateTrajecotryPolynomials(tf);
@@ -206,13 +232,30 @@ int main(int argc, char **argv) {
             /*MAIN CONTROL BODY*/
             ros::spinOnce();
             // loop_rate.sleep();
-            updateVel(0.005); // 200hz
             /*control function takes place here, PD/impedance etc*/
             curr_time = ros::Time::now();
             dur_time = curr_time - t_beg;
             secs = dur_time.sec + dur_time.nsec * pow(10, -9);
+            // if(secs>=tf){ //to bazo gia na kanei douleia mexri ta 30, tha to bgalo afto meta
+            //     msg_RW.data = msg_LS.data = msg_LE.data = msg_LW.data =  0.0001;
+            //     rw_torque_pub.publish(msg_RW);
+            //     ls_torque_pub.publish(msg_LS);
+            //     le_torque_pub.publish(msg_LE);
+            //     re_torque_pub.publish(msg_LW);
+            //     shutdown_requested = true;
+            //     break;
+            // }
+            updateVel(0.01,secs,tf); // 200hz
             finalTrajectories(secs,tf); //gia polyonymikh troxia, tin theloume gia olous tous controllers, kanei kai arxikopoihsh metavlhton
             controller(count,tf,secs); //impedance controller
+            // ee_x = xstep - 0.001;
+            // ee_y = ystep - 0.001;
+            // thetach = thstep - 1*M_PI/180;
+
+            // xeedot(0) = xstepdot - 0.01;
+            // xeedot(1) = ystepdot - 0.01;
+            // xeedot(2) = thstepdot - 1*M_PI/180;
+            // PDcontroller(tf,secs); //cartesian PD controller
             count++;
             msg_RW.data = filter_torque(tau(0),prev_tau(0)); //tau(0); 
             msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
@@ -222,141 +265,154 @@ int main(int argc, char **argv) {
             ls_torque_pub.publish(msg_LS);
             le_torque_pub.publish(msg_LE);
             re_torque_pub.publish(msg_LW); //ousiastika einai to left wrist alla tespa
-        }
-        if(record){
-
-            // if(safeclose){
-            //     xstep = xsafeclose;
-            //     ystep = ysafeclose;
-            //     thstep = thetasafeclose;
-            //     xstepdot = 0;
-            //     ystepdot = 0;
-            //     thstepdot = 0;
-            //     theta0step = theta0safeclose;
-            //     theta0stepdot = 0;
-
-            // }
-            msg_xd_x.data = xstep;
-            msg_xd_y.data = ystep;
-            msg_xd_theta.data = thstep;
-            msg_xd_theta0.data = theta0step;
-
-
-            msg_xt_x.data = xt;
-            msg_xt_y.data = yt;
-            msg_xt_theta.data = thetat;
-
-            msg_xt_x_raw.data = rawxt;
-            msg_xt_y_raw.data = rawyt;
-            msg_xt_theta_raw.data = rawthetat;
-
-            msg_xt_theta0.data = theta0in;
-
-
-            msg_xee_x.data = ee_x;
-            msg_xee_y.data = ee_y;
-            msg_xee_theta.data = thetach;
-            msg_xee_theta0.data = theta0;
-
-            msg_xd_x_dot.data = xstepdot;
-            msg_xd_y_dot.data = ystepdot;
-            msg_xd_theta_dot.data = thstepdot;
-            msg_xd_theta0_dot.data = theta0stepdot;
-
-
-            msg_xt_x_dot.data = xtdot;
-            msg_xt_y_dot.data = ytdot;
-            msg_xt_theta_dot.data = thetatdot;
-
-            msg_xt_x_dot_raw.data = rawxtdot;
-            msg_xt_y_dot_raw.data = rawytdot;
-            msg_xt_theta_dot_raw.data = rawthetatdot;
-
-            msg_xt_theta0_dot.data = 0;
-
-            msg_xee_x_dot.data = xeedot(0);
-            msg_xee_y_dot.data = xeedot(1);
-            msg_xee_theta_dot.data = xeedot(2);
-            msg_xee_theta0_dot.data = theta0dot;
-
-            msg_fextx.data = force_x;
-
-            msg_q1.data = q1;
-            msg_q2.data = q2;
-            msg_q3.data = q3;
-
-
-            msg_q1dot.data = q1dot;
-            msg_q2dot.data = q2dot;
-            msg_q3dot.data = q3dot;
-
-                
-            msg_torquerw.data = tau(0);
-            msg_torqueq1.data = tau(1);
-            msg_torqueq2.data = tau(2);
-            msg_torqueq3.data = tau(3);   
-
-            bag.write("/cepheus/xt_x_raw", ros::Time::now(), msg_xt_x_raw);
-            bag.write("/cepheus/xt_y_raw", ros::Time::now(), msg_xt_y_raw);
-            bag.write("/cepheus/xt_theta_raw", ros::Time::now(), msg_xt_theta_raw);
-
-            bag.write("/cepheus/xt_x_dot_raw", ros::Time::now(), msg_xt_x_dot_raw);
-            bag.write("/cepheus/xt_y_dot_raw", ros::Time::now(), msg_xt_y_dot_raw);
-            bag.write("/cepheus/xt_theta_dot_raw", ros::Time::now(), msg_xt_theta_dot_raw);
-
-
-            bag.write("/cepheus/xt_x", ros::Time::now(), msg_xt_x);
-            bag.write("/cepheus/xd_x", ros::Time::now(), msg_xd_x);
-            bag.write("/cepheus/xee_x", ros::Time::now(), msg_xee_x);
-
-            bag.write("/cepheus/xt_y", ros::Time::now(), msg_xt_y);
-            bag.write("/cepheus/xd_y", ros::Time::now(), msg_xd_y);
-            bag.write("/cepheus/xee_y", ros::Time::now(), msg_xee_y);      
-
-            bag.write("/cepheus/xt_theta", ros::Time::now(), msg_xt_theta);
-            bag.write("/cepheus/xd_theta", ros::Time::now(), msg_xd_theta);
-            bag.write("/cepheus/xee_theta", ros::Time::now(), msg_xee_theta);
-
-            bag.write("/cepheus/xt_theta0", ros::Time::now(), msg_xt_theta0);
-            bag.write("/cepheus/xd_theta0", ros::Time::now(), msg_xd_theta0);
-            bag.write("/cepheus/xee_theta0", ros::Time::now(), msg_xee_theta0); 
-
-            bag.write("/cepheus/xt_x_dot", ros::Time::now(), msg_xt_x_dot);
-            bag.write("/cepheus/xd_x_dot", ros::Time::now(), msg_xd_x_dot);
-            bag.write("/cepheus/xee_x_dot", ros::Time::now(), msg_xee_x_dot);
-
-            bag.write("/cepheus/xt_y_dot", ros::Time::now(), msg_xt_y_dot);
-            bag.write("/cepheus/xd_y_dot", ros::Time::now(), msg_xd_y_dot);
-            bag.write("/cepheus/xee_y_dot", ros::Time::now(), msg_xee_y_dot);      
-
-            bag.write("/cepheus/xt_theta_dot", ros::Time::now(), msg_xt_theta_dot);
-            bag.write("/cepheus/xd_theta_dot", ros::Time::now(), msg_xd_theta_dot);
-            bag.write("/cepheus/xee_theta_dot", ros::Time::now(), msg_xee_theta_dot);
-
-            bag.write("/cepheus/xt_theta0_dot", ros::Time::now(), msg_xt_theta0_dot);
-            bag.write("/cepheus/xd_theta0_dot", ros::Time::now(), msg_xd_theta0_dot);
-            bag.write("/cepheus/xee_theta0_dot", ros::Time::now(), msg_xee_theta0_dot);      
-
-            bag.write("/cepheus/ft_sensor_topic", ros::Time::now(), msg_fextx);
-        
-            bag.write("/cepheus/torquerw", ros::Time::now(), msg_torquerw);
-            bag.write("/cepheus/torqueq1", ros::Time::now(), msg_torqueq1);
-            bag.write("/cepheus/torqueq2", ros::Time::now(), msg_torqueq2);
-            bag.write("/cepheus/torqueq3", ros::Time::now(), msg_torqueq3); 
-
-            bag.write("/cepheus/q1", ros::Time::now(), msg_q1);
-            bag.write("/cepheus/q2", ros::Time::now(), msg_q2);
-            bag.write("/cepheus/q3", ros::Time::now(), msg_q3);
- 
-
-            bag.write("/cepheus/q1dot", ros::Time::now(), msg_q1dot);
-            bag.write("/cepheus/q2dot", ros::Time::now(), msg_q2dot);
-            bag.write("/cepheus/q3dot", ros::Time::now(), msg_q3dot);
- 
-               
+            if(secs>tf && (abs(ee_x-xt)<0.003) && (abs(ee_y-yt)<0.003) && !grabStarted){
+                grabStarted = true;
+                start_grab_msg.data = true;
+                grab_pub.publish(start_grab_msg);
             }
-        
-        loop_rate.sleep();  //exei bei allou, vasika kalytera edo
+            if(record){
+
+                // if(safeclose){
+                //     xstep = xsafeclose;
+                //     ystep = ysafeclose;
+                //     thstep = thetasafeclose;
+                //     xstepdot = 0;
+                //     ystepdot = 0;
+                //     thstepdot = 0;
+                //     theta0step = theta0safeclose;
+                //     theta0stepdot = 0;
+
+                // }
+
+                msg_xd_x.data = xstep;
+                msg_xd_y.data = ystep;
+                msg_xd_theta.data = thstep;
+                msg_xd_theta0.data = theta0step;
+
+
+                msg_xt_x.data = xt;
+                msg_xt_y.data = yt;
+                msg_xt_theta.data = thetat;
+
+                // msg_xt_x_raw.data = rawxt;
+                // msg_xt_y_raw.data = rawyt;
+                // msg_xt_theta_raw.data = rawthetat;
+
+                msg_xt_theta0.data = theta0in;
+
+
+                msg_xee_x.data = ee_x;
+                msg_xee_y.data = ee_y;
+                msg_xee_theta.data = thetach;
+                msg_xee_theta0.data = theta0;
+
+                msg_xd_x_dot.data = xstepdot;
+                msg_xd_y_dot.data = ystepdot;
+                msg_xd_theta_dot.data = thstepdot;
+                msg_xd_theta0_dot.data = theta0stepdot;
+
+
+                msg_xt_x_dot.data = xtdot;
+                msg_xt_y_dot.data = ytdot;
+                msg_xt_theta_dot.data = thetatdot;
+
+                msg_xt_x_dot_raw.data = rawxtdot;
+                msg_xt_y_dot_raw.data = rawytdot;
+                msg_xt_theta_dot_raw.data = rawthetatdot;
+
+                msg_xt_theta0_dot.data = 0;
+
+                msg_xee_x_dot.data = xeedot(0);
+                msg_xee_y_dot.data = xeedot(1);
+                msg_xee_theta_dot.data = xeedot(2);
+                msg_xee_theta0_dot.data = theta0dot;
+
+                msg_fextx.data = force_x;
+                msg_fextx_raw.data = raw_force_x;
+
+                msg_q1.data = q1;
+                msg_q2.data = q2;
+                msg_q3.data = q3;
+
+
+                msg_q1dot.data = q1dot;
+                msg_q2dot.data = q2dot;
+                msg_q3dot.data = q3dot;
+
+                    
+                msg_torquerw.data = tau(0);
+                msg_torqueq1.data = tau(1);
+                msg_torqueq2.data = tau(2);
+                msg_torqueq3.data = tau(3);   
+
+                // if(count <1){  //giati to xstep[0] einai 0
+                //     // std::cout<<"frist torques zero"<<std::endl;
+                //     msg_RW.data = msg_LS.data = msg_LE.data = msg_LW.data =  0.0;
+                // }
+
+                // bag.write("/cepheus/xt_x_raw", ros::Time::now(), msg_xt_x_raw);
+                // bag.write("/cepheus/xt_y_raw", ros::Time::now(), msg_xt_y_raw);
+                // bag.write("/cepheus/xt_theta_raw", ros::Time::now(), msg_xt_theta_raw);
+
+                // bag.write("/cepheus/xt_x_dot_raw", ros::Time::now(), msg_xt_x_dot_raw);
+                // bag.write("/cepheus/xt_y_dot_raw", ros::Time::now(), msg_xt_y_dot_raw);
+                // bag.write("/cepheus/xt_theta_dot_raw", ros::Time::now(), msg_xt_theta_dot_raw);
+
+
+                bag.write("/cepheus/xt_x", ros::Time::now(), msg_xt_x);
+                bag.write("/cepheus/xd_x", ros::Time::now(), msg_xd_x);
+                bag.write("/cepheus/xee_x", ros::Time::now(), msg_xee_x);
+
+                bag.write("/cepheus/xt_y", ros::Time::now(), msg_xt_y);
+                bag.write("/cepheus/xd_y", ros::Time::now(), msg_xd_y);
+                bag.write("/cepheus/xee_y", ros::Time::now(), msg_xee_y);      
+
+                bag.write("/cepheus/xt_theta", ros::Time::now(), msg_xt_theta);
+                bag.write("/cepheus/xd_theta", ros::Time::now(), msg_xd_theta);
+                bag.write("/cepheus/xee_theta", ros::Time::now(), msg_xee_theta);
+
+                bag.write("/cepheus/xt_theta0", ros::Time::now(), msg_xt_theta0);
+                bag.write("/cepheus/xd_theta0", ros::Time::now(), msg_xd_theta0);
+                bag.write("/cepheus/xee_theta0", ros::Time::now(), msg_xee_theta0); 
+
+                bag.write("/cepheus/xt_x_dot", ros::Time::now(), msg_xt_x_dot);
+                bag.write("/cepheus/xd_x_dot", ros::Time::now(), msg_xd_x_dot);
+                bag.write("/cepheus/xee_x_dot", ros::Time::now(), msg_xee_x_dot);
+
+                bag.write("/cepheus/xt_y_dot", ros::Time::now(), msg_xt_y_dot);
+                bag.write("/cepheus/xd_y_dot", ros::Time::now(), msg_xd_y_dot);
+                bag.write("/cepheus/xee_y_dot", ros::Time::now(), msg_xee_y_dot);      
+
+                bag.write("/cepheus/xt_theta_dot", ros::Time::now(), msg_xt_theta_dot);
+                bag.write("/cepheus/xd_theta_dot", ros::Time::now(), msg_xd_theta_dot);
+                bag.write("/cepheus/xee_theta_dot", ros::Time::now(), msg_xee_theta_dot);
+
+                bag.write("/cepheus/xt_theta0_dot", ros::Time::now(), msg_xt_theta0_dot);
+                bag.write("/cepheus/xd_theta0_dot", ros::Time::now(), msg_xd_theta0_dot);
+                bag.write("/cepheus/xee_theta0_dot", ros::Time::now(), msg_xee_theta0_dot);      
+
+                bag.write("/cepheus/ft_sensor_topic", ros::Time::now(), msg_fextx);
+                bag.write("/cepheus/fextx_raw", ros::Time::now(), msg_fextx_raw);
+            
+                bag.write("/cepheus/torquerw", ros::Time::now(), msg_torquerw);
+                bag.write("/cepheus/torqueq1", ros::Time::now(), msg_torqueq1);
+                bag.write("/cepheus/torqueq2", ros::Time::now(), msg_torqueq2);
+                bag.write("/cepheus/torqueq3", ros::Time::now(), msg_torqueq3); 
+
+                bag.write("/cepheus/q1", ros::Time::now(), msg_q1);
+                bag.write("/cepheus/q2", ros::Time::now(), msg_q2);
+                bag.write("/cepheus/q3", ros::Time::now(), msg_q3);
+    
+
+                bag.write("/cepheus/q1dot", ros::Time::now(), msg_q1dot);
+                bag.write("/cepheus/q2dot", ros::Time::now(), msg_q2dot);
+                bag.write("/cepheus/q3dot", ros::Time::now(), msg_q3dot);
+    
+                
+                }
+        }
+            
+            loop_rate.sleep();  //exei bei allou, vasika kalytera edo
     }
     
 

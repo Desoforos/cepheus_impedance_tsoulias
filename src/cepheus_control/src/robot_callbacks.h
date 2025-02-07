@@ -30,13 +30,16 @@ double moving_average(double new_value, std::deque<double>& window, int size, do
 
 
 void ee_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
+    if(!eecheck){
+        eecheck = true;
+    }
     if(!firstTime){
         xE_prev = ee_x;
         yE_prev = ee_y;
         thetaE_prev = thetach;
     }
-	ee_x = msg->transform.translation.x;
-	ee_y = msg->transform.translation.y;
+    ee_x = msg->transform.translation.x;
+    ee_y = msg->transform.translation.y;
 	tf::Quaternion qee( //for angle of ee
 		msg->transform.rotation.x,
 		msg->transform.rotation.y,
@@ -50,21 +53,32 @@ void ee_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
         thetach = yawee;
     }
     else{
-        if(abs(yawee - thetach) < 15*M_PI/180){
+        if(abs(yawee - thetach) < 8*M_PI/180){
             thetach = yawee; //angle of chaser(ee)
+            // thetach = moving_average(thetach, thetawindow, 11,sumtheta);
         }
+        // ee_x = moving_average(msg->transform.translation.x, xwindow, 11,sumx);
+        // ee_y = moving_average(msg->transform.translation.y, ywindow, 11,sumy);
     }
 }
 
 
 void target_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
-    if(!firstTime){
-        rawxt_prev = rawxt;
-        rawyt_prev = rawyt;
-        rawthetat_prev = rawthetat;
+    if(!targetcheck){
+        targetcheck = true;
     }
-	rawxt = msg->transform.translation.x;
-	rawyt = msg->transform.translation.y;
+    if(!firstTime){
+        // rawxt_prev = rawxt;
+        // rawyt_prev = rawyt;
+        // rawthetat_prev = rawthetat;
+        xt_prev = xt;
+        yt_prev = yt;
+        thetat_prev = thetat;
+    }
+	// rawxt = msg->transform.translation.x;
+	// rawyt = msg->transform.translation.y;
+    xt = msg->transform.translation.x - 0.06;  //an to exo orizontia, 6cm, allios ftiakse neo frame gia to target me marker sto interface
+	yt = msg->transform.translation.y;
 	tf::Quaternion qt( //for angle of ee
 		msg->transform.rotation.x,
 		msg->transform.rotation.y,
@@ -74,17 +88,24 @@ void target_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
     double rollt, pitcht, yawt;
 	m_t.getRPY(rollt, pitcht, yawt);
     if(firstTime){
-        rawthetat = yawt;
+        // rawthetat = yawt;
+        thetat = yawt;
     }
     else{
-        if(abs(yawt - rawthetat) < 15*M_PI/180){
-            rawthetat = yawt; //angle of chaser(ee)
+        if(abs(yawt - thetat) < 8*M_PI/180){
+            // rawthetat = yawt; //angle of chaser(ee)
+            thetat = yawt; //angle of chaser(ee)
+
         }
     }
+    thetat = 0; //orizontia
 	// thetat = yawt; //angle of chaser(ee)
 }
 
 void base_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
+    if(!basecheck){
+        basecheck = true;
+    }
     if(!firstTime){
         xc0_prev = xc0;
         yc0_prev = yc0;
@@ -104,8 +125,9 @@ void base_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
         theta0 = yawc0;
     }
     else{
-        if(abs(yawc0 - theta0) < 15*M_PI/180){
+        if(abs(yawc0 - theta0) < 8*M_PI/180){
             theta0 = yawc0; //angle of chaser(ee)
+            // theta0 = moving_average(theta0, theta0window, 10,sumtheta0);
         }
     }
 }
@@ -171,7 +193,7 @@ void lsPosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         }
     // }
     if(offsetsdone){
-        q1 = moving_average(-(cmd->data), q1_window, q_window_size,sumq1) + offsetq1;
+        q1 = moving_average(-(cmd->data), q1_window, 11,sumq1) + offsetq1;
     }
     else{
         q1 = -(cmd->data) + offsetq1;
@@ -196,7 +218,7 @@ void lePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         }
     // }
     if(offsetsdone){
-        q2 = moving_average(cmd->data, q2_window, q_window_size,sumq2) + offsetq2;
+        q2 = moving_average(cmd->data, q2_window, 11,sumq2) + offsetq2;
     }
     else{
         q2 = cmd->data + offsetq2;
@@ -220,7 +242,7 @@ void rePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         }
     // }
     if(offsetsdone){
-        q3 = moving_average(-(cmd->data), q3_window, q_window_size,sumq3) + offsetq3;
+        q3 = moving_average(-(cmd->data), q3_window, 11,sumq3) + offsetq3;
     }
     else{
         q3 = -(cmd->data) + offsetq3;
@@ -233,7 +255,7 @@ void lsVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q1dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q1dot = moving_average(-(cmd->data), q1dot_window, q_window_size,sumq1dot);
+    q1dot = moving_average(-(cmd->data), q1dot_window, 11,sumq1dot);
 	// q1dot = -(cmd->data);
 }
 
@@ -242,7 +264,7 @@ void leVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q2dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q2dot = moving_average(cmd->data, q2dot_window, q_window_size,sumq2dot);
+    q2dot = moving_average(cmd->data, q2dot_window, 11,sumq2dot);
 	// q2dot = cmd->data;
 }
 
@@ -251,7 +273,7 @@ void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q3dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q3dot = moving_average(-(cmd->data), q3dot_window, q_window_size,sumq3dot);
+    q3dot = moving_average(-(cmd->data), q3dot_window, 11,sumq3dot);
 	// q3dot = -(cmd->data);
 }
 
@@ -260,6 +282,7 @@ void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 
 void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     raw_force_x = abs(msg->wrench.force.z);  //etsi einai mapped apo to bota  filtered.
+    raw_force_x = moving_average(raw_force_x, force_window, 10, forcesum);
     // force_y = msg->wrench.force.y;
 	// torque_z = msg->wrench.torque.z;
 	// fext(0) = force_x;
@@ -275,7 +298,7 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     // }
     // force_x = moving_average(raw_force_x, force_window, force_window_size, forcesum);
     // force_x = raw_force_x; //ase to filtro giati den einai kalo stin arxi
-    force_x = 0 ;
+    force_x = 0; //bypass ginetai sto functions
 	if(abs(force_x)<1){
 		incontact = false;
 	}
