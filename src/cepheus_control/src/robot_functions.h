@@ -27,6 +27,11 @@ double savitzkyGolayFilter(std::deque<double>& history, double new_value, double
     return velocity / dt;
 }
 
+double lowPassFilter(double new_value, double prev_filtered, double fc, double dt) {
+    double alpha = 2 * M_PI * fc * dt / (2 * M_PI * fc * dt + 1);
+    return alpha * new_value + (1 - alpha) * prev_filtered;
+}
+
 
 void initialiseParameters(){
     /*gia peirama me kosta 25/7/24*/
@@ -62,7 +67,7 @@ void initialiseParameters(){
     
     l1 = 0.269;
     // l2 = 0.143;
-    l2 = 0.15
+    l2 = 0.15;
     l3 = 0.15; //peripoy
 
     r1 = 0.1010;
@@ -171,8 +176,8 @@ void calculateTrajecotryPolynomials(double tf){
 
 void finalTrajectories(double t,double tf){
   /*PROTA KANO OVERRIDE TON STOXO GIA TEST XORIS STOXO*/
-  xt = 0.94;
-  yt = 0.86;
+  xt = 0; //0.94;
+  yt = 0; //0.86;
   thetat = 0;//M_PI/4; // M_PI/2;
   xtdot = 0.0;
   ytdot = 0.0;
@@ -313,6 +318,9 @@ void updateVel(double dt, double t, double tf){
     xc0dot = 0;
     yc0dot = 0;
     theta0dot = 0;
+    xdotprev = 0;
+    ydotprev = 0;
+    thetadotprev =0;
   }
   else{
     xdotprev = xeedot(0);
@@ -325,12 +333,15 @@ void updateVel(double dt, double t, double tf){
     yc0dotprev = yc0dot;
     theta0dotprev = theta0dot;
 
-    ee_x = moving_average(ee_x, xwindow, 6,sumx);
-    // ee_y = moving_average(ee_y, ywindow, 6,sumy);
-    thetach = moving_average(thetach, thetawindow, 6, sumtheta);
+    ee_x = moving_average(ee_x, xwindow, 10,sumx);
+    // ee_y = moving_average(ee_y, ywindow, 6,sumy);  //gia na exei fthinousa poreia
+    ee_y = movingMedian(ee_y, ywindow, 3, 0.1, yE_prev);
+    thetach = moving_average(thetach, thetawindow, 15, sumtheta);
+
+    ydottemp = (ee_y-yE_prev)/dt;
 
     xdottemp = (ee_x-xE_prev)/dt;
-    ydottemp = (ee_y-yE_prev)/dt;
+    
     thetadottemp = (thetach-thetaE_prev)/dt;
 
     // xtdot = (xt-xt_prev)/dt;
@@ -376,11 +387,14 @@ void updateVel(double dt, double t, double tf){
     //   theta0dot = theta0dottemp;
     //   // theta0dot = moving_average(theta0dot, theta0dot_window, 10, sumtheta0dot);
     // }
-    xeedot(0) = moving_average(xdottemp, xdot_window, 6, sumxdot); //window size = 10
-    // xeedot(1) = moving_average(ydottemp, ydot_window, 6, sumydot); //window size = 10
-    xeedot(1) = ydottemp;
-    xeedot(2) = moving_average(thetadottemp, thetadot_window, 6, sumthetadot); //window size = 10
-    theta0dot = moving_average(theta0dottemp, theta0dot_window, 6, sumtheta0dot);
+    xeedot(0) = moving_average(xdottemp, xdot_window, 10, sumxdot); //window size = 10
+    // xeedot(1) = moving_average(ydottemp, ydot_window, 3, sumydot); //window size = 10 
+    xeedot(1) = lowPassFilter(ydottemp, xeedot(1), 1, 0.01); //fc kai dt
+    // xeedot(1) = ydottemp;  //oxi filtro sto y gia na exei fthinousa poreia
+    // xeedot(1) = movingMedian(ydottemp, ydot_window, 3, 0.1, ydotprev);
+
+    xeedot(2) = moving_average(thetadottemp, thetadot_window, 15, sumthetadot); //window size = 10
+    theta0dot = moving_average(theta0dottemp, theta0dot_window, 10, sumtheta0dot);
     
 
     
@@ -388,7 +402,7 @@ void updateVel(double dt, double t, double tf){
     // xeedot(0) = savitzkyGolayFilter(xhistory, ee_x, 0.005); //N=11 values
     // xeedot(1) = savitzkyGolayFilter(yhistory, ee_y, 0.005);
     // xeedot(2) = savitzkyGolayFilter(thetahistory, thetach, 0.005);
-
+    
     xc0dot = movingMedian(xc0dot, xc0dot_window, 10, 0.1, xc0dotprev); //window size = 10
     yc0dot = movingMedian(yc0dot, yc0dot_window, 10, 0.1, yc0dotprev); //window size = 10
     // theta0dot = movingMedian(theta0dot, theta0dot_window, 11, 0.1, theta0dotprev); //window size = 10
@@ -579,10 +593,10 @@ void controller(int count, double tf, double t){
   double z_free=1;
   double ts_f=0.2*tf;
   double wn_free=6/ts_f;
-  // double kdf=1.5;
-  // double mdf=kdf/pow(wn_free,2);
-  double mdf = 2;
-  double kdf = mdf*pow(wn_free,2);
+  double kdf=1.2;
+  double mdf=kdf/pow(wn_free,2);
+  // double mdf = 1;
+  // double kdf = mdf*pow(wn_free,2);
   double bdf=2*z_free*wn_free*mdf;
   Eigen::MatrixXd md_f = mdf*Eigen::MatrixXd::Identity(4,4);
   Eigen::MatrixXd bd_f = bdf*Eigen::MatrixXd::Identity(4,4);
@@ -1308,5 +1322,7 @@ if(count%100 == 0){
 }
 
 }
+
+
 
 #endif

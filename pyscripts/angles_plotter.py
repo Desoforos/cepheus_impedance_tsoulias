@@ -54,7 +54,7 @@ def filter_timeseries(raw, sampling_frequency, cutoff_frequency, outlier_thresho
     
     return filtered_raw
 
-sampling_frequency = 200  # Hz
+sampling_frequency = 100  # Hz
 cutoff_frequency = 5  # Hz
 outlier_threshold = 10
 
@@ -102,16 +102,18 @@ q1dot, q2dot, q3dot, theta0dot = [], [], [], []
 q1d, q2d, q3d, theta0d = [], [], [], []
 q1ddot, q2ddot, q3ddot, theta0ddot = [], [], [], []
 torquerw, torqueq1, torqueq2, torqueq3 = [], [], [], []
+theta = []
 
 bag = rosbag.Bag(bag_file)
 
 for topic, msg, t in bag.read_messages(topics=['/cepheus/q1','/cepheus/q2', '/cepheus/q3',
-                                               '/cepheus/theta0', '/cepheus/q1dot', '/cepheus/q2dot',
+                                               '/cepheus/xee_theta0', '/cepheus/q1dot', '/cepheus/q2dot',
                                                 '/cepheus/q3dot', '/cepheus/theta0dot',
                                                 '/cepheus/q1d','/cepheus/q2d', '/cepheus/q3d',
                                                '/cepheus/theta0d', '/cepheus/q1ddot', '/cepheus/q2ddot',
                                                 '/cepheus/q3ddot', '/cepheus/theta0ddot',
-                                                '/cepheus/torquerw', '/cepheus/torqueq1', '/cepheus/torqueq2', '/cepheus/torqueq3']):
+                                                '/cepheus/torquerw', '/cepheus/torqueq1', '/cepheus/torqueq2', '/cepheus/torqueq3',
+                                                '/cepheus/xee_theta']):
     time_stamps.append(t.to_sec())
 
     if topic == "/cepheus/q1":
@@ -120,8 +122,10 @@ for topic, msg, t in bag.read_messages(topics=['/cepheus/q1','/cepheus/q2', '/ce
         q2.append(msg.data*180/pi)
     elif topic == "/cepheus/q3":
         q3.append(msg.data*180/pi)
-    elif topic == "/cepheus/theta0":
+    elif topic == "/cepheus/xee_theta0":
         theta0.append(msg.data*180/pi)
+    elif topic == "/cepheus/xee_theta":
+        theta.append(msg.data*180/pi)
     elif topic == "/cepheus/q1dot":
         q1dot.append(msg.data*180/pi)
     elif topic == "/cepheus/q2dot":
@@ -175,14 +179,14 @@ bag.close()
 # print("q2 initial is: ",q2[0])
 # print("q3 initial is: ",q3[0])
 
-sampling_frequency = 200  # Hz
+sampling_frequency = 100  # Hz
 time_stamps= np.arange(0, len(q1)) / sampling_frequency
 time_stamps -= time_stamps[0]  # Start from 0
 
-desired_secs = 30
+# desired_secs = 30
 
-des_len = sampling_frequency*desired_secs
-# des_len = len(q1)
+# des_len = sampling_frequency*desired_secs
+des_len = len(q1)
 
 
 # for i in range(len(q1)):
@@ -287,6 +291,22 @@ window_size = 200
 # q2 = simple_filter(q2,lim)
 # q3 = simple_filter(q3,lim)
 
+# print("q1[1] is ",q1[200])
+# print("q2[1] is ",q2[200])
+# print("q3[1] is ",q3[200])
+# print("all together is: ", q1[200]+q2[200]+q3[200])
+for i in range(0, len(q1), 100):
+    print("Iteration: ",i)
+    print("theta from vicon: ",theta[i])
+    temp = theta0[i]+q1[i]+q2[i]+q3[i]
+    print("theta0 + q1 + q2 + q3: ",temp)
+    print("difference = ",theta[i]-temp)
+    print("theta0 + q1 + q2 + q3 + q01: ",temp - 30.015)
+    print("difference +q01 = ",theta[i]-temp + 30.015)
+    print("///////////////////")
+
+
+
 
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
@@ -363,7 +383,7 @@ axs[1, 0].set_ylabel('q3dot [deg/sec]')
 axs[1, 0].legend()
 
 # Plot Theta0 Coordinates (Target, Desired, Actual)
-axs[1, 1].plot(time_stamps[:des_len], theta0dot[:des_len], label='Actual theta0dot', color='b')
+# axs[1, 1].plot(time_stamps[:des_len], theta0dot[:des_len], label='Actual theta0dot', color='b')
 # axs[1, 1].plot(time_stamps[:des_len], theta0ddot[:des_len], label='Desired theta0dot', color='g',linestyle='--')
 axs[1, 1].grid()
 axs[1, 1].set_title('theta0dot values')

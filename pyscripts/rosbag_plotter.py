@@ -8,6 +8,8 @@ from scipy.signal import savgol_filter
 from scipy.interpolate import interp1d
 import math
 pi = math.pi
+from scipy.signal import butter, filtfilt
+
 
 
 def smoothlist(rawlist):
@@ -213,6 +215,10 @@ print("errordot[100] is: ",xd_x_dot[1] - xee_x_dot[100])
 print("torque3[0] is: ",torqueq3[0])
 print("torque3[1] is: ",torqueq3[1])
 print("torque3[100] is: ",torqueq3[100])
+
+print("theta[1] is: ", xee_theta[200])
+print("theta0[1] is: ", xee_theta0[200])
+
 
 error_x = []
 error_xdot = []
@@ -558,4 +564,62 @@ axs[1, 0].set_title("errors Theta")
 # axs[1, 1].set_xlabel('Time [s]')
 # axs[1, 1].set_ylabel('Theta0 [deg]')
 # axs[1, 1].legend()
+plt.show()
+
+
+ydot = xee_y_dot
+fs = 100
+n = len(ydot)
+frequencies = np.fft.fftfreq(n, d=1/fs)
+fft_magnitude = np.abs(np.fft.fft(ydot))
+
+# Plot FFT
+plt.figure(figsize=(8,4))
+plt.plot(frequencies[:n//2], fft_magnitude[:n//2])  # Only positive frequencies
+plt.xlabel("Frequency (Hz)")
+plt.ylabel("Magnitude")
+plt.title("FFT of ydot signal")
+plt.grid()
+plt.show()
+
+def butter_lowpass_filter(data, cutoff, fs, order=2):
+    nyquist = 0.5 * fs  # Nyquist frequency
+    normal_cutoff = cutoff / nyquist  # Normalize cutoff frequency
+    b, a = butter(order, normal_cutoff, btype='low', analog=False)
+    return filtfilt(b, a, data)  # Apply filter
+
+filtered_ydot = butter_lowpass_filter(ydot, cutoff=0.8, fs=100, order=2)
+
+plt.plot(time_stamps[:des_len], filtered_ydot[:des_len], label='ydot', color='r')
+plt.plot(time_stamps[:des_len], xd_y_dot[:des_len], label='Desired Ydot', color='g',linestyle='--')
+plt.title("Butterworth 2nd order filter with fc = 0.8Hz")
+plt.xlabel("Time (sec) ")
+plt.ylabel("Ydot (m/s)")
+plt.grid()
+plt.show()
+
+
+y = xee_y
+fs = 100
+n = len(y)
+frequencies = np.fft.fftfreq(n, d=1/fs)
+fft_magnitude = np.abs(np.fft.fft(y))
+
+# Plot FFT
+plt.figure(figsize=(8,4))
+plt.plot(frequencies[:n//2], fft_magnitude[:n//2])  # Only positive frequencies
+plt.xlabel("Frequency (Hz)")
+plt.ylabel("Magnitude")
+plt.title("FFT of y signal")
+plt.grid()
+plt.show()
+
+filtered_y = butter_lowpass_filter(ydot, cutoff=5, fs=100, order=2)
+
+plt.plot(time_stamps[:des_len], filtered_y[:des_len], label='y', color='r')
+plt.plot(time_stamps[:des_len], xd_y[:des_len], label='Desired Ydot', color='g',linestyle='--')
+plt.title("Butterworth 2nd order filter with fc = 5Hz")
+plt.xlabel("Time (sec) ")
+plt.ylabel("Y (m) ")
+plt.grid()
 plt.show()

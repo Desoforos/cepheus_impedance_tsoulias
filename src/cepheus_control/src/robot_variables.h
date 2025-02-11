@@ -262,6 +262,7 @@ std::deque<double> yhistory;  // Stores the last N values
 std::deque<double> thetahistory;  
  
  double sumxc0dot = 0, sumyc0dot = 0 ;
+ double filtered_ydot = 0;
 /////////////// GLOBAL VARIABLES DECLARATION END////////////////////////
 
 #endif

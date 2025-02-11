@@ -255,7 +255,12 @@ void lsVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q1dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q1dot = moving_average(-(cmd->data), q1dot_window, 11,sumq1dot);
+    if(offsetsdone){
+        q1dot = moving_average(-(cmd->data), q1dot_window, 11,sumq1dot);
+    }
+    else{
+        q1dot = -(cmd->data);
+    }
 	// q1dot = -(cmd->data);
 }
 
@@ -264,7 +269,12 @@ void leVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q2dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q2dot = moving_average(cmd->data, q2dot_window, 11,sumq2dot);
+    if(offsetsdone){
+        q2dot = moving_average(cmd->data, q2dot_window, 11,sumq2dot);
+    }
+    else{
+        q2dot = cmd->data;
+    }
 	// q2dot = cmd->data;
 }
 
@@ -273,7 +283,12 @@ void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// if (abs(cmd->data - q3dot) > VEL_FILTER)
 	// 	return;
 	// else
-    q3dot = moving_average(-(cmd->data), q3dot_window, 11,sumq3dot);
+    if(offsetsdone){
+        q3dot = moving_average(-(cmd->data), q3dot_window, 11,sumq3dot);
+    }
+    else{
+        q3dot = -(cmd->data);
+    }
 	// q3dot = -(cmd->data);
 }
 
