@@ -77,7 +77,7 @@ void target_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
     }
 	// rawxt = msg->transform.translation.x;
 	// rawyt = msg->transform.translation.y;
-    xt = msg->transform.translation.x - 0.06;  //an to exo orizontia, 6cm, allios ftiakse neo frame gia to target me marker sto interface
+    xt = msg->transform.translation.x;// - 0.06;  //an to exo orizontia, 6cm, allios ftiakse neo frame gia to target me marker sto interface
 	yt = msg->transform.translation.y;
 	tf::Quaternion qt( //for angle of ee
 		msg->transform.rotation.x,
@@ -98,7 +98,7 @@ void target_posCallback(const geometry_msgs::TransformStamped::ConstPtr& msg){
 
         }
     }
-    thetat = 0; //orizontia
+    // thetat = 0; //orizontia
 	// thetat = yawt; //angle of chaser(ee)
 }
 
@@ -193,7 +193,7 @@ void lsPosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         }
     // }
     if(offsetsdone){
-        q1 = moving_average(-(cmd->data), q1_window, 11,sumq1) + offsetq1;
+        q1 = moving_average(-(cmd->data)+ offsetq1, q1_window, 10,sumq1);
     }
     else{
         q1 = -(cmd->data) + offsetq1;
@@ -218,7 +218,7 @@ void lePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         }
     // }
     if(offsetsdone){
-        q2 = moving_average(cmd->data, q2_window, 11,sumq2) + offsetq2;
+        q2 = moving_average(cmd->data + offsetq2, q2_window, 10,sumq2);
     }
     else{
         q2 = cmd->data + offsetq2;
@@ -242,7 +242,7 @@ void rePosCallback(const std_msgs::Float64::ConstPtr& cmd) {
     //         }
     // }
     if(offsetsdone){
-        q3 = moving_average(-(cmd->data), q3_window, 11,sumq3) + offsetq3;
+        q3 = moving_average(-(cmd->data)+ offsetq3, q3_window, 10,sumq3);
     }
     else{
         q3 = -(cmd->data) + offsetq3;
@@ -256,7 +256,7 @@ void lsVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// 	return;
 	// else
     if(offsetsdone){
-        q1dot = moving_average(-(cmd->data), q1dot_window, 11,sumq1dot);
+        q1dot = moving_average(-(cmd->data), q1dot_window, 10,sumq1dot);
     }
     else{
         q1dot = -(cmd->data);
@@ -270,7 +270,7 @@ void leVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// 	return;
 	// else
     if(offsetsdone){
-        q2dot = moving_average(cmd->data, q2dot_window, 11,sumq2dot);
+        q2dot = moving_average(cmd->data, q2dot_window, 10,sumq2dot);
     }
     else{
         q2dot = cmd->data;
@@ -284,7 +284,7 @@ void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 	// 	return;
 	// else
     if(offsetsdone){
-        q3dot = moving_average(-(cmd->data), q3dot_window, 11,sumq3dot);
+        q3dot = moving_average(-(cmd->data), q3dot_window, 10,sumq3dot);
     }
     else{
         q3dot = -(cmd->data);
@@ -296,7 +296,7 @@ void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 
 
 void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
-    raw_force_x = abs(msg->wrench.force.z);  //etsi einai mapped apo to bota  filtered.
+    raw_force_x = (msg->wrench.force.z);  //etsi einai mapped apo to bota  filtered.
     raw_force_x = moving_average(raw_force_x, force_window, 10, forcesum);
     // force_y = msg->wrench.force.y;
 	// torque_z = msg->wrench.torque.z;
@@ -337,6 +337,14 @@ void arduinoCallbacktest(const std_msgs::String::ConstPtr &msg){
 	if(msg->data == "hardgrip"){
 		gripperListenedHard = true;
 	}
+}
+
+
+void forosCallback(const std_msgs::Bool::ConstPtr&msg){
+    // if(msg->data){
+    //     beginGrab = true; 
+    // }
+    stopMotors = true;
 }
 
 

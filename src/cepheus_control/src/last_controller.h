@@ -407,7 +407,7 @@ void controller(int count, double tf, double t){
   double z_contact=z_free*sqrt(kdf/(kdf+ke));
   double wn_contact=wn_free*sqrt((kdf+ke)/kdf);
   double fd = 1;
-  double kdc = 100;
+  double kdc = 100; //100
   double mdc=(kdc+ke)/pow(wn_contact,2);
   double be = 0;  //0;
   double bdc=2*z_contact*wn_contact*mdc-be;
@@ -931,7 +931,7 @@ qe << 0, fext(0), 0;  //den eimai sigouros gia afto
 
 
 
-if(t<=tf){ //anti gia abs(fext(0))<0.5
+if(t<=(tf)){ //anti gia abs(fext(0))<0.5
   bd = bd_f;
   kd = kd_f;
   md = md_f;
@@ -976,7 +976,7 @@ qext << 0, 0, fext(0), 0;
 
 
 
-Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-64*kd*error-52*bd*error_dot-qext + fdes); //32,32 einai kalo (test16) kai to 64,32
+Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-64*kd*error-52*bd*error_dot-qext + fdes);//13-2:64,52 //32,32 einai kalo (test16) kai to 64,32
 
 
 
@@ -998,12 +998,15 @@ double ns = kprop*errorth0 + kder*errorth0dot;
 
 
 
-
-//diko moy pd, ta q1,q2 gia xy (se pososto), to q3 gia prosanatolismo
 // tau(0) = -0.5*error[0] - 20*error_dot[0];
 // tau(1) = -0.5*(0.3*error[1]+0.7*error[2]) - 20*(0.3*error_dot[1]+0.7*error_dot[2]);
 // tau(2) = -0.5*(0.7*error[1]+0.3*error[2]) - 20*(0.7*error_dot[1]+0.3*error_dot[2]);
 // tau(3) = -0.5*(thetach - thstep) - 20*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
+//diko moy pd, ta q1,q2 gia xy (se pososto), to q3 gia prosanatolismo
+tau(0) = -0.5*error[0] - 20*error_dot[0];
+tau(1) = -5*(0.3*error[1]+0.7*error[2]) - 20*(0.3*error_dot[1]+0.7*error_dot[2]);
+tau(2) = -5*(0.7*error[1]+0.3*error[2]) - 20*(0.7*error_dot[1]+0.3*error_dot[2]);
+tau(3) = -0.5*(thetach - thstep) - 20*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
 
 // msg_RW.data = -tau(0); 
 // msg_RW.data = ns;
@@ -1013,7 +1016,7 @@ double ns = kprop*errorth0 + kder*errorth0dot;
 // tau(3) = tau(3)/46;//93;
 // tau(3) = 0.6*(thstep-thetach) + 0.6*(thstepdot - xeedot(2));
 
-
+//if (abs(tau(0))> maxtorque) || (abs(tau(1))>maxtorque) || (abs(tau(2))>maxtorque) || (abs(tau(3))>maxtorque)
 if((abs(tau(0))> maxtorque) || (abs(tau(1))>maxtorque) || (abs(tau(2))>maxtorque) || (abs(tau(3))>maxtorque)){
   /*initiate safety closure*/
   ROS_WARN("Reached Critical Torques! Initiating safe close..");

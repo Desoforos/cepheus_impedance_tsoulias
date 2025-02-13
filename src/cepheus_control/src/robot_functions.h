@@ -50,7 +50,7 @@ void initialiseParameters(){
     // // l3 = r3 = 0.0411/2;
     // l3 = r3 = 0.0411;
     mt = 10; //kyriolektika axristo
-    q01 = -0.5236;
+    q01 = 0; //-0.5236;
     s01 = 0.5;
     s02 = 0.2;
 
@@ -93,9 +93,6 @@ void initialiseParameters(){
     x1 = l1+r1;
     x2 = l2+r2;
     x3 = l3+r3;
-
-    M = m0 + m1 + m2 + m3;
-
     // kp_multiplier << 25, 0, 0, 0,
     //             0, 25, 0, 0,
     //             0, 0, 25, 0,
@@ -176,13 +173,13 @@ void calculateTrajecotryPolynomials(double tf){
 
 void finalTrajectories(double t,double tf){
   /*PROTA KANO OVERRIDE TON STOXO GIA TEST XORIS STOXO*/
-  xt = 0; //0.94;
-  yt = 0; //0.86;
-  thetat = 0;//M_PI/4; // M_PI/2;
-  xtdot = 0.0;
-  ytdot = 0.0;
-  thetatdot = 0;
-  force_x = raw_force_x = 0;
+  // xt = 0; //0.94;
+  // yt = 0; //0.86;
+  // thetat = 0;//M_PI/4; // M_PI/2;
+  // xtdot = 0.0;
+  // ytdot = 0.0;
+  // thetatdot = 0;
+  // force_x = raw_force_x = 0;
   /*TELOS OVERRIDE, VGALTO OTAN BEI O STOXOS STO TRAPEZI*/
   if(firstTime){   //initialize the postiion of chaser and target for the first time ONLY
       xE_in = ee_x;
@@ -335,7 +332,7 @@ void updateVel(double dt, double t, double tf){
 
     ee_x = moving_average(ee_x, xwindow, 10,sumx);
     // ee_y = moving_average(ee_y, ywindow, 6,sumy);  //gia na exei fthinousa poreia
-    ee_y = movingMedian(ee_y, ywindow, 3, 0.1, yE_prev);
+    ee_y = movingMedian(ee_y, ywindow, 3, 0.1, yE_prev); //3point median gia to y
     thetach = moving_average(thetach, thetawindow, 15, sumtheta);
 
     ydottemp = (ee_y-yE_prev)/dt;
@@ -352,20 +349,24 @@ void updateVel(double dt, double t, double tf){
     yc0dot = (yc0-yc0_prev)/dt;
     theta0dottemp = (theta0-theta0_prev)/dt;
 
-    if(t<=tf){  //evgala to t<=tf
-      xtdot = 0;
-      ytdot = 0;
-      thetatdot = 0;
-    }
-    else{
-      xtdot = (xt-xt_prev)/dt;
-      ytdot = (yt-yt_prev)/dt;
-      thetatdot = (thetat-thetat_prev)/dt;
+    // if(t<=tf){  //evgala to t<=tf
+    //   xtdot = 0;
+    //   ytdot = 0;
+    //   thetatdot = 0;
+    // }
+    // else{
+    xtdot = (xt-xt_prev)/dt;
+    ytdot = (yt-yt_prev)/dt;
+    thetatdot = (thetat-thetat_prev)/dt;
 
-      xtdot = movingMedian(xtdot, xtdot_window, 3, 0.1, xtdotprev); //window size = 10
-      ytdot = movingMedian(ytdot, ytdot_window, 3, 0.1, ytdotprev); //window size = 10
-      thetatdot = movingMedian(thetatdot, thetatdot_window, 3, 0.1, thetadotprev); //window size = 10
-    }
+    xtdot = movingMedian(xtdot, xtdot_window, 3, 0.1, xtdotprev); //window size = 10
+    ytdot = movingMedian(ytdot, ytdot_window, 3, 0.1, ytdotprev); //window size = 10
+    thetatdot = movingMedian(thetatdot, thetatdot_window, 3, 0.1, thetadotprev); //window size = 10
+    // } //borei na to ksanavalo
+    // xtdot = moving_average(xtdot, xtdot_window, 10, sumxtdot); //window size = 10
+    // ytdot = moving_average(ytdot, ytdot_window, 10, sumytdot); //window size = 10
+    // thetatdot = moving_average(thetatdot, thetatdot_window, 15, sumthetatdot); //window size = 10
+
 
     // xeedot(0) = movingMedian(xeedot(0), xdot_window, 11, 0.1, xdotprev); //window size = 10
     // xeedot(1) = movingMedian(xeedot(1), ydot_window, 11, 0.1, ytdotprev); //window size = 10
@@ -389,9 +390,10 @@ void updateVel(double dt, double t, double tf){
     // }
     xeedot(0) = moving_average(xdottemp, xdot_window, 10, sumxdot); //window size = 10
     // xeedot(1) = moving_average(ydottemp, ydot_window, 3, sumydot); //window size = 10 
-    xeedot(1) = lowPassFilter(ydottemp, xeedot(1), 1, 0.01); //fc kai dt
+    // xeedot(1) = lowPassFilter(ydottemp, xeedot(1), 1, 0.01); //fc kai dt
     // xeedot(1) = ydottemp;  //oxi filtro sto y gia na exei fthinousa poreia
-    // xeedot(1) = movingMedian(ydottemp, ydot_window, 3, 0.1, ydotprev);
+    xeedot(1) = movingMedian(ydottemp, ydot_window, 3, 0.1, ydotprev);
+    // xeedot(1) = ydottemp; //pernaei apo butterworth stin main
 
     xeedot(2) = moving_average(thetadottemp, thetadot_window, 15, sumthetadot); //window size = 10
     theta0dot = moving_average(theta0dottemp, theta0dot_window, 10, sumtheta0dot);
@@ -403,8 +405,8 @@ void updateVel(double dt, double t, double tf){
     // xeedot(1) = savitzkyGolayFilter(yhistory, ee_y, 0.005);
     // xeedot(2) = savitzkyGolayFilter(thetahistory, thetach, 0.005);
     
-    xc0dot = movingMedian(xc0dot, xc0dot_window, 10, 0.1, xc0dotprev); //window size = 10
-    yc0dot = movingMedian(yc0dot, yc0dot_window, 10, 0.1, yc0dotprev); //window size = 10
+    xc0dot = movingMedian(xc0dot, xc0dot_window, 5, 0.1, xc0dotprev); //window size = 10
+    yc0dot = movingMedian(yc0dot, yc0dot_window, 5, 0.1, yc0dotprev); //window size = 10
     // theta0dot = movingMedian(theta0dot, theta0dot_window, 11, 0.1, theta0dotprev); //window size = 10
   }
 }
@@ -593,11 +595,15 @@ void controller(int count, double tf, double t){
   double z_free=1;
   double ts_f=0.2*tf;
   double wn_free=6/ts_f;
-  double kdf=1.2;
+  double kdf=1;
   double mdf=kdf/pow(wn_free,2);
   // double mdf = 1;
   // double kdf = mdf*pow(wn_free,2);
   double bdf=2*z_free*wn_free*mdf;
+
+  //EN TELEI: 
+  kdf = 1.1;
+  bdf = 0.6;
   Eigen::MatrixXd md_f = mdf*Eigen::MatrixXd::Identity(4,4);
   Eigen::MatrixXd bd_f = bdf*Eigen::MatrixXd::Identity(4,4);
   Eigen::MatrixXd kd_f = kdf*Eigen::MatrixXd::Identity(4,4);

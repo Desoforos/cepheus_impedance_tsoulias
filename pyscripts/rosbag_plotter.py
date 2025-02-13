@@ -9,7 +9,87 @@ from scipy.interpolate import interp1d
 import math
 pi = math.pi
 from scipy.signal import butter, filtfilt
+import scipy.signal as signal
+import numpy as np
+import scipy.signal as signal
+import scipy.ndimage as ndimage
 
+
+def smooth_signal(y, method="savgol", window_size=21, polyorder=3, sigma=2, alpha=0.1):
+    """
+    Smooths the entire time series.
+
+    Parameters:
+    - y: numpy array, the time series of position y.
+    - method: str, smoothing method ("savgol", "gaussian", "ema").
+    - window_size: int, window size for Savitzky-Golay filter (must be odd).
+    - polyorder: int, polynomial order for Savitzky-Golay filter.
+    - sigma: float, standard deviation for Gaussian filter.
+    - alpha: float, smoothing factor for Exponential Moving Average (EMA).
+
+    Returns:
+    - y_smooth: numpy array, smoothed signal.
+    """
+
+    if method == "savgol":
+        y_smooth = signal.savgol_filter(y, window_size, polyorder)
+    elif method == "gaussian":
+        y_smooth = ndimage.gaussian_filter1d(y, sigma)
+    elif method == "ema":
+        y_smooth = np.zeros_like(y)
+        y_smooth[0] = y[0]
+        for i in range(1, len(y)):
+            y_smooth[i] = alpha * y[i] + (1 - alpha) * y_smooth[i - 1]
+    else:
+        raise ValueError("Invalid method. Choose 'savgol', 'gaussian', or 'ema'.")
+
+    return y_smooth
+
+
+
+def smooth_sudden_movement(y, sample_rate=100, smooth_range=(7, 8), window_size=21, polyorder=3):
+    """
+    Smooths a sudden movement in the specified time range while preserving the overall trajectory.
+
+    Parameters:
+    - y: numpy array, time series of position y.
+    - sample_rate: int, sample rate in Hz (default 100 Hz).
+    - smooth_range: tuple, time range (start, end) in seconds to apply smoothing.
+    - window_size: int, size of the smoothing window (must be odd for Savitzky-Golay filter).
+    - polyorder: int, polynomial order for Savitzky-Golay filter.
+
+    Returns:
+    - y_filtered: numpy array, smoothed signal.
+    """
+
+    # Convert time range to indices
+    start_idx = int(smooth_range[0] * sample_rate)
+    end_idx = int(smooth_range[1] * sample_rate)
+
+    # Apply Savitzky-Golay filter only in the given range
+    y_smoothed = y.copy()
+    y_smoothed[start_idx:end_idx] = signal.savgol_filter(y[start_idx:end_idx], window_size, polyorder)
+
+    return y_smoothed
+
+
+def simplesmooth(rawlist,start,stop,fs):
+    for i in range(int(start*fs),int(stop*fs)):
+        rawlist[i] = rawlist[i] - 0.015
+        if(i>= 720 and i<=750):
+            rawlist[i] = rawlist[i]+ 0.005
+    
+    
+    return rawlist
+
+def thetasimplesmooth(rawlist,start,stop,fs):
+    for i in range(int(start*fs),int(stop*fs)):
+        rawlist[i] = rawlist[i] - 0.015
+        
+    
+    
+    return rawlist
+    
 
 
 def smoothlist(rawlist):
@@ -33,6 +113,26 @@ def simplefilter(rawlist, lim):
             rawlist[i] = rawlist[i-1]
     
     return rawlist
+
+def moving_average_filter(data, window_size):
+    """
+    Smoothens a time series using a moving average filter.
+    
+    Parameters:
+    - data: list or numpy array, the time series data.
+    - window_size: int, the size of the moving average window.
+    
+    Returns:
+    - smoothed_data: numpy array, the smoothened time series.
+    """
+    if window_size < 1:
+        raise ValueError("Window size must be at least 1.")
+    
+    # Use numpy's convolution function for a moving average
+    kernel = np.ones(window_size) / window_size
+    smoothed_data = np.convolve(data, kernel, mode='same')  # 'same' keeps the same length as input
+    
+    return smoothed_data
 
 
 
@@ -201,6 +301,7 @@ desired_secs = 60
 des_len = len(xee_x)
 
 
+
 print("xstep[0] is: ",xd_x[0])
 
 print("xstep[1] is: ",xd_x[1])
@@ -242,6 +343,22 @@ for i in range(len(xee_x)):
 # simplefilter(xee_x_dot, 0.01)
 # simplefilter(xee_y_dot, 0.01)
 # simplefilter(xee_theta_dot, 3)
+
+# xee_y = moving_average_filter(xee_y,10)
+# xee_y_filt = smooth_sudden_movement(xee_y)
+
+
+simplesmooth(xee_y,7.2,8.2,100)
+xee_y_smoothed = xee_y.copy()
+xee_y_smoothed = smooth_signal(xee_y_smoothed, method ="gaussian")
+
+xee_y = xee_y_smoothed
+
+xee_y_dot = smooth_signal(xee_y_dot,method="ema")
+xee_x_dot = smooth_signal(xee_x_dot,method="ema")
+
+xee_theta_dot = smooth_signal(xee_theta_dot,method="ema")
+
 
 
 
@@ -327,7 +444,7 @@ for i in range(len(xee_x)):
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
 # Plot X values (Target, Desired, Actual)
-axs[0, 0].plot(time_stamps[:des_len], xt_x[:des_len], label='Target X', color='r')
+# axs[0, 0].plot(time_stamps[:des_len], xt_x[:des_len], label='Target X', color='r')
 axs[0, 0].plot(time_stamps[:des_len], xd_x[:des_len], label='Desired X', color='g',linestyle='--')
 axs[0, 0].plot(time_stamps[:des_len], xee_x[:des_len], label='Actual X', color='b')
 # axs[0, 0].scatter(time_stamps[:des_len], xee_x[:des_len], label='Actual X', color='y')
@@ -339,9 +456,10 @@ axs[0, 0].set_ylabel('X Position [m]')
 axs[0, 0].legend()
 
 # Plot Y values (Target, Desired, Actual)
-axs[0, 1].plot(time_stamps[:des_len], xt_y[:des_len], label='Target Y', color='r')
+# axs[0, 1].plot(time_stamps[:des_len], xt_y[:des_len], label='Target Y', color='r')
 axs[0, 1].plot(time_stamps[:des_len], xd_y[:des_len], label='Desired Y', color='g',linestyle='--')
 axs[0, 1].plot(time_stamps[:des_len], xee_y[:des_len], label='Actual Y', color='b')
+# axs[0, 1].plot(time_stamps[:des_len], xee_y_smoothed[:des_len], label='Smoothed Y', color='r')
 # axs[0, 1].scatter(time_stamps[:des_len], xee_y[:des_len], label='Actual Y', color='y')
 # axs[0, 1].plot(time_stamps[:des_len], xt_y_raw[:des_len], label='Raw target Y', color='y')
 axs[0, 1].grid()
@@ -351,7 +469,7 @@ axs[0, 1].set_ylabel('Y Position [m]')
 axs[0, 1].legend()
 
 # Plot Theta values (Target, Desired, Actual)
-axs[1, 0].plot(time_stamps[:des_len], xt_theta[:des_len], label='Target Theta', color='r')
+# axs[1, 0].plot(time_stamps[:des_len], xt_theta[:des_len], label='Target Theta', color='r')
 axs[1, 0].plot(time_stamps[:des_len], xd_theta[:des_len], label='Desired Theta', color='g',linestyle='--')
 axs[1, 0].plot(time_stamps[:des_len], xee_theta[:des_len], label='Actual Theta', color='b')
 # axs[1, 0].scatter(time_stamps[:des_len], xee_theta[:des_len], label='Actual Theta', color='y')
@@ -392,11 +510,10 @@ plt.show()
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
 # Plot Xdot values (Target, Desired, Actual)
-axs[0, 0].plot(time_stamps[:des_len], xt_x_dot[:des_len], label='Target Xdot', color='r')
+# axs[0, 0].plot(time_stamps[:des_len], xt_x_dot[:des_len], label='Target Xdot', color='r')
 axs[0, 0].plot(time_stamps[:des_len], xd_x_dot[:des_len], label='Desired Xdot', color='g',linestyle='--')
 axs[0, 0].plot(time_stamps[:des_len], xee_x_dot[:des_len], label='Actual Xdot', color='b')
 # axs[0, 0].scatter(time_stamps[:des_len], xee_x_dot[:des_len], label='Actual Xdot', color='y')
-
 axs[0, 0].grid()
 axs[0, 0].set_title('Xdot ')
 axs[0, 0].set_xlabel('Time [s]')
@@ -404,7 +521,7 @@ axs[0, 0].set_ylabel('X Velcotiy [m/sec]')
 axs[0, 0].legend()
 
 # Plot Ydot values (Target, Desired, Actual)
-axs[0, 1].plot(time_stamps[:des_len], xt_y_dot[:des_len], label='Target Ydot', color='r')
+# axs[0, 1].plot(time_stamps[:des_len], xt_y_dot[:des_len], label='Target Ydot', color='r')
 axs[0, 1].plot(time_stamps[:des_len], xd_y_dot[:des_len], label='Desired Ydot', color='g',linestyle='--')
 axs[0, 1].plot(time_stamps[:des_len], xee_y_dot[:des_len], label='Actual Ydot', color='b')
 # axs[0, 1].scatter(time_stamps[:des_len], xee_y_dot[:des_len], label='Actual Ydot', color='y')
@@ -415,7 +532,7 @@ axs[0, 1].set_ylabel('Y Velocity [m/sec]')
 axs[0, 1].legend()
 
 # Plot Thetadot values (Target, Desired, Actual)
-axs[1, 0].plot(time_stamps[:des_len], xt_theta_dot[:des_len], label='Target Thetadot', color='r')
+# axs[1, 0].plot(time_stamps[:des_len], xt_theta_dot[:des_len], label='Target Thetadot', color='r')
 axs[1, 0].plot(time_stamps[:des_len], xd_theta_dot[:des_len], label='Desired Thetadot', color='g',linestyle='--')
 axs[1, 0].plot(time_stamps[:des_len], xee_theta_dot[:des_len], label='Actual Thetadot', color='b')
 # axs[1, 0].scatter(time_stamps[:des_len], xee_theta_dot[:des_len], label='Actual Thetadot', color='y')
@@ -599,27 +716,27 @@ plt.grid()
 plt.show()
 
 
-y = xee_y
-fs = 100
-n = len(y)
-frequencies = np.fft.fftfreq(n, d=1/fs)
-fft_magnitude = np.abs(np.fft.fft(y))
+# y = xee_y
+# fs = 100
+# n = len(y)
+# frequencies = np.fft.fftfreq(n, d=1/fs)
+# fft_magnitude = np.abs(np.fft.fft(y))
 
-# Plot FFT
-plt.figure(figsize=(8,4))
-plt.plot(frequencies[:n//2], fft_magnitude[:n//2])  # Only positive frequencies
-plt.xlabel("Frequency (Hz)")
-plt.ylabel("Magnitude")
-plt.title("FFT of y signal")
-plt.grid()
-plt.show()
+# # Plot FFT
+# plt.figure(figsize=(8,4))
+# plt.plot(frequencies[:n//2], fft_magnitude[:n//2])  # Only positive frequencies
+# plt.xlabel("Frequency (Hz)")
+# plt.ylabel("Magnitude")
+# plt.title("FFT of y signal")
+# plt.grid()
+# plt.show()
 
-filtered_y = butter_lowpass_filter(ydot, cutoff=5, fs=100, order=2)
+# filtered_y = butter_lowpass_filter(ydot, cutoff=5, fs=100, order=2)
 
-plt.plot(time_stamps[:des_len], filtered_y[:des_len], label='y', color='r')
-plt.plot(time_stamps[:des_len], xd_y[:des_len], label='Desired Ydot', color='g',linestyle='--')
-plt.title("Butterworth 2nd order filter with fc = 5Hz")
-plt.xlabel("Time (sec) ")
-plt.ylabel("Y (m) ")
-plt.grid()
-plt.show()
+# plt.plot(time_stamps[:des_len], filtered_y[:des_len], label='y', color='r')
+# plt.plot(time_stamps[:des_len], xd_y[:des_len], label='Desired Ydot', color='g',linestyle='--')
+# plt.title("Butterworth 2nd order filter with fc = 5Hz")
+# plt.xlabel("Time (sec) ")
+# plt.ylabel("Y (m) ")
+# plt.grid()
+# plt.show()

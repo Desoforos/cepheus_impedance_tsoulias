@@ -29,53 +29,39 @@ void sigintHandler(int sig) {
 }
 
 
-class IIRButterworthFilter {
-private:
-    double a1, a2, b0, b1, b2;
-    double x_prev1, x_prev2; // Previous input values (raw ydot)
-    double y_prev1, y_prev2; // Previous output values (filtered ydot)
+struct ButterworthFilter {
+    double a0, a1, a2, b1, b2;
+    double x1, x2; // Previous inputs
+    double y1, y2; // Previous outputs
 
-public:
-    IIRButterworthFilter(double cutoff_freq, double sampling_freq) {
-        double omega = 2.0 * M_PI * cutoff_freq / sampling_freq;
-        double sin_omega = sin(omega);
-        double cos_omega = cos(omega);
-        double alpha = sin_omega / (2.0 * sqrt(2.0)); // Butterworth Q-factor
+    ButterworthFilter(double fc, double fs) {
+        double omega = 2.0 * M_PI * fc / fs;
+        double tan_omega = tan(omega / 2.0);
+        double c = 1.0 + sqrt(2.0) * tan_omega + tan_omega * tan_omega;
 
-        // Butterworth filter coefficients (2nd-order)
-        b0 = (1.0 - cos_omega) / 2.0;
-        b1 = 1.0 - cos_omega;
-        b2 = (1.0 - cos_omega) / 2.0;
-        a1 = -2.0 * cos_omega;
-        a2 = 1.0 - alpha;
+        a0 = (tan_omega * tan_omega) / c;
+        a1 = 2.0 * a0;
+        a2 = a0;
+        b1 = 2.0 * (tan_omega * tan_omega - 1.0) / c;
+        b2 = (1.0 - sqrt(2.0) * tan_omega + tan_omega * tan_omega) / c;
 
-        // Normalize coefficients
-        double a0 = 1.0 + alpha;
-        b0 /= a0;
-        b1 /= a0;
-        b2 /= a0;
-        a1 /= a0;
-        a2 /= a0;
-
-        // Initialize previous values to zero
-        x_prev1 = x_prev2 = 0.0;
-        y_prev1 = y_prev2 = 0.0;
+        // Initialize previous values
+        x1 = x2 = y1 = y2 = 0.0;
     }
 
     double filter(double x) {
-        // Apply the IIR difference equation
-        double y = b0 * x + b1 * x_prev1 + b2 * x_prev2 - a1 * y_prev1 - a2 * y_prev2;
+        // Compute filtered value
+        double y = a0 * x + a1 * x1 + a2 * x2 - b1 * y1 - b2 * y2;
 
-        // Update history for next iteration
-        x_prev2 = x_prev1;
-        x_prev1 = x;
-        y_prev2 = y_prev1;
-        y_prev1 = y;
+        // Shift previous values for next iteration
+        x2 = x1;
+        x1 = x;
+        y2 = y1;
+        y1 = y;
 
         return y;
     }
 };
-
 
 
 
@@ -103,6 +89,9 @@ int main(int argc, char **argv) {
     bool paramsinit = false;
     bool record = false;
     bool grabStarted = false;
+    int contactCounter =0; 
+    double tsoft = 0;
+    stopMotors = false;
 
     targetcheck = false;
     eecheck = false;
@@ -121,6 +110,9 @@ int main(int argc, char **argv) {
     double tf; //time of movement before reaching target
 
     // IIRButterworthFilter ydot_filter(0.8, 100.0);
+    double fc = 0.9; //cutoff frequency gia ydot
+    double fs = 100; //100hz deigmatolipsia
+    ButterworthFilter filter(fc, fs);
 
     /* Create publishers */
   
@@ -158,6 +150,7 @@ int main(int argc, char **argv) {
 
     ros::Subscriber arduino_sub = nh.subscribe("/tsoulias_speak", 1, arduinoCallbacktest);
     ros::Publisher arduino_pub = nh.advertise<std_msgs::String>("/tsoulias_hear", 1);
+    // ros::Subscriber foros_sub = nh.subscribe("/foros_hear",1,forosCallback);
 
 
 	ros::Subscriber ls_pos_sub = nh.subscribe("read_left_shoulder_position", 1, lsPosCallback);  //gia q1
@@ -297,6 +290,7 @@ int main(int argc, char **argv) {
             //     break;
             // }
             updateVel(0.01,secs,tf); // 100hz
+            // xeedot(1) = filter.filter(xeedot(1));
             // xeedot(1) = ydot_filter.filter(xeedot(1));
             finalTrajectories(secs,tf); //gia polyonymikh troxia, tin theloume gia olous tous controllers, kanei kai arxikopoihsh metavlhton
             controller(count,tf,secs); //impedance controller
@@ -313,14 +307,23 @@ int main(int argc, char **argv) {
             msg_LS.data = filter_torque(tau(1),prev_tau(1)); //tau(1);
             msg_LE.data = filter_torque(tau(2),prev_tau(2)); //tau(2);
             msg_LW.data = filter_torque(tau(3),prev_tau(3));
+            if(stopMotors){ //kano overwrite ton elegkth an prepei na kleiso tous kinhthres
+                msg_RW.data = msg_LS.data = msg_LE.data = msg_LW.data =  0.0001; 
+            }
             rw_torque_pub.publish(msg_RW);
             ls_torque_pub.publish(msg_LS);
             le_torque_pub.publish(msg_LE);
             re_torque_pub.publish(msg_LW); //ousiastika einai to left wrist alla tespa
-            if(secs>tf && (abs(ee_x-xt)<0.003) && (abs(ee_y-yt)<0.003) && !grabStarted){
+            if(secs>tf && (abs(ee_x-xt)<0.05) && (abs(ee_y-yt)<0.05)){
+                contactCounter++;
+            }
+            if(contactCounter > 1*100){
+                if(!grabStarted){
                 grabStarted = true;
                 start_grab_msg.data = true;
                 grab_pub.publish(start_grab_msg);
+                tsoft = secs;
+                }
             }
             if(record){
 
@@ -474,6 +477,7 @@ int main(int argc, char **argv) {
 
     // start_moving.data = false;
     // start_moving_pub.publish(start_moving);
+    std::cout <<"tsoft is: "<<tsoft<< "sec."<<std::endl;
 
 
     return 0;

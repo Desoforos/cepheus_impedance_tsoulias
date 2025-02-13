@@ -86,12 +86,15 @@ int main(int argc, char **argv) {
     ros::Subscriber grab_sub = nh.subscribe("/start_grab", 1, grabCallback);
     ros::Subscriber arduino_sub = nh.subscribe("/tsoulias_speak", 1, arduinoCallbacktest);
     ros::Publisher arduino_pub = nh.advertise<std_msgs::String>("/tsoulias_hear", 1);
+    // ros::Publisher foros_pub = nh.advertise<std_msgs::Float64>("/foros_hear", 1);
 
     ros::Subscriber force_sub = nh.subscribe("/filtered_botasys", 1, forceCallback);
 
     ros::Rate loop_rate(200); //200Hz
     std_msgs::Float64 force_msg;
     std_msgs::Float64 raw_force_msg;
+    std_msgs::Float64 stop_motors_msg;
+    
 
     bool record = false;
 
@@ -114,6 +117,7 @@ int main(int argc, char **argv) {
 
     ardincontact = false;
     beginGrab = false; //tha perimenei to subscribe
+    // beginGrab = true; //gia xeirokinhto piasimo
 
     std::cout<<"Press any key to start."<<std::endl;
     std::cin>>cmd;
@@ -149,6 +153,8 @@ int main(int argc, char **argv) {
                         // }
                         arduino_msg.data = "hardgrip";
                         arduino_pub.publish(arduino_msg);
+                        // stop_motors_msg.data = 1.0;
+                        // foros_pub.publish(stop_motors_msg);
                         //ROSPUBLISH HARDGRIP MIA FORA META DEN KSANASTELNEI
                     }
                     ros::spinOnce(); //perimeno callback gia true to hardFinished
