@@ -297,7 +297,7 @@ void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 
 void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     raw_force_x = (msg->wrench.force.z);  //etsi einai mapped apo to bota  filtered.
-    raw_force_x = moving_average(raw_force_x, force_window, 10, forcesum);
+    raw_force_x = moving_average(raw_force_x, force_window, 5, forcesum);
     // force_y = msg->wrench.force.y;
 	// torque_z = msg->wrench.torque.z;
 	// fext(0) = force_x;

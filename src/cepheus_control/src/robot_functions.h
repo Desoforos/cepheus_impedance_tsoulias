@@ -222,7 +222,7 @@ void finalTrajectories(double t,double tf){
     thstepdotdotfr = sdotdot*(thetat_in - thetaE_in);
     theta0stepdotdotfr =  sdotdot*(theta0fin - theta0in);
     
-    xstepc = xt; //na to balo + 0.001; //gia na ginei h synexhs epafh, vevaiosou oti einai plhros orizontia , allios 0.0001*cos(xee(2));
+    xstepc = xt + 0.001; //na to balo + 0.001; //gia na ginei h synexhs epafh, vevaiosou oti einai plhros orizontia , allios 0.0001*cos(xee(2));
     ystepc = yt;           //allios 0.0001*sin(xee(2)); na to valo sto y allaksa tous aksones
     thstepc = thetat;
     theta0stepc = theta0fin;
@@ -255,7 +255,13 @@ void finalTrajectories(double t,double tf){
 
 
     if(t>tf){ //allios incontact isos kalytera me xrono
-      xstep = xstepc;
+      // xstep = xstepc;
+      if(grabStarted){
+        xstep = xt;
+      }
+      else{
+        xstep = xt + 0.002;
+      }
       ystep = ystepc;
       thstep = thstepc;
       theta0step = theta0stepc;
@@ -1110,7 +1116,7 @@ jebar << je21star-h21star*(h11star.inverse())*je11star, je22star-h21star*(h11sta
 
 // Qext=[0;0;Fext;0); na to ftiakso
 
-qe << 0, force_x, 0;  //den eimai sigouros gia afto
+
 
 // if(t<=tf){ //allios !incontact //t<=tf
 //   force_x = 0;
@@ -1123,15 +1129,33 @@ qe << 0, force_x, 0;  //den eimai sigouros gia afto
 //   bd = bd_c;
 //   kd = kd_c;
 //   md = md_c;
-//   fdes << 0, 0, fd, 0;
+//   fdes << 0, fd, 0, 0;
 //   force_x = 0; //(0.08 + raw_force_x)/2;
 // }
-/*NA TO BGALO META!!!!!*/
-kd = kd_f;
-md = md_f;
-bd = bd_f;
-fdes << 0, 0, 0, 0;
-/* MHN TO KSEXASEIS!!!!!*/
+if(abs(abs(rawraw_force_x)-abs(m3*xstepdotdot))>0.5){
+  incontact = true;
+}
+else{
+  incontact = false;
+}
+
+if(!incontact || grabStarted || t<=tf){
+  kd = kd_f;
+  md = md_f;
+  bd = bd_f;
+  fdes << 0, 0, 0, 0;
+  force_x = 0;
+}
+else{ //diladi prepei incontact && !grabStarted && t >tf
+  bd = bd_c;
+  kd = kd_c;
+  md = md_c;
+  fdes << 0, fd, 0, 0;
+  force_x = abs(abs(rawraw_force_x)-abs(m3*xstepdotdot));
+}
+
+qe << force_x, 0, 0;  
+/*Diladi, des an yparxei epafh. An nai, ddes an einai kata to sfiksimo. An oxi, impedance. An nai, free space (megales dynames sto sfiksimo)*/
 
 // fdes << 0, 0, fd*abs(force_x)/(abs(force_x)+a22), 0;
 
@@ -1166,7 +1190,7 @@ error_dot << (theta0dot - theta0stepdot), (xeedot(0) - xstepdot), (xeedot(1) - y
 
 
 Eigen::VectorXd qext(4);
-qext << 0, 0, force_x, 0;
+qext << 0, force_x, 0, 0;
 
 
 Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-kd*error-bd*error_dot-qext + fdes);  //kd = 1, bd=2 kd=0.325 , bd = 0.2

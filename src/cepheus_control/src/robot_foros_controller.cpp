@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
     bool hasbegun = false;
     bool paramsinit = false;
     bool record = false;
-    bool grabStarted = false;
+    
     int contactCounter =0; 
     double tsoft = 0;
     stopMotors = false;

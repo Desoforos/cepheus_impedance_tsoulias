@@ -264,6 +264,7 @@ std::deque<double> thetahistory;
  double sumxc0dot = 0, sumyc0dot = 0 ;
  double filtered_ydot = 0;
  bool stopMotors = false;
+ bool grabStarted = false;
 /////////////// GLOBAL VARIABLES DECLARATION END////////////////////////
 
 #endif
