@@ -81,8 +81,7 @@ int main(int argc, char **argv) {
     // xtdot = 0;
     // ytdot = 0;
     // thetatdot = 0;
-
-
+    
     double safetylimit = 20*M_PI/180; 
     int count = 0;
     bool hasbegun = false;

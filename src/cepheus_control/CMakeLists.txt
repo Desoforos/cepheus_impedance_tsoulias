@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
+# cmake_minimum_required(VERSION 3.1.3)
+# set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# add_definitions(-std=c++14 -Wall -Werror)
 project(cepheus_control)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
@@ -150,16 +153,17 @@ ${catkin_INCLUDE_DIRS}
 # add_executable(foros_simcontroller_node src/foros_simcontroller.cpp) #nikiforos new
 # add_executable(eross_control_node src/eross_control.cpp) #nikiforos, took from eros
 # add_executable(foros_user_node src/foros_user.cpp)
-add_executable(testsetter_node src/gazebo_nodes/testsetter.cpp)
-add_executable(new_foros_simcontroller_node src/gazebo_nodes/new_foros_simcontroller.cpp)
-add_executable(simple_publisher_node src/simple_publisher.cpp)
-add_executable(simple_recorder_node src/simple_recorder.cpp)
+# tou gazebo se sxolia
+# add_executable(testsetter_node src/gazebo_nodes/testsetter.cpp)
+# add_executable(new_foros_simcontroller_node src/gazebo_nodes/new_foros_simcontroller.cpp)
+# add_executable(simple_publisher_node src/simple_publisher.cpp)
+# add_executable(simple_recorder_node src/simple_recorder.cpp)
 add_executable(robot_foros_controller_node src/robot_foros_controller.cpp) 
 add_executable(arduino_test_node src/arduino_test.cpp)
 add_executable(vicon_test_node src/vicon_test.cpp)
 # add_executable(robot_foros_ignition_node src/robot_foros_ignition.cpp)
 add_executable(motors_test_node src/motors_test.cpp)
-add_executable(gazebo_motors_test_node src/gazebo_nodes/gazebo_motors_test.cpp)
+# add_executable(gazebo_motors_test_node src/gazebo_nodes/gazebo_motors_test.cpp)
 
 
 
@@ -178,16 +182,16 @@ add_executable(gazebo_motors_test_node src/gazebo_nodes/gazebo_motors_test.cpp)
 # target_link_libraries(foros_user_node ${catkin_LIBRARIES}  )
 # target_link_libraries(cepheus_controller_node ${catkin_LIBRARIES}  )
 # target_link_libraries(foros_simcontroller_node ${catkin_LIBRARIES}  ) #nikiforos
-target_link_libraries(testsetter_node ${catkin_LIBRARIES}  ) #nikiforos
-target_link_libraries(new_foros_simcontroller_node ${catkin_LIBRARIES} ) #nikiforos
-target_link_libraries(simple_publisher_node ${catkin_LIBRARIES} )
-target_link_libraries(simple_recorder_node ${catkin_LIBRARIES} )
+# target_link_libraries(testsetter_node ${catkin_LIBRARIES}  ) #nikiforos
+# target_link_libraries(new_foros_simcontroller_node ${catkin_LIBRARIES} ) #nikiforos
+# target_link_libraries(simple_publisher_node ${catkin_LIBRARIES} )
+# target_link_libraries(simple_recorder_node ${catkin_LIBRARIES} )
 target_link_libraries(robot_foros_controller_node ${catkin_LIBRARIES} )
 target_link_libraries(arduino_test_node ${catkin_LIBRARIES} )
 target_link_libraries(vicon_test_node ${catkin_LIBRARIES} )
-target_link_libraries(robot_foros_ignition_node ${catkin_LIBRARIES})
+# target_link_libraries(robot_foros_ignition_node ${catkin_LIBRARIES})
 target_link_libraries(motors_test_node ${catkin_LIBRARIES})
-target_link_libraries(gazebo_motors_test_node ${catkin_LIBRARIES})
+# target_link_libraries(gazebo_motors_test_node ${catkin_LIBRARIES})
 
 
 

@@ -260,7 +260,7 @@ void finalTrajectories(double t,double tf){
         xstep = xt;
       }
       else{
-        xstep = xt + 0.002;
+        xstep = xt + 0.002; //2 xiliosta
       }
       ystep = ystepc;
       thstep = thstepc;
@@ -595,35 +595,70 @@ void controller(int count, double tf, double t){
   double p17=m3*l3*r0y;
   double p18=(l1+r1)*m3*l3;
   double p19=(l2+r2)*m3*l3;
-
   double a11 = pow(10,20);
   double a22 = pow(10,-20);
-  double z_free=1;
-  double ts_f=0.2*tf;
-  double wn_free=6/ts_f;
-  double kdf=1;
-  double mdf=kdf/pow(wn_free,2);
-  // double mdf = 1;
-  // double kdf = mdf*pow(wn_free,2);
-  double bdf=2*z_free*wn_free*mdf;
-
-  //EN TELEI: 
-  kdf = 1.1;
-  bdf = 0.6;
-  Eigen::MatrixXd md_f = mdf*Eigen::MatrixXd::Identity(4,4);
-  Eigen::MatrixXd bd_f = bdf*Eigen::MatrixXd::Identity(4,4);
-  Eigen::MatrixXd kd_f = kdf*Eigen::MatrixXd::Identity(4,4);
+  /*kerdh elegkth*/
   double ke = pow(10,6);
-  double z_contact=z_free*sqrt(kdf/(kdf+ke));
-  double wn_contact=wn_free*sqrt((kdf+ke)/kdf);
-  double fd = 1;
-  double kdc = 100;
-  double mdc=(kdc+ke)/pow(wn_contact,2);
-  double be = 0;
-  double bdc=2*z_contact*wn_contact*mdc-be;
-  Eigen::MatrixXd md_c = mdc*Eigen::MatrixXd::Identity(4,4);
-  Eigen::MatrixXd bd_c = bdc*Eigen::MatrixXd::Identity(4,4);
-  Eigen::MatrixXd kd_c = kdc*Eigen::MatrixXd::Identity(4,4);
+  double kdef, bdef, mdef;
+  double kdec, bdec, mdec;
+  double kdb, bdb;
+  double wnef, zef;
+  double wnec, zec;
+  double wnb, zb;
+  double tsf = 0.2*tf;
+  double tsc = 1; //1 sec
+  zef = 1;
+  zec = 1;
+  zb = 1;
+  mdef = 1;
+  mdec = 1;
+  wnef = 6/tsf;
+  wnec = 6/tsc;
+  wnb = 6/tsf;
+
+  kdef = wnef*wnef*mdef; //free space phase, end effector
+  bdef = 2*zef*wnef*mdef;
+
+  kdec = wnec*wnec*mdec - ke; //contact phase, end effector
+  bdec = 2*zec*wnec*mdec;
+
+  kdb = wnb*wnb;   //base for both phases
+  bdb = 2*zb*wnb;
+
+
+  // double z_free=1;
+  // double ts_f=0.2*tf;
+  // double wn_free=6/ts_f;
+  // double kdf=1;
+  // double mdf=kdf/pow(wn_free,2);
+  // // double mdf = 1;
+  // // double kdf = mdf*pow(wn_free,2);
+  // double bdf=2*z_free*wn_free*mdf;
+
+  // kdf = 1.1; //isos na ta ftiakso kapos etsi pali, afta htan gia tf = 10 sec
+  // bdf = 0.6;
+
+  Eigen::MatrixXd md_f = mdef*Eigen::MatrixXd::Identity(4,4);
+  md_f(0,0) = 1; //ths bashs
+  Eigen::MatrixXd bd_f = bdef*Eigen::MatrixXd::Identity(4,4);
+  bd_f(0,0) = bdb; //ths bashs
+  Eigen::MatrixXd kd_f = kdef*Eigen::MatrixXd::Identity(4,4);
+  kd_f(0,0) = kdb; //ths bashs
+  
+  // double z_contact=z_free*sqrt(kdf/(kdf+ke));
+  // double wn_contact=wn_free*sqrt((kdf+ke)/kdf);
+  // double fd = 1;
+  // double kdc = 100;
+  // double mdc=(kdc+ke)/pow(wn_contact,2);
+  // double be = 0;
+  // double bdc=2*z_contact*wn_contact*mdc-be;
+  Eigen::MatrixXd md_c = mdec*Eigen::MatrixXd::Identity(4,4);
+  md_c(0,0) = 1; //ths bashs
+  Eigen::MatrixXd bd_c = bdec*Eigen::MatrixXd::Identity(4,4);
+  bd_c(0,0) = bdb; //ths bashs
+  Eigen::MatrixXd kd_c = kdec*Eigen::MatrixXd::Identity(4,4);
+  kd_c(0,0) = kdb; //ths bashs
+
   Eigen::MatrixXd md(4,4);
   Eigen::MatrixXd kd(4,4);
   Eigen::MatrixXd bd(4,4);
@@ -1132,7 +1167,7 @@ jebar << je21star-h21star*(h11star.inverse())*je11star, je22star-h21star*(h11sta
 //   fdes << 0, fd, 0, 0;
 //   force_x = 0; //(0.08 + raw_force_x)/2;
 // }
-if(abs(abs(rawraw_force_x)-abs(m3*xstepdotdot))>0.5){
+if(abs(abs(raw_force_x)-abs(m3*xstepdotdot))>0.5){ //0.5 einai to threshold
   incontact = true;
 }
 else{
@@ -1151,7 +1186,7 @@ else{ //diladi prepei incontact && !grabStarted && t >tf
   kd = kd_c;
   md = md_c;
   fdes << 0, fd, 0, 0;
-  force_x = abs(abs(rawraw_force_x)-abs(m3*xstepdotdot));
+  force_x = abs(abs(raw_force_x)-abs(m3*xstepdotdot));
 }
 
 qe << force_x, 0, 0;  
