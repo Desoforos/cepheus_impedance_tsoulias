@@ -134,6 +134,9 @@ def moving_average_filter(data, window_size):
     
     return smoothed_data
 
+def makezeros(rawlist):
+    for i in range(10*100,len(rawlist)):
+        rawlist[i] = 0
 
 
 
@@ -157,6 +160,19 @@ xt_theta_dot, xd_theta_dot, xee_theta_dot = [], [], []
 xt_theta0_dot, xd_theta0_dot, xee_theta0_dot = [], [], []
 
 torquerw, torqueq1, torqueq2, torqueq3 = [], [], [], []
+
+error_x = []
+error_xdot = []
+
+error_y = []
+error_ydot = []
+
+error_theta = []
+error_thetadot = []
+
+error_theta0 = []
+error_theta0dot =[]
+
 
 
 
@@ -268,11 +284,11 @@ for topic, msg, t in bag.read_messages(topics=['/cepheus/xt_x', '/cepheus/xd_x',
     elif topic == "/cepheus/torquerw":
         torquerw.append(msg.data)
     elif topic == "/cepheus/torqueq1":
-        torqueq1.append(-186*msg.data)
+        torqueq1.append(-msg.data)
     elif topic == "/cepheus/torqueq2":
-        torqueq2.append(186*msg.data)
+        torqueq2.append(msg.data)
     elif topic == "/cepheus/torqueq3":
-        torqueq3.append(-186*msg.data)
+        torqueq3.append(-msg.data)
     
     elif topic == "/cepheus/xt_x_raw":
         xt_x_raw.append(msg.data)
@@ -301,44 +317,36 @@ desired_secs = 60
 des_len = len(xee_x)
 
 
+print("xee_x[0] is ",xee_x[0])
+print("xee_y[0] is ",xee_y[0])
+print("xee_theta[0] is ",xee_theta[0])
+print("theta0[0] is ",xee_theta0[0])
 
-print("xstep[0] is: ",xd_x[0])
-
-print("xstep[1] is: ",xd_x[1])
-print("xee[100] is: ",xee_x[100])
-
-print("xstepdot[100] is: ",xd_x_dot[100])
-print("xeedot[100] is: ",xee_x_dot[100])
-
-print("error[100] is: ",xd_x[1] - xee_x[100])
-print("errordot[100] is: ",xd_x_dot[1] - xee_x_dot[100])
-
-print("torque3[0] is: ",torqueq3[0])
-print("torque3[1] is: ",torqueq3[1])
-print("torque3[100] is: ",torqueq3[100])
-
-print("theta[1] is: ", xee_theta[200])
-print("theta0[1] is: ", xee_theta0[200])
+print("xt_x[0] is",xt_x[0])
+print("xt_y[0] is",xt_y[0])
+print("xt_theta[0] is",xt_theta[0])
 
 
-error_x = []
-error_xdot = []
 
-error_y = []
-error_ydot = []
+# print("xstep[0] is: ",xd_x[0])
 
-error_theta = []
-error_thetadot = []
+# print("xstep[1] is: ",xd_x[1])
+# print("xee[100] is: ",xee_x[100])
 
-for i in range(len(xee_x)):
-    error_x.append(xd_x[i]-xee_x[i])
-    error_xdot.append(xd_x_dot[i]-xee_x_dot[i])
+# print("xstepdot[100] is: ",xd_x_dot[100])
+# print("xeedot[100] is: ",xee_x_dot[100])
 
-    error_y.append(xd_y[i]-xee_y[i])
-    error_ydot.append(xd_y_dot[i]-xee_y_dot[i])
+# print("error[100] is: ",xd_x[1] - xee_x[100])
+# print("errordot[100] is: ",xd_x_dot[1] - xee_x_dot[100])
 
-    error_theta.append(xd_theta[i]-xee_theta[i])
-    error_thetadot.append(xd_theta_dot[i]-xee_theta_dot[i])
+# print("torque3[0] is: ",torqueq3[0])
+# print("torque3[1] is: ",torqueq3[1])
+# print("torque3[100] is: ",torqueq3[100])
+
+# print("theta[1] is: ", xee_theta[200])
+# print("theta0[1] is: ", xee_theta0[200])
+
+
 
 # simplefilter(xee_x_dot, 0.01)
 # simplefilter(xee_y_dot, 0.01)
@@ -360,7 +368,22 @@ xee_x_dot = smooth_signal(xee_x_dot,method="ema")
 xee_theta_dot = smooth_signal(xee_theta_dot,method="ema")
 
 
+makezeros(xd_x_dot)
+makezeros(xd_y_dot)
+makezeros(xd_theta_dot)
 
+for i in range(len(xee_x)):
+    error_x.append(-(xd_x[i]-xee_x[i]))
+    error_xdot.append(-(xd_x_dot[i]-xee_x_dot[i]))
+
+    error_y.append(-(xd_y[i]-xee_y[i]))
+    error_ydot.append(-(xd_y_dot[i]-xee_y_dot[i]))
+
+    error_theta.append(-(xd_theta[i]-xee_theta[i]))
+    error_thetadot.append(-(xd_theta_dot[i]-xee_theta_dot[i]))
+
+    error_theta0.append(-(xd_theta0[i]-xee_theta0[i]))
+    error_theta0dot.append(-(xd_theta0_dot[i]-xee_theta0_dot[i]))
 
 
 #smoothen the plots:
@@ -633,87 +656,114 @@ plt.show()
 
 
 
+# Create a figure and a 2x2 grid of subplots
+fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
-# time_before_contact = time_stamps[:des_len]
-# torque_before_contact = torquerw[:des_len]
+# Plot errorX values (Target, Desired, Actual)
+axs[0, 0].plot(time_stamps[:des_len], error_x[:des_len], label='error X', color='r')
+# axs[0, 0].plot(time_stamps[:des_len], error_xdot[:des_len], label='error Xdot', color='b')
+axs[0, 0].grid()
+axs[0, 0].legend()
+axs[0, 0].set_title("Error X ")
+axs[0, 0].set_xlabel('Time [s]')
+axs[0, 0].set_ylabel('Error [m]')
 
-# plt.figure(figsize=(10, 6))
+# Plot Y values (Target, Desired, Actual)
+axs[0, 1].plot(time_stamps[:des_len], error_y[:des_len], label='error Y', color='r')
+# axs[0, 1].plot(time_stamps[:des_len], error_ydot[:des_len], label='error Ydot', color='b')
+axs[0, 1].grid()
+axs[0, 1].legend()
+axs[0, 1].set_title("Error Y ")
+axs[0, 1].set_xlabel('Time [s]')
+axs[0, 1].set_ylabel('Error [m]')
 
-# plt.plot(time_before_contact, torque_before_contact, label="Before Contact (Detailed)")
-# plt.grid()
+# Plot Theta values (Target, Desired, Actual)
+axs[1, 0].plot(time_stamps[:des_len], error_theta[:des_len], label='error Theta', color='r')
+# axs[1, 0].plot(time_stamps[:des_len], error_thetadot[:des_len], label='error Thetadot', color='b')
+axs[1, 0].grid()
+axs[1, 0].legend()
+axs[1, 0].set_title("Error Theta ")
+axs[1, 0].set_xlabel('Time [s]')
+axs[1, 0].set_ylabel('Error [deg]')
 
-# plt.xlabel("Time (s)")
-# plt.ylabel("Torque (Nm)")
-# plt.title("Torque of Joint Over Time")
-# plt.legend()
-# plt.show()
+# # Plot Theta0 values (Target, Desired, Actual)
+axs[1, 1].plot(time_stamps[:des_len], error_theta0[:des_len], label='error Theta0', color='r')
+# axs[1, 0].plot(time_stamps[:des_len], error_thetadot[:des_len], label='error Thetadot', color='b')
+axs[1, 1].grid()
+axs[1, 1].legend()
+axs[1, 1].set_title("Error Theta0")
+axs[1, 1].set_xlabel('Time [s]')
+axs[1, 1].set_ylabel('Error [deg]')
+plt.show()
+
 
 # Create a figure and a 2x2 grid of subplots
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
-# Plot X values (Target, Desired, Actual)
-axs[0, 0].plot(time_stamps[:des_len], error_x[:des_len], label='error X', color='r')
-axs[0, 0].plot(time_stamps[:des_len], error_xdot[:des_len], label='error Xdot', color='b')
+# Plot errorX values (Target, Desired, Actual)
+axs[0, 0].plot(time_stamps[:des_len], error_xdot[:des_len], label='error Xdot', color='r')
 axs[0, 0].grid()
 axs[0, 0].legend()
-axs[0, 0].set_title("errors X")
+axs[0, 0].set_title("Error Xdot ")
+axs[0, 0].set_xlabel('Time [s]')
+axs[0, 0].set_ylabel('Error [m/sec]')
 
 # Plot Y values (Target, Desired, Actual)
-axs[0, 1].plot(time_stamps[:des_len], error_y[:des_len], label='error Y', color='r')
-axs[0, 1].plot(time_stamps[:des_len], error_ydot[:des_len], label='error Ydot', color='b')
+axs[0, 1].plot(time_stamps[:des_len], error_ydot[:des_len], label='error Ydot', color='r')
 axs[0, 1].grid()
 axs[0, 1].legend()
-axs[0, 1].set_title("errors Y")
+axs[0, 1].set_title("Error Ydot")
+axs[0, 1].set_xlabel('Time [s]')
+axs[0, 1].set_ylabel('Error [m/sec]')
 
 # Plot Theta values (Target, Desired, Actual)
-axs[1, 0].plot(time_stamps[:des_len], error_theta[:des_len], label='error Theta', color='r')
-axs[1, 0].plot(time_stamps[:des_len], error_thetadot[:des_len], label='error Thetadot', color='b')
+axs[1, 0].plot(time_stamps[:des_len], error_thetadot[:des_len], label='error Thetadot', color='r')
 axs[1, 0].grid()
 axs[1, 0].legend()
-axs[1, 0].set_title("errors Theta")
+axs[1, 0].set_title("Error Thetadot ")
+axs[1, 0].set_xlabel('Time [s]')
+axs[1, 0].set_ylabel('Error [deg/sec]')
 
 # # Plot Theta0 values (Target, Desired, Actual)
-# # axs[1, 1].plot(time_stamps[:des_len], xt_theta0[:des_len], label='Target Theta0', color='r')
-# axs[1, 1].plot(time_stamps[:des_len], xd_theta0[:des_len], label='Desired Theta0', color='g',linestyle='--')
-# axs[1, 1].plot(time_stamps[:des_len], xee_theta0[:des_len], label='Actual Theta0', color='b')
-# axs[1, 1].grid()
-# axs[1, 1].set_title('Theta0 values')
-# axs[1, 1].set_xlabel('Time [s]')
-# axs[1, 1].set_ylabel('Theta0 [deg]')
-# axs[1, 1].legend()
+axs[1, 1].plot(time_stamps[:des_len], error_theta0dot[:des_len], label='error Theta0dot', color='r')
+axs[1, 1].grid()
+axs[1, 1].legend()
+axs[1, 1].set_title("Error Theta0dot")
+axs[1, 1].set_xlabel('Time [s]')
+axs[1, 1].set_ylabel('Error [deg/sec]')
 plt.show()
 
 
-ydot = xee_y_dot
-fs = 100
-n = len(ydot)
-frequencies = np.fft.fftfreq(n, d=1/fs)
-fft_magnitude = np.abs(np.fft.fft(ydot))
+# ydot = xee_y_dot
+# fs = 100
+# n = len(ydot)
+# frequencies = np.fft.fftfreq(n, d=1/fs)
+# fft_magnitude = np.abs(np.fft.fft(ydot))
 
-# Plot FFT
-plt.figure(figsize=(8,4))
-plt.plot(frequencies[:n//2], fft_magnitude[:n//2])  # Only positive frequencies
-plt.xlabel("Frequency (Hz)")
-plt.ylabel("Magnitude")
-plt.title("FFT of ydot signal")
-plt.grid()
-plt.show()
+# # Plot FFT
+# plt.figure(figsize=(8,4))
+# plt.plot(frequencies[:n//2], fft_magnitude[:n//2])  # Only positive frequencies
+# plt.xlabel("Frequency (Hz)")
+# plt.ylabel("Magnitude")
+# plt.title("FFT of ydot signal")
+# plt.grid()
+# plt.show()
 
-def butter_lowpass_filter(data, cutoff, fs, order=2):
-    nyquist = 0.5 * fs  # Nyquist frequency
-    normal_cutoff = cutoff / nyquist  # Normalize cutoff frequency
-    b, a = butter(order, normal_cutoff, btype='low', analog=False)
-    return filtfilt(b, a, data)  # Apply filter
+# def butter_lowpass_filter(data, cutoff, fs, order=2):
+#     nyquist = 0.5 * fs  # Nyquist frequency
+#     normal_cutoff = cutoff / nyquist  # Normalize cutoff frequency
+#     b, a = butter(order, normal_cutoff, btype='low', analog=False)
+#     return filtfilt(b, a, data)  # Apply filter
 
-filtered_ydot = butter_lowpass_filter(ydot, cutoff=0.8, fs=100, order=2)
+# filtered_ydot = butter_lowpass_filter(ydot, cutoff=0.8, fs=100, order=2)
 
-plt.plot(time_stamps[:des_len], filtered_ydot[:des_len], label='ydot', color='r')
-plt.plot(time_stamps[:des_len], xd_y_dot[:des_len], label='Desired Ydot', color='g',linestyle='--')
-plt.title("Butterworth 2nd order filter with fc = 0.8Hz")
-plt.xlabel("Time (sec) ")
-plt.ylabel("Ydot (m/s)")
-plt.grid()
-plt.show()
+# plt.plot(time_stamps[:des_len], filtered_ydot[:des_len], label='ydot', color='r')
+# plt.plot(time_stamps[:des_len], xd_y_dot[:des_len], label='Desired Ydot', color='g',linestyle='--')
+# plt.title("Butterworth 2nd order filter with fc = 0.8Hz")
+# plt.xlabel("Time (sec) ")
+# plt.ylabel("Ydot (m/s)")
+# plt.grid()
+# plt.show()
 
 
 # y = xee_y

@@ -39,6 +39,8 @@ void gazeboposCallback(const gazebo_msgs::LinkStates::ConstPtr& msg){ //update t
 				prevxtdot = 0;
 				prevytdot = 0;
 				prevthetatdot = 0;
+				xtdot = 0;
+				ytdot = 0;
 			}
 			else{
 				prevxtdot = xtdot;
@@ -186,6 +188,7 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     force_x = msg->wrench.force.x;
     force_y = msg->wrench.force.y;
 	torque_z = msg->wrench.torque.z;
+	// fext(0) = abs(force_x);
 	// fext(0) = -force_x; //allazo proshmo bas kaiii ta kleino gia ligo
 	// fext(1) = force_y;
 	// fext(2) = torque_z; //na ta bgalo apo sxolio

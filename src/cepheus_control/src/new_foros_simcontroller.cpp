@@ -28,6 +28,18 @@ void sigintHandler(int sig) {
     shutdown_requested = true;  // Set flag for graceful shutdown
 }
 
+double moving_average(double new_value, std::deque<double>& window, int size, double& running_sum) {
+    if (window.size() == size) {
+        running_sum -= window.front();
+        window.pop_front();
+    }
+    window.push_back(new_value);
+    running_sum += new_value;
+    return running_sum / window.size();
+}
+
+std::deque<double> force_window;  // Stores the last N values
+double sumforce;
 
 
 
@@ -210,7 +222,7 @@ int main(int argc, char **argv) {
             secs = dur_time.sec + dur_time.nsec * pow(10, -9);
 
             /*first initialise the wrist and keep q1,q2 steady*/
-            if(!wristInitialised){
+            if(false){ //!wristInitialised
                 initialiseWrist();
             }
             else{
@@ -233,7 +245,8 @@ int main(int argc, char **argv) {
                     }
                 }
                 if(!safeclose){ //1/200 = 0.005
-                    fext(0) = abs(mt*calcacc(0.005,xtdot,prevxtdot)); //override the plugin while experiment
+                    fext(0) = abs(20*calcacc(0.005,xtdot,prevxtdot)); //override the plugin while experiment
+                    fext(0) = moving_average(fext(0),force_window,10,sumforce);
                     curr_time = ros::Time::now();
                     dur_time = curr_time - t_beg;  //ksekinaei h metrhsh meta to initialization tou wrist, 30 sec gia wrist kai 30 sec gia ta alla
                     secs = dur_time.sec + dur_time.nsec * pow(10, -9);
@@ -262,7 +275,30 @@ int main(int argc, char **argv) {
                     torqueq3 = 0.06*(q3safeclose-q3) + 0.6*(0-q3dot);
                     // torqueRW = torqueq1 = torqueq2 = torqueq3 = 0.0;
                 }
-                if(record){
+                
+            }
+
+            base_wrench.torque.z = torqueRW;
+            msg_LS.data = torqueq1;
+            msg_LE.data = torqueq2;
+            msg_LW.data = torqueq3;
+
+            base_force_pub.publish(base_wrench);
+            LS_torque_pub.publish(msg_LS);
+            LE_torque_pub.publish(msg_LE);
+            LW_torque_pub.publish(msg_LW);
+
+            xd_x_pub.publish(msg_xd_x);
+            xd_y_pub.publish(msg_xd_y);
+            xd_theta_pub.publish(msg_xd_theta);
+            xt_x_pub.publish(msg_xt_x);
+            xt_y_pub.publish(msg_xt_y);
+            xt_theta_pub.publish(msg_xt_theta);
+            xee_x_pub.publish(msg_xee_x);
+            xee_y_pub.publish(msg_xee_y);
+            xee_theta_pub.publish(msg_xee_theta);
+        }
+        if(record){
                     msg_xd_x.data = xstep;
                     msg_xd_y.data = ystep;
                     msg_xd_theta.data = thstep;
@@ -284,7 +320,6 @@ int main(int argc, char **argv) {
                     msg_xd_y_dot.data = ystepdot;
                     msg_xd_theta_dot.data = thstepdot;
                     msg_xd_theta0_dot.data = theta0stepdot;
-
 
                     msg_xt_x_dot.data = xtdot;
                     msg_xt_y_dot.data = ytdot;
@@ -346,41 +381,19 @@ int main(int argc, char **argv) {
                     bag.write("/cepheus/torqueq2", ros::Time::now(), msg_torqueq2);
                     bag.write("/cepheus/torqueq3", ros::Time::now(), msg_torqueq3);                  
                 }
-            }
-
-            base_wrench.torque.z = torqueRW;
-            msg_LS.data = torqueq1;
-            msg_LE.data = torqueq2;
-            msg_LW.data = torqueq3;
-
-            base_force_pub.publish(base_wrench);
-            LS_torque_pub.publish(msg_LS);
-            LE_torque_pub.publish(msg_LE);
-            LW_torque_pub.publish(msg_LW);
-
-            xd_x_pub.publish(msg_xd_x);
-            xd_y_pub.publish(msg_xd_y);
-            xd_theta_pub.publish(msg_xd_theta);
-            xt_x_pub.publish(msg_xt_x);
-            xt_y_pub.publish(msg_xt_y);
-            xt_theta_pub.publish(msg_xt_theta);
-            xee_x_pub.publish(msg_xee_x);
-            xee_y_pub.publish(msg_xee_y);
-            xee_theta_pub.publish(msg_xee_theta);
-        }
 
 		if(reachedTarget){ //na ftiakso to reachedGoal kalytera gia na teleionei to peirama, na ftiakso xrono
 			ROS_INFO("[new_foros_simcontroller]: Target position achieved, stopped publishing. \n");
 			break;
-		}
-
-        if(record && shutdown_requested){
-            bag.close();
-        }
+		}   
 
         loop_rate.sleep(); //to exo balei allou
 
     }
+
+     if(record && shutdown_requested){
+            bag.close();
+        }
 
     return 0;
 

@@ -5,10 +5,11 @@
 void initialiseParametersNew(){
     /*gia peirama me kosta 25/7/24*/
     m0 = 53;
+    // m0 = 12;
     l0 = 0;
     r0x=0.1425;
     r0y=-0.08225;
-    m1 = 0.2314;
+    m1 = 0.2314;//0.27
     l1 = r1 = 0.185;
     m2 = 0.1;
     // l2 = r2 = 0.143;
@@ -28,10 +29,31 @@ void initialiseParametersNew(){
     // i3zz = 1.2287/100000;
     
     ibzz = 1.06;
+    // ibzz = 0.27;
     i1zz = 0.0026476;
     i2zz = 0.0011318;
     i3zz = 2.73/100000;
 
+    // /*adraneiaka kai geometrika xarakthristika apo peirama althino 13-2-imp6*/
+    // m0 = 12;
+    // m1 = 0.4409;
+    // m2 = 0.1304;
+    // m3 = 1; //0.45;  //peripou 
+    // l1 = 0.269;
+    // // l2 = 0.143;
+    // l2 = 0.15;
+    // l3 = 0.15; //peripoy
+    // r1 = 0.1010;
+    // r2 = 0.143;
+    // // r2 = 0.15;
+    // r3 = 0.15;  //peripoy
+    // ibzz = 0.27;
+    // i1zz = 0.0068; //apo alex
+    // i2zz = 0.010; //apo alex
+    // // i2zz = 0.00098475; apo mena
+    // i3zz = 0.007908; //peripoy apo mena
+    // /*telos */
+ 
 
 
     double x1,x2,x3;
@@ -174,9 +196,9 @@ void finaltrajectories(double t,double tf, double hz){
       theta0stepdotdotfr =  sdotdot*(theta0fin - theta0in);
     }
     else{
-      xstepfr = xt_in;
-      ystepfr = yt_in;
-      thstepfr = thetat_in;
+      xstepfr = xt + 0.005;
+      ystepfr = yt;
+      thstepfr = thetat;
       theta0stepfr = theta0fin;
 
       xstepdotfr = 0;
@@ -191,7 +213,7 @@ void finaltrajectories(double t,double tf, double hz){
     }
    
 
-    xstepc = xt + 0.0005; //0.0001*cos(xee(2));  //gia to imp einai 0.0005
+    xstepc = xt + 0.005; //0.0001*cos(xee(2));  //gia to imp einai 0.0005
     ystepc = yt;  //+ 0.0001*sin(xee(2));
     thstepc = thetat;
     theta0stepc = theta0fin;
@@ -222,7 +244,7 @@ void finaltrajectories(double t,double tf, double hz){
     // theta0stepdot = theta0stepdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotc*(abs(fext(0))/(abs(fext(0))+a22));
     // theta0stepdotdot = theta0stepdotdotfr*(abs(1-abs(fext(0))/a11)/(1+a11*abs(fext(0))))+theta0stepdotdotc*(abs(fext(0))/(abs(fext(0))+a22));
 
-    if(t<=tf){ //tha to ksananikso afto fysika //anti gia abs(fext(0))<0.5
+    if(fext(0)<0.05){ //tha to ksananikso afto fysika //anti gia abs(fext(0))<0.5
       xstep = xstepfr;
       ystep = ystepfr;
       thstep = thstepfr;
@@ -931,17 +953,19 @@ qe << 0, fext(0), 0;  //den eimai sigouros gia afto
 
 
 
-if(t<=(tf)){ //anti gia abs(fext(0))<0.5
-  bd = bd_f;
-  kd = kd_f;
+if(fext(0)<0.05){ //anti gia abs(fext(0))<0.5
+  bd = 52*bd_f; //52*bd_f;
+  kd = 64*kd_f; //64*kd_f;
   md = md_f;
   fdes << 0, 0, 0, 0;
 }
 else{
+  ROS_INFO("In contact phase");
+  std::cout<<"fextx is: "<<fext(0)<<" N"<<std::endl;
   bd = bd_c;
   kd = kd_c;
   md = md_c;
-  fdes << 0, 0, fd, 0;
+  fdes << 0, fd, 0, 0;
 }
 /*NA TO BGALO META!!!!!*/
 // Eigen::MatrixXd kd = kd_f;
@@ -970,13 +994,13 @@ error_dot << (theta0dot - theta0stepdot), (xeedot(0) - xstepdot), (xeedot(1) - y
 
 
 Eigen::VectorXd qext(4);
-qext << 0, 0, fext(0), 0;
+qext << 0, fext(0), 0, 0;
 
 // error = 5*error; //gia to gazebo mono
 
 
 
-Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-64*kd*error-52*bd*error_dot-qext + fdes);//13-2:64,52 //32,32 einai kalo (test16) kai to 64,32
+Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-kd*error-bd*error_dot-qext + fdes);//13-2:64,52 //32,32 einai kalo (test16) kai to 64,32
 
 
 
@@ -1003,10 +1027,10 @@ double ns = kprop*errorth0 + kder*errorth0dot;
 // tau(2) = -0.5*(0.7*error[1]+0.3*error[2]) - 20*(0.7*error_dot[1]+0.3*error_dot[2]);
 // tau(3) = -0.5*(thetach - thstep) - 20*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
 //diko moy pd, ta q1,q2 gia xy (se pososto), to q3 gia prosanatolismo
-tau(0) = -0.5*error[0] - 20*error_dot[0];
-tau(1) = -5*(0.3*error[1]+0.7*error[2]) - 20*(0.3*error_dot[1]+0.7*error_dot[2]);
-tau(2) = -5*(0.7*error[1]+0.3*error[2]) - 20*(0.7*error_dot[1]+0.3*error_dot[2]);
-tau(3) = -0.5*(thetach - thstep) - 20*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
+// tau(0) = -0.5*error[0] - 20*error_dot[0];
+// tau(1) = -5*(0.3*error[1]+0.7*error[2]) - 20*(0.3*error_dot[1]+0.7*error_dot[2]);
+// tau(2) = -5*(0.7*error[1]+0.3*error[2]) - 20*(0.7*error_dot[1]+0.3*error_dot[2]);
+// tau(3) = -0.5*(thetach - thstep) - 20*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
 
 // msg_RW.data = -tau(0); 
 // msg_RW.data = ns;

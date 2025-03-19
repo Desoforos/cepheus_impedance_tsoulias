@@ -366,17 +366,7 @@
 		</actuator>
 	</transmission>
     <gazebo>
-		<plugin name="ft_sensor" filename="libgazebo_ros_ft_sensor.so">
-			<updateRate>0</updateRate>   <!--poly shmantiko na einai 0, allios kanei bug!!!!(nikhforos)-->
-			<topicName>ft_sensor_topic</topicName>
-			<jointName>left_wrist_joint</jointName>
-			<noise>
-          		<type>gaussian</type>
-          		<mean>0.0</mean>
-          		<stddev>0.003</stddev> <!-- change this to simulate noise --> 
-        	</noise>
-		</plugin>
-	</gazebo>
+
 
     <gazebo reference="left_wrist_joint">
 		<provideFeedback>true</provideFeedback>

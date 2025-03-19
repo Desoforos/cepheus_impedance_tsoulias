@@ -296,7 +296,7 @@
 				xyz="${arm_length/2} 0 0"
 				rpy="0 0 0" />
 			<geometry>
-				<box size="${arm_length} 0.02 0.02" />
+				<box size="${arm_length} 0.03 0.03" />
 			</geometry>
 			<material name="LightGrey"/>
 		</visual>
@@ -305,7 +305,7 @@
 				xyz="${arm_length/2} 0.0 0"
 				rpy="0 0 0" />
 			<geometry>
-				<box size="${arm_length} 0.02 0.02"/>
+				<box size="${arm_length} 0.03 0.03"/>
 			</geometry>
 		</collision>
 		<!-- <xacro:inertial_box mass="0.2314" x="0.37" y="0.02" z="0.02">
@@ -357,7 +357,7 @@
 				xyz="${forearm_length/2} 0 0"
 				rpy="0 0 0" />
 			<geometry>
-				<box size="${forearm_length} 0.02 0.02"/>
+				<box size="${forearm_length} 0.03 0.03"/>
 			</geometry>
 			<material name="LightGrey"/>
 		</visual>
@@ -366,7 +366,7 @@
 				xyz="${forearm_length/2} 0 0"
 				rpy="0 0 0" />
 			<geometry>
-				<box size="${forearm_length} 0.02 0.02"/>
+				<box size="${forearm_length} 0.03 0.03"/>
 			</geometry>
 		</collision>
 		<!-- <xacro:inertial_box mass="0.1" x="0.286" y="0.02" z="0.02">
@@ -418,7 +418,7 @@
 				xyz="${gripper_length/2} 0 0"
 				rpy="0 0 0" />
 			<geometry>
-				<box size="${gripper_length} 0.02 0.02"/>
+				<box size="${gripper_length} 0.03 0.03"/>
 			</geometry>
 			<material name="LightGrey"/>
 		</visual>
@@ -427,7 +427,7 @@
 				xyz="${gripper_length/2} 0 0"
 				rpy="0 0 0" />
 			<geometry>
-				<box size="${gripper_length} 0.02 0.02"/>
+				<box size="${gripper_length} 0.03 0.03"/>
 			</geometry>
 			<!-- <surface>
 				<friction>
@@ -481,7 +481,7 @@
 		<parent link="left_grip"/>
 		<child link="final_link"/>
 		<origin
-			xyz="${gripper_length} 0 0.02"
+			xyz="${gripper_length} 0 0.03"
 			rpy="0 0 0 " />
 		<axis xyz="1 0 0"/>
 		<limit lower="-1" upper="1" effort="${joint_effort}" velocity="${joint_velocity}"/>
@@ -534,16 +534,7 @@
 	</gazebo>
 
 
-	<gazebo>
-		<plugin filename="libgazebo_ros_force.so" name="gazebo_ros_force" >
-			<!-- <alwaysOn>true</alwaysOn> -->
-			<!-- <update>100</update> -->
-			<!-- <updateRate>0</updateRate> anti gia 100 -->
-			<bodyName>cepheus_base</bodyName>
-			<topicName>force_base_topic</topicName>
-			<force_reference_frame>cepheus_base</force_reference_frame>
-		</plugin>
-	</gazebo>
+
 
 	<gazebo reference="left_grip">
 		<gravity>false</gravity>
@@ -568,4 +559,18 @@
 		<kd>0</kd>
   </gazebo>	
 	<!-- <gravity>false</gravity> -->
+	<gazebo reference="left_wrist_joint">
+		<provideFeedback>true</provideFeedback>
+	</gazebo>
+	<plugin name="ft_sensor" filename="libgazebo_ros_ft_sensor.so">
+			<updateRate>0</updateRate>   <!--poly shmantiko na einai 0, allios kanei bug!!!!(nikhforos)-->
+			<topicName>ft_sensor_topic</topicName>
+			<jointName>left_wrist_joint</jointName>
+			<noise>
+          		<type>gaussian</type>
+          		<mean>0.0</mean>
+          		<stddev>0.003</stddev> <!-- change this to simulate noise --> 
+        	</noise>
+	</plugin>
+
 </robot>

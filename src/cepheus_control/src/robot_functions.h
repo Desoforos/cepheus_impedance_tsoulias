@@ -77,9 +77,9 @@ void initialiseParameters(){
 
     
     // ibzz = 2.24/5; //peripou
-    ibzz = 0.27;
-    i1zz = 0.0068;
-    i2zz = 0.010;
+    ibzz = 0.1176;
+    i1zz = 0.0068; //apo alex
+    i2zz = 0.010;   //apo alex
     // i2zz = 0.00098475;
     i3zz = 0.007908; //peripoy
 
