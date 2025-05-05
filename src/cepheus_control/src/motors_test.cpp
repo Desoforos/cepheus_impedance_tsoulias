@@ -367,7 +367,7 @@ int main(int argc, char **argv) {
   	ros::Publisher re_torque_pub = nh.advertise<std_msgs::Float64>("set_right_elbow_effort", 1);     //ropi se q3 (ki omos to right elbow ousiastika einai to wrist)
     ros::Publisher rw_torque_pub = nh.advertise<std_msgs::Float64>("cmd_torque", 1);  //ropi se reaction wheel    (ola afta ta akouei to interface)
     int count = 0;
-    ros::Rate loop_rate(200);  //200hz
+    ros::Rate loop_rate(100);  //100hz
     std_msgs::Float64 torque;
   
 

@@ -77,6 +77,8 @@ std_msgs::String arduino_msg;
 std_msgs::Bool start_moving;
 std_msgs::Bool start_grab_msg;
 
+std_msgs::Float32 temp_msg;
+
 
 
 
@@ -265,6 +267,17 @@ std::deque<double> thetahistory;
  double filtered_ydot = 0;
  bool stopMotors = false;
  bool grabStarted = false;
+
+
+
+ /*arduino accelerometers old*/
+ double acc1_x, acc1_y, acc1_z;
+ double acc2_x, acc2_y, acc2_z;
+ double acc3_x, acc3_y, acc3_z;
+
+ /*new imu messages*/
+ double imu_acc_x, imu_acc_y,;
+ double imu_vel_theta;
 /////////////// GLOBAL VARIABLES DECLARATION END////////////////////////
 
 #endif

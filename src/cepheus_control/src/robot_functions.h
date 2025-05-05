@@ -607,6 +607,7 @@ void controller(int count, double tf, double t){
   double wnb, zb;
   double tsf = 0.2*tf;
   double tsc = 1; //1 sec
+  double fd = 1;
   zef = 1;
   zec = 1;
   zb = 1;
@@ -1167,12 +1168,15 @@ jebar << je21star-h21star*(h11star.inverse())*je11star, je22star-h21star*(h11sta
 //   fdes << 0, fd, 0, 0;
 //   force_x = 0; //(0.08 + raw_force_x)/2;
 // }
-if(abs(abs(raw_force_x)-abs(m3*xstepdotdot))>0.5){ //0.5 einai to threshold
-  incontact = true;
-}
-else{
-  incontact = false;
-}
+
+// if(abs(abs(raw_force_x)-abs(m3*xstepdotdot))>0.5){ //0.5 einai to threshold
+//   incontact = true;
+// }
+// else{
+//   incontact = false;
+// }  //tha to anoikso gia ioant 
+incontact = false;
+force_x = 0;
 
 if(!incontact || grabStarted || t<=tf){
   kd = kd_f;

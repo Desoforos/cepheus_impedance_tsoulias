@@ -164,6 +164,8 @@ add_executable(vicon_test_node src/vicon_test.cpp)
 # add_executable(robot_foros_ignition_node src/robot_foros_ignition.cpp)
 add_executable(motors_test_node src/motors_test.cpp)
 # add_executable(gazebo_motors_test_node src/gazebo_nodes/gazebo_motors_test.cpp)
+add_executable(recorder_node src/recorder.cpp)
+
 
 
 
@@ -192,6 +194,7 @@ target_link_libraries(vicon_test_node ${catkin_LIBRARIES} )
 # target_link_libraries(robot_foros_ignition_node ${catkin_LIBRARIES})
 target_link_libraries(motors_test_node ${catkin_LIBRARIES})
 # target_link_libraries(gazebo_motors_test_node ${catkin_LIBRARIES})
+target_link_libraries(recorder_node ${catkin_LIBRARIES})
 
 
 

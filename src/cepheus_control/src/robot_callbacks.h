@@ -297,7 +297,7 @@ void reVelCallback(const std_msgs::Float64::ConstPtr& cmd) {
 
 void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
     raw_force_x = (msg->wrench.force.z);  //etsi einai mapped apo to bota  filtered.
-    raw_force_x = moving_average(raw_force_x, force_window, 5, forcesum);
+    // raw_force_x = moving_average(raw_force_x, force_window, 5, forcesum);
     // force_y = msg->wrench.force.y;
 	// torque_z = msg->wrench.torque.z;
 	// fext(0) = force_x;
@@ -321,6 +321,7 @@ void forceCallback(const geometry_msgs::WrenchStamped::ConstPtr&msg){
 		incontact = true;
 	}
 }
+
 
 void arduinoCallbacktest(const std_msgs::String::ConstPtr &msg){
 	if(msg->data == "nothing"){
@@ -347,7 +348,50 @@ void forosCallback(const std_msgs::Bool::ConstPtr&msg){
     stopMotors = true;
 }
 
+void acc3_xCallback(const std_msgs::Float32::ConstPtr&msg){
+    acc3_x = msg->data;
+}
 
+void acc3_yCallback(const std_msgs::Float32::ConstPtr&msg){
+    acc3_y = msg->data;
+}
 
+void acc3_zCallback(const std_msgs::Float32::ConstPtr&msg){
+    acc3_z = msg->data;
+}
+
+void acc2_xCallback(const std_msgs::Float32::ConstPtr&msg){
+    acc2_x = msg->data;
+}
+
+void acc2_yCallback(const std_msgs::Float32::ConstPtr&msg){
+    acc2_y = msg->data;
+}
+
+void acc2_zCallback(const std_msgs::Float32::ConstPtr&msg){
+    acc2_z = msg->data;
+}
+
+void acc1_xCallback(const std_msgs::Float32::ConstPtr&msg){
+    acc1_x = msg->data;
+}
+
+void acc1_yCallback(const std_msgs::Float32::ConstPtr&msg){
+    acc1_y = msg->data;
+}
+
+void acc1_zCallback(const std_msgs::Float32::ConstPtr&msg){
+    acc1_z = msg->data;
+}
+
+void imu_linear_accCallback(const geometry_msgs::Vector3Stamped::ConstPtr& msg)
+{
+    imu_acc_x = msg->vector.x;
+    imu_acc_y = msg->vector.y;
+}
+
+void imu_angular_velCallback(const geometry_msgs::Vector3Stamped::ConstPtr& msg){
+    imu_vel_theta = msg->vector.z;
+}
 /////////////// CALLBACK FUNCTIONS DEFINITION END////////////////////////
 #endif

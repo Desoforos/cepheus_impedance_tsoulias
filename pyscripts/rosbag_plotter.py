@@ -311,10 +311,10 @@ sampling_frequency = 100  # Hz
 time_stamps= np.arange(0, len(xt_x)) / sampling_frequency
 time_stamps -= time_stamps[0]  # Start from 0
 
-desired_secs = 60
+desired_secs = 15
 
-# des_len = sampling_frequency*desired_secs
-des_len = len(xee_x)
+des_len = sampling_frequency*desired_secs
+# des_len = len(xee_x)
 
 
 print("xee_x[0] is ",xee_x[0])
@@ -356,9 +356,9 @@ print("xt_theta[0] is",xt_theta[0])
 # xee_y_filt = smooth_sudden_movement(xee_y)
 
 
-simplesmooth(xee_y,7.2,8.2,100)
+simplesmooth(xee_y,7.2,8.2,100) #gia 13-2-imp6
 xee_y_smoothed = xee_y.copy()
-xee_y_smoothed = smooth_signal(xee_y_smoothed, method ="gaussian")
+xee_y_smoothed = smooth_signal(xee_y_smoothed, method ="gaussian") #gia 13-2-imp6
 
 xee_y = xee_y_smoothed
 

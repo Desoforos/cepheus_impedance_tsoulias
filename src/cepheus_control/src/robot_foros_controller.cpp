@@ -162,11 +162,27 @@ int main(int argc, char **argv) {
     // ros::Subscriber ls_limit_sub = nh.subscribe("read_left_shoulder_limit", 1, lsLimitCallback);  //afta einai gia arxikopoihsh , na ta do
 	// ros::Subscriber le_limit_sub = nh.subscribe("read_left_elbow_limit", 1, leLimitCallback);
 
-    ros::Subscriber force_sub = nh.subscribe("/filtered_botasys", 1, forceCallback);
+    // ros::Subscriber force_sub = nh.subscribe("/filtered_botasys", 1, forceCallback);
     
     ros::Subscriber ee_pos_sub = nh.subscribe("/vicon/cepheus_endeffector/cepheus_endeffector", 1, ee_posCallback);
     ros::Subscriber target_pos_sub = nh.subscribe("/vicon/cepheus_target/cepheus_target", 1, target_posCallback);
     ros::Subscriber base_pos_sub = nh.subscribe("/vicon/cepheusbase/cepheusbase", 1, base_posCallback);
+    ros::Subscriber ft_test_sub = nh.subscribe("/bus0/ft_sensor0/ft_sensor_readings/wrench", 1, forceCallback);
+
+    ros::Subscriber acc3_x_sub = nh.subscribe("/arduino_1_2/acc3_x", 1, acc3_xCallback);
+    ros::Subscriber acc3_y_sub = nh.subscribe("/arduino_1_2/acc3_y", 1, acc3_yCallback);
+    ros::Subscriber acc3_z_sub = nh.subscribe("/arduino_1_2/acc3_z", 1, acc3_zCallback);
+
+    ros::Subscriber acc2_x_sub = nh.subscribe("/arduino_3/acc2_x", 1, acc2_xCallback);
+    ros::Subscriber acc2_y_sub = nh.subscribe("/arduino_3/acc2_y", 1, acc2_yCallback);
+    ros::Subscriber acc2_z_sub = nh.subscribe("/arduino_3/acc2_z", 1, acc2_zCallback);
+
+    ros::Subscriber acc1_x_sub = nh.subscribe("/arduino_3/acc1_x", 1, acc1_xCallback);
+    ros::Subscriber acc1_y_sub = nh.subscribe("/arduino_3/acc1_y", 1, acc1_yCallback);
+    ros::Subscriber acc1_z_sub = nh.subscribe("/arduino_3/acc1_z", 1, acc1_zCallback);
+
+    ros::Subscriber imu_linear_acc_sub = nh.subscribe("/imu/acceleration", 1, imu_linear_accCallback);
+    ros::Subscriber imu_angular_vel_sub = nh.subscribe("/imu/angular_velocity", 1, imu_angular_velCallback);
 
 
     /* init messages */ 
@@ -461,8 +477,44 @@ int main(int argc, char **argv) {
                 bag.write("/cepheus/q1dot", ros::Time::now(), msg_q1dot);
                 bag.write("/cepheus/q2dot", ros::Time::now(), msg_q2dot);
                 bag.write("/cepheus/q3dot", ros::Time::now(), msg_q3dot);
-    
-                
+
+                temp_msg.data = acc1_x;
+                bag.write("/cepheus/acc1_x", ros::Time::now(), temp_msg);
+
+                temp_msg.data = acc1_y;
+                bag.write("/cepheus/acc1_y", ros::Time::now(), temp_msg);
+
+                temp_msg.data = acc1_z;
+                bag.write("/cepheus/acc1_z", ros::Time::now(), temp_msg);    
+
+
+                temp_msg.data = acc2_x;
+                bag.write("/cepheus/acc2_x", ros::Time::now(), temp_msg);
+
+                temp_msg.data = acc2_y;
+                bag.write("/cepheus/acc2_y", ros::Time::now(), temp_msg);
+
+                temp_msg.data = acc2_z;
+                bag.write("/cepheus/acc2_z", ros::Time::now(), temp_msg);
+
+
+                temp_msg.data = acc3_x;
+                bag.write("/cepheus/acc3_x", ros::Time::now(), temp_msg);
+
+                temp_msg.data = acc3_y;
+                bag.write("/cepheus/acc3_y", ros::Time::now(), temp_msg);
+
+                temp_msg.data = acc3_z;
+                bag.write("/cepheus/acc3_z", ros::Time::now(), temp_msg); 
+
+                temp_msg.data = imu_acc_x;
+                bag.write("/cepheus/imu_acc_x", ros::Time::now(), temp_msg);    
+
+                temp_msg.data = imu_acc_y;
+                bag.write("/cepheus/imu_acc_y", ros::Time::now(), temp_msg);
+
+                temp_msg.data = imu_vel_theta;
+                bag.write("/cepheus/imu_vel_theta", ros::Time::now(), temp_msg);                 
                 }
         }
             
