@@ -84,20 +84,7 @@ def moving_median_filter(data, window_size):
     return filtered_data
 
 
-def smoothlist(rawlist):
-    incontact = False
-    for i in range(len(rawlist)):
-        if(i == 0):
-            pass
-        if(i>62.25*200):
-            pass
-        else:
-            if(abs(rawlist[i])>0.1):
-                incontact = True
-            if(incontact):
-                if(abs(rawlist[i])<0.01):
-                    rawlist[i] = rawlist[i-1]
-    return rawlist
+
 
 
 

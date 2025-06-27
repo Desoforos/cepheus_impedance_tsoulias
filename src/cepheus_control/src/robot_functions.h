@@ -34,6 +34,7 @@ double lowPassFilter(double new_value, double prev_filtered, double fc, double d
 
 
 void initialiseParameters(){
+  /*edo einai ta adraneiaka kai geometrika xaraktiristika, eginan kapoies allages, boreis na ta allakseis an thes*/
     /*gia peirama me kosta 25/7/24*/
     // m0 = 53/5;
     m0 = 12;
@@ -77,9 +78,9 @@ void initialiseParameters(){
 
     
     // ibzz = 2.24/5; //peripou
-    ibzz = 0.1176;
-    i1zz = 0.0068; //apo alex
-    i2zz = 0.010;   //apo alex
+    ibzz = 0.27;
+    i1zz = 0.0068;
+    i2zz = 0.010;
     // i2zz = 0.00098475;
     i3zz = 0.007908; //peripoy
 
@@ -93,17 +94,8 @@ void initialiseParameters(){
     x1 = l1+r1;
     x2 = l2+r2;
     x3 = l3+r3;
-    // kp_multiplier << 25, 0, 0, 0,
-    //             0, 25, 0, 0,
-    //             0, 0, 25, 0,
-    //             0, 0, 0, 25;
 
-    // bd_multiplier << 1.5, 0, 0, 0,
-    //             0, 0.5, 0, 0,
-    //             0, 0, 0.5, 0,
-    //             0, 0, 0, 0.5;
-
-    kp_multiplier << 0.5, 0, 0, 0,
+    kp_multiplier << 0.5, 0, 0, 0, //afta itan gia na peirazo kerdh, en telh den ta xrisimopoihsa sto telos
                 0, 2.5, 0, 0,
                 0, 0, 2.8, 0,
                 0, 0, 0, 1.5;
@@ -113,14 +105,11 @@ void initialiseParameters(){
                 0, 0, 0.0, 0,
                 0, 0, 0, 0.0;
 
-                  // tau(0) = 0.5*(theta0in - theta0) + 2*(0-theta0dot);
-  // tau(1) = -1.4*(0.75*error[1]+0.25*error[2]) - 0.0*(0.75*error_dot[1]+0.25*error_dot[2]); //q1 mono gia x
-  // tau(2) = -1.25*(0.25*error[1]+0.75*error[2]) - 0.0*(0.25*error_dot[1]+0.75*error_dot[2]); //q2 mono gia y
-  // tau(3) = -0.75*(thetach - thstep) - 0.0*(xeedot(2) - thstepdot); // dhladh q3 MONO gia orientation
+
 
 
 }
-
+//to moving median den douleve kala gia to ee_y, isos logo tis kinisis pou kaname ston y aksona
 double movingMedian(double new_value, std::deque<double>& window, int window_size, double alpha, double smoothed_value) {
     // Add the new value to the window
     window.push_back(new_value);
@@ -222,7 +211,7 @@ void finalTrajectories(double t,double tf){
     thstepdotdotfr = sdotdot*(thetat_in - thetaE_in);
     theta0stepdotdotfr =  sdotdot*(theta0fin - theta0in);
     
-    xstepc = xt + 0.001; //na to balo + 0.001; //gia na ginei h synexhs epafh, vevaiosou oti einai plhros orizontia , allios 0.0001*cos(xee(2));
+    xstepc = xt; //na to balo + 0.001; //gia na ginei h synexhs epafh, vevaiosou oti einai plhros orizontia , allios 0.0001*cos(xee(2));
     ystepc = yt;           //allios 0.0001*sin(xee(2)); na to valo sto y allaksa tous aksones
     thstepc = thetat;
     theta0stepc = theta0fin;
@@ -255,13 +244,7 @@ void finalTrajectories(double t,double tf){
 
 
     if(t>tf){ //allios incontact isos kalytera me xrono
-      // xstep = xstepc;
-      if(grabStarted){
-        xstep = xt;
-      }
-      else{
-        xstep = xt + 0.002; //2 xiliosta
-      }
+      xstep = xstepc;
       ystep = ystepc;
       thstep = thstepc;
       theta0step = theta0stepc;
@@ -339,7 +322,7 @@ void updateVel(double dt, double t, double tf){
     ee_x = moving_average(ee_x, xwindow, 10,sumx);
     // ee_y = moving_average(ee_y, ywindow, 6,sumy);  //gia na exei fthinousa poreia
     ee_y = movingMedian(ee_y, ywindow, 3, 0.1, yE_prev); //3point median gia to y
-    thetach = moving_average(thetach, thetawindow, 15, sumtheta);
+    thetach = moving_average(thetach, thetawindow, 10, sumtheta);
 
     ydottemp = (ee_y-yE_prev)/dt;
 
@@ -376,7 +359,7 @@ void updateVel(double dt, double t, double tf){
 
     // xeedot(0) = movingMedian(xeedot(0), xdot_window, 11, 0.1, xdotprev); //window size = 10
     // xeedot(1) = movingMedian(xeedot(1), ydot_window, 11, 0.1, ytdotprev); //window size = 10
-    // xeedot(2) = movingMedian(xeedot(2), thetadot_window, 11, 0.1, thetatdotprev); //window size = 10
+    // xeedot(2) = movingMedian(xeedot(2), thetadot_window, 3, 0.1, thetatdotprev); //window size = 10
 
     // if(abs(xeedot(0) - xdottemp)<0.01){
     //   xeedot(0) = xdottemp;
@@ -428,7 +411,7 @@ double filter_torque(double torq, double prev) {
 	return torq;
 }
 
-void PDcontroller(double tf, double t){
+void PDcontroller(double tf, double t){ //den to xrisimopoihsa sta telika peiramata fysika
   double ts = 0.2*tf;
   double z = 1;
   double wn = 6/ts;
@@ -511,8 +494,8 @@ void PDcontroller(double tf, double t){
 
 
 
-void controller(int count, double tf, double t){
-  // force_x = 0;
+void controller(int count, double tf, double t){ //o elekgths pou xrisimopoihsa
+  force_x = 0;
 
 
     /*Jacobian coefficients*/
@@ -595,71 +578,36 @@ void controller(int count, double tf, double t){
   double p17=m3*l3*r0y;
   double p18=(l1+r1)*m3*l3;
   double p19=(l2+r2)*m3*l3;
+
   double a11 = pow(10,20);
   double a22 = pow(10,-20);
-  /*kerdh elegkth*/
+  /*edo afta ta kerdh bgainoun apo to paper tou kosta, kalo einai na ta ksanakoitakseis*/
+  double z_free=1;
+  double ts_f=0.2*tf;
+  double wn_free=6/ts_f;
+  double kdf=1;
+  double mdf=kdf/pow(wn_free,2);
+  // double mdf = 1;
+  // double kdf = mdf*pow(wn_free,2);
+  double bdf=2*z_free*wn_free*mdf;
+
+  //EN TELEI: 
+  kdf = 1.1;
+  bdf = 0.6;
+  Eigen::MatrixXd md_f = mdf*Eigen::MatrixXd::Identity(4,4);
+  Eigen::MatrixXd bd_f = bdf*Eigen::MatrixXd::Identity(4,4);
+  Eigen::MatrixXd kd_f = kdf*Eigen::MatrixXd::Identity(4,4);
   double ke = pow(10,6);
-  double kdef, bdef, mdef;
-  double kdec, bdec, mdec;
-  double kdb, bdb;
-  double wnef, zef;
-  double wnec, zec;
-  double wnb, zb;
-  double tsf = 0.2*tf;
-  double tsc = 1; //1 sec
+  double z_contact=z_free*sqrt(kdf/(kdf+ke));
+  double wn_contact=wn_free*sqrt((kdf+ke)/kdf);
   double fd = 1;
-  zef = 1;
-  zec = 1;
-  zb = 1;
-  mdef = 1;
-  mdec = 1;
-  wnef = 6/tsf;
-  wnec = 6/tsc;
-  wnb = 6/tsf;
-
-  kdef = wnef*wnef*mdef; //free space phase, end effector
-  bdef = 2*zef*wnef*mdef;
-
-  kdec = wnec*wnec*mdec - ke; //contact phase, end effector
-  bdec = 2*zec*wnec*mdec;
-
-  kdb = wnb*wnb;   //base for both phases
-  bdb = 2*zb*wnb;
-
-
-  // double z_free=1;
-  // double ts_f=0.2*tf;
-  // double wn_free=6/ts_f;
-  // double kdf=1;
-  // double mdf=kdf/pow(wn_free,2);
-  // // double mdf = 1;
-  // // double kdf = mdf*pow(wn_free,2);
-  // double bdf=2*z_free*wn_free*mdf;
-
-  // kdf = 1.1; //isos na ta ftiakso kapos etsi pali, afta htan gia tf = 10 sec
-  // bdf = 0.6;
-
-  Eigen::MatrixXd md_f = mdef*Eigen::MatrixXd::Identity(4,4);
-  md_f(0,0) = 1; //ths bashs
-  Eigen::MatrixXd bd_f = bdef*Eigen::MatrixXd::Identity(4,4);
-  bd_f(0,0) = bdb; //ths bashs
-  Eigen::MatrixXd kd_f = kdef*Eigen::MatrixXd::Identity(4,4);
-  kd_f(0,0) = kdb; //ths bashs
-  
-  // double z_contact=z_free*sqrt(kdf/(kdf+ke));
-  // double wn_contact=wn_free*sqrt((kdf+ke)/kdf);
-  // double fd = 1;
-  // double kdc = 100;
-  // double mdc=(kdc+ke)/pow(wn_contact,2);
-  // double be = 0;
-  // double bdc=2*z_contact*wn_contact*mdc-be;
-  Eigen::MatrixXd md_c = mdec*Eigen::MatrixXd::Identity(4,4);
-  md_c(0,0) = 1; //ths bashs
-  Eigen::MatrixXd bd_c = bdec*Eigen::MatrixXd::Identity(4,4);
-  bd_c(0,0) = bdb; //ths bashs
-  Eigen::MatrixXd kd_c = kdec*Eigen::MatrixXd::Identity(4,4);
-  kd_c(0,0) = kdb; //ths bashs
-
+  double kdc = 100;
+  double mdc=(kdc+ke)/pow(wn_contact,2);
+  double be = 0;
+  double bdc=2*z_contact*wn_contact*mdc-be;
+  Eigen::MatrixXd md_c = mdc*Eigen::MatrixXd::Identity(4,4);
+  Eigen::MatrixXd bd_c = bdc*Eigen::MatrixXd::Identity(4,4);
+  Eigen::MatrixXd kd_c = kdc*Eigen::MatrixXd::Identity(4,4);
   Eigen::MatrixXd md(4,4);
   Eigen::MatrixXd kd(4,4);
   Eigen::MatrixXd bd(4,4);
@@ -668,43 +616,13 @@ void controller(int count, double tf, double t){
 
 
 
-  /* APATH THA TO ALLAKSO*/
-  // ee_x = 0.706577;
-  // ee_y = -0.263787;
-  // thetach = 0.866966;
-  // xeedot(0) = 0.000382186;
-  // xeedot(1) = 0.000174835;
-  // xeedot(2) = -0.000288378;
-  // xt_in  =0.787303;
-  // yt_in  =0.163512;
-  // thetat_in = 0.777124;
-  // theta0 = -0.462226;
-  // theta0dot = -0.000288378;
-  // xc0 = -0.0100868;
-  // yc0 = -0.00505269;
-  // xc0dot = 0.000724746;
-  // yc0dot = 0.000651179;
-  // q1 = -0.742835;
-  // q2 = 1.05601;
-  // q3 = 0.529251;
-  // q1dot = -1.359*pow(10,-11);
-  // q2dot = -2.75252*pow(10,-6);
-  // q3dot = -2.78264*pow(10,-13);
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-  q1 = q1+q01;
+  q1 = q1+q01; //afto einai etsi giati etsi eixe bgalei ton elegth o Kostas, meta to anairo sto telos
 
   h11 = p1;
   h12 = 0;
@@ -825,7 +743,7 @@ void controller(int count, double tf, double t){
     p18*q1dot*theta0dot*sin(q2 + q3) + p18*pow(theta0dot,2)*sin(q2 + q3) + p16* 
     pow(theta0dot,2)*sin(q1 + q2 + q3);
 
-  q1 = q1 -q01;
+  q1 = q1 -q01; //na eides to ekana pali q1
 
   //to theta 1 einai to q1 ousiastika kai to th0 to theta0
 
@@ -1152,7 +1070,7 @@ jebar << je21star-h21star*(h11star.inverse())*je11star, je22star-h21star*(h11sta
 
 // Qext=[0;0;Fext;0); na to ftiakso
 
-
+qe << 0, force_x, 0;  //den eimai sigouros gia afto
 
 // if(t<=tf){ //allios !incontact //t<=tf
 //   force_x = 0;
@@ -1165,36 +1083,15 @@ jebar << je21star-h21star*(h11star.inverse())*je11star, je22star-h21star*(h11sta
 //   bd = bd_c;
 //   kd = kd_c;
 //   md = md_c;
-//   fdes << 0, fd, 0, 0;
+//   fdes << 0, 0, fd, 0;
 //   force_x = 0; //(0.08 + raw_force_x)/2;
 // }
-
-// if(abs(abs(raw_force_x)-abs(m3*xstepdotdot))>0.5){ //0.5 einai to threshold
-//   incontact = true;
-// }
-// else{
-//   incontact = false;
-// }  //tha to anoikso gia ioant 
-incontact = false;
-force_x = 0;
-
-if(!incontact || grabStarted || t<=tf){
-  kd = kd_f;
-  md = md_f;
-  bd = bd_f;
-  fdes << 0, 0, 0, 0;
-  force_x = 0;
-}
-else{ //diladi prepei incontact && !grabStarted && t >tf
-  bd = bd_c;
-  kd = kd_c;
-  md = md_c;
-  fdes << 0, fd, 0, 0;
-  force_x = abs(abs(raw_force_x)-abs(m3*xstepdotdot));
-}
-
-qe << force_x, 0, 0;  
-/*Diladi, des an yparxei epafh. An nai, ddes an einai kata to sfiksimo. An oxi, impedance. An nai, free space (megales dynames sto sfiksimo)*/
+/*NA TO BGALO META!!!!!*/
+kd = kd_f;    //afto to eixa etsi giati ekana peirama mono sto free space, an thes contact prepei na valeis ena if-else
+md = md_f;
+bd = bd_f;
+fdes << 0, 0, 0, 0;
+/* MHN TO KSEXASEIS!!!!!*/
 
 // fdes << 0, 0, fd*abs(force_x)/(abs(force_x)+a22), 0;
 
@@ -1205,17 +1102,7 @@ qe << force_x, 0, 0;
 xdotdot_des<< theta0stepdotdot, xstepdotdot, ystepdotdot, thstepdotdot;
 
 
-// if(count <1){  //giati to xstep[0] einai 0, akyro vrhka ton logo sto record
-//   xstep = ee_x;
-//   ystep = ee_y;
-//   thstep = thetach;
-//   theta0step = theta0;
 
-//   xstepdot = 0;
-//   ystepdot = 0;
-//   thstepdot = 0;
-//   theta0stepdot = 0;
-// }
 
 
 
@@ -1229,7 +1116,7 @@ error_dot << (theta0dot - theta0stepdot), (xeedot(0) - xstepdot), (xeedot(1) - y
 
 
 Eigen::VectorXd qext(4);
-qext << 0, force_x, 0, 0;
+qext << 0, 0, force_x, 0;
 
 
 Eigen::VectorXd u = xdotdot_des+(md.inverse())*(-kd*error-bd*error_dot-qext + fdes);  //kd = 1, bd=2 kd=0.325 , bd = 0.2
@@ -1243,12 +1130,9 @@ Eigen::VectorXd qbar=hbar*u+cbar-jebar*qe;
 
 tau = (jbar.inverse())*qbar;
 
-// if(count <1){  //giati to xstep[0] einai 0
-//   std::cout<<"frist torques zero"<<std::endl;
-//   tau(0) = tau(1) = tau(2) = tau(3) = 0.00001;
-// }
 
-// tau(0) = 0.5*(theta0in - theta0) + 2*(0 - theta0dot); 
+
+// tau(0) = 0.5*(theta0in - theta0) + 2*(0 - theta0dot); //san aplo pd
 
 prev_tau(0) = tau(0);
 prev_tau(1) = tau(1);
@@ -1271,7 +1155,7 @@ prev_tau(3) = tau(3);
 //   std::cout<<"q1 torque is:  "<<tau(1)<<" Nm. "<< std::endl;
 //   std::cout<<"q2 torque is:  "<<tau(2)<<" Nm. "<< std::endl;
 //   std::cout<<"q3 torque is:  "<<tau(3)<<" Nm. "<< std::endl;
-// }
+// } //san safety check den thimamai an leitourgei kala, teleftaia fora to eixa se sxolio
 
 /*metatropi gia tous motors kai meiothres*/
 tau(1) = -tau(1)/186;

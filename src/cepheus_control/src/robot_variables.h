@@ -7,9 +7,6 @@
 /*Boolean flags*/
 bool reachedTarget;// = false;
 bool start_movement;// = false;
-// bool eefirstTime;// = true; //boolean for first time listening
-// bool targetfirstTime;
-// bool basefirstTime;
 bool firstTime;
 
 bool ls_initialized = false;
@@ -77,7 +74,7 @@ std_msgs::String arduino_msg;
 std_msgs::Bool start_moving;
 std_msgs::Bool start_grab_msg;
 
-std_msgs::Float32 temp_msg;
+std_msgs::Float64 temp_msg;
 
 
 
@@ -152,7 +149,7 @@ double offsetq2 = 0.0;
 double offsetq3 = 0.0;
 double q1known = 1.84447;  //gonies analoga me tin gnosti diataksi, ego ekana omos thetiko akro, agonas karpos arnitika akra
 double q2known = -0.9542;
-double q3known = -0.2856;
+double q3known = -0.8393; //palia itan -0.2856 omos allakse otan lysame tin triti arthrosi kai tin ksanadesame; 
 
 std_msgs::Float64 msg_q1;
 std_msgs::Float64 msg_q2;
@@ -276,7 +273,7 @@ std::deque<double> thetahistory;
  double acc3_x, acc3_y, acc3_z;
 
  /*new imu messages*/
- double imu_acc_x, imu_acc_y,;
+ double imu_acc_x, imu_acc_y;
  double imu_vel_theta;
 /////////////// GLOBAL VARIABLES DECLARATION END////////////////////////
 

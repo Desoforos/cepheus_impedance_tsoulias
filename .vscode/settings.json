@@ -100,7 +100,16 @@
         "bit": "cpp",
         "valarray": "cpp",
         "codecvt": "c",
-        "future": "c"
+        "future": "c",
+        "csetjmp": "cpp",
+        "any": "cpp",
+        "cuchar": "cpp",
+        "filesystem": "cpp",
+        "rope": "cpp",
+        "slist": "cpp",
+        "scoped_allocator": "cpp",
+        "charconv": "cpp",
+        "netfwd": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

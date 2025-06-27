@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+# afto xrisimopoihsa sti diplomatiki, ostoso meta gia to ioant tou evala ki alla plots pou den yparxoun sto .bag tis diplomaitkis (13-2-imp6.bag)
 import rosbag
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,6 +13,11 @@ import scipy.signal as signal
 import numpy as np
 import scipy.signal as signal
 import scipy.ndimage as ndimage
+import scipy.signal as signal
+import scipy.ndimage as ndimage
+import scipy.io
+import os
+
 
 
 def smooth_signal(y, method="savgol", window_size=21, polyorder=3, sigma=2, alpha=0.1):
@@ -73,22 +78,7 @@ def smooth_sudden_movement(y, sample_rate=100, smooth_range=(7, 8), window_size=
     return y_smoothed
 
 
-def simplesmooth(rawlist,start,stop,fs):
-    for i in range(int(start*fs),int(stop*fs)):
-        rawlist[i] = rawlist[i] - 0.015
-        if(i>= 720 and i<=750):
-            rawlist[i] = rawlist[i]+ 0.005
-    
-    
-    return rawlist
 
-def thetasimplesmooth(rawlist,start,stop,fs):
-    for i in range(int(start*fs),int(stop*fs)):
-        rawlist[i] = rawlist[i] - 0.015
-        
-    
-    
-    return rawlist
     
 
 
@@ -134,15 +124,15 @@ def moving_average_filter(data, window_size):
     
     return smoothed_data
 
-def makezeros(rawlist):
-    for i in range(10*100,len(rawlist)):
-        rawlist[i] = 0
-
 
 
 # Bag file path
 path = "/home/desoforos/cepheus_impedance_tsoulias/rosbags/"
 bag_file = path + sys.argv[1] + ".bag"
+
+path2 = "/home/desoforos/Desktop/IOANT_proti_fash/gia_rek/"
+
+
 
 # Initialize lists for storing data
 time_stamps = []
@@ -173,6 +163,12 @@ error_thetadot = []
 error_theta0 = []
 error_theta0dot =[]
 
+acc1_x , acc1_y, acc1_z = [], [], []
+acc2_x , acc2_y, acc2_z = [], [], []
+acc3_x , acc3_y, acc3_z = [], [], []
+
+imu_acc_x , imu_acc_y, imu_vel_theta = [], [] ,[]
+
 
 
 
@@ -194,7 +190,10 @@ for topic, msg, t in bag.read_messages(topics=['/cepheus/xt_x', '/cepheus/xd_x',
                                                '/cepheus/xt_theta0_dot', '/cepheus/xd_theta0_dot', '/cepheus/xee_theta0_dot',
                                                '/cepheus/torquerw', '/cepheus/torqueq1', '/cepheus/torqueq2', '/cepheus/torqueq3',
                                                '/cepheus/xt_x_raw','/cepheus/xt_y_raw','/cepheus/xt_theta_raw',
-                                               '/cepheus/xt_x_dot_raw','/cepheus/xt_y_dot_raw','/cepheus/xt_theta_dot_raw']):
+                                               '/cepheus/xt_x_dot_raw','/cepheus/xt_y_dot_raw','/cepheus/xt_theta_dot_raw',
+                                               '/cepheus/acc1_x', '/cepheus/acc1_y', '/cepheus/acc1_z','/cepheus/acc2_x', '/cepheus/acc2_y', '/cepheus/acc2_z',
+                                                '/cepheus/acc3_x', '/cepheus/acc3_y', '/cepheus/acc3_z',
+                                                '/cepheus/imu_acc_x','/cepheus/imu_acc_y', '/cepheus/imu_vel_theta']):
     # Time
     time_stamps.append(t.to_sec())
 
@@ -280,7 +279,7 @@ for topic, msg, t in bag.read_messages(topics=['/cepheus/xt_x', '/cepheus/xd_x',
     # elif topic == "/cepheus/torqueq3":
     #     torqueq3.append(msg.data)
 
-    # gia actual motors (*186 gia actual roph)
+    # gia Measured motors (*186 gia Measured roph)
     elif topic == "/cepheus/torquerw":
         torquerw.append(msg.data)
     elif topic == "/cepheus/torqueq1":
@@ -296,8 +295,36 @@ for topic, msg, t in bag.read_messages(topics=['/cepheus/xt_x', '/cepheus/xd_x',
         xt_y_raw.append(msg.data)
     elif topic == "/cepheus/xt_theta_raw":
         xt_theta_raw.append(msg.data)
+    
+    elif topic == "/cepheus/acc1_x":
+        acc1_x.append(msg.data)
+    elif topic == "/cepheus/acc1_y":
+        acc1_y.append(msg.data)
+    elif topic == "/cepheus/acc1_z":
+        acc1_z.append(msg.data)
 
+    elif topic == "/cepheus/acc2_x":
+        acc2_x.append(msg.data)
+    elif topic == "/cepheus/acc2_y":
+        acc2_y.append(msg.data)
+    elif topic == "/cepheus/acc2_z":
+        acc2_z.append(msg.data)
 
+    elif topic == "/cepheus/acc3_x":
+        acc3_x.append(msg.data)
+    elif topic == "/cepheus/acc3_y":
+        acc3_y.append(msg.data)
+    elif topic == "/cepheus/acc3_z":
+        acc3_z.append(msg.data)
+    
+    elif topic == "/cepheus/imu_acc_x":
+        imu_acc_x.append(msg.data)
+    elif topic == "/cepheus/imu_acc_y":
+        imu_acc_y.append(msg.data)
+    elif topic == "/cepheus/imu_vel_theta":
+        imu_vel_theta.append(msg.data)
+        
+              
 
 
 
@@ -308,23 +335,23 @@ bag.close()
 
 #diorthosh
 sampling_frequency = 100  # Hz
-time_stamps= np.arange(0, len(xt_x)) / sampling_frequency
+time_stamps= np.arange(0, len(torqueq1)) / sampling_frequency
 time_stamps -= time_stamps[0]  # Start from 0
 
-desired_secs = 15
+desired_secs = 19
 
 des_len = sampling_frequency*desired_secs
 # des_len = len(xee_x)
 
 
-print("xee_x[0] is ",xee_x[0])
-print("xee_y[0] is ",xee_y[0])
-print("xee_theta[0] is ",xee_theta[0])
-print("theta0[0] is ",xee_theta0[0])
+# print("xee_x[0] is ",xee_x[0])
+# print("xee_y[0] is ",xee_y[0])
+# print("xee_theta[0] is ",xee_theta[0])
+# print("theta0[0] is ",xee_theta0[0])
 
-print("xt_x[0] is",xt_x[0])
-print("xt_y[0] is",xt_y[0])
-print("xt_theta[0] is",xt_theta[0])
+# print("xt_x[0] is",xt_x[0])
+# print("xt_y[0] is",xt_y[0])
+# print("xt_theta[0] is",xt_theta[0])
 
 
 
@@ -356,35 +383,35 @@ print("xt_theta[0] is",xt_theta[0])
 # xee_y_filt = smooth_sudden_movement(xee_y)
 
 
-simplesmooth(xee_y,7.2,8.2,100) #gia 13-2-imp6
-xee_y_smoothed = xee_y.copy()
-xee_y_smoothed = smooth_signal(xee_y_smoothed, method ="gaussian") #gia 13-2-imp6
+# simplesmooth(xee_y,7.2,8.2,100) #gia 13-2-imp6
+# xee_y_smoothed = xee_y.copy()
+# xee_y_smoothed = smooth_signal(xee_y_smoothed, method ="gaussian") #gia 13-2-imp6
 
-xee_y = xee_y_smoothed
+# xee_y = xee_y_smoothed
+###############na ta ksananoikso##############33
+# xee_y_dot = smooth_signal(xee_y_dot,method="ema")
+# xee_x_dot = smooth_signal(xee_x_dot,method="ema")
 
-xee_y_dot = smooth_signal(xee_y_dot,method="ema")
-xee_x_dot = smooth_signal(xee_x_dot,method="ema")
-
-xee_theta_dot = smooth_signal(xee_theta_dot,method="ema")
+# xee_theta_dot = smooth_signal(xee_theta_dot,method="ema")
 
 
-makezeros(xd_x_dot)
-makezeros(xd_y_dot)
-makezeros(xd_theta_dot)
+# makezeros(xd_x_dot)
+# makezeros(xd_y_dot)
+# makezeros(xd_theta_dot)
 
-for i in range(len(xee_x)):
-    error_x.append(-(xd_x[i]-xee_x[i]))
-    error_xdot.append(-(xd_x_dot[i]-xee_x_dot[i]))
+# for i in range(len(xee_x)):
+#     error_x.append(-(xd_x[i]-xee_x[i]))
+#     error_xdot.append(-(xd_x_dot[i]-xee_x_dot[i]))
 
-    error_y.append(-(xd_y[i]-xee_y[i]))
-    error_ydot.append(-(xd_y_dot[i]-xee_y_dot[i]))
+#     error_y.append(-(xd_y[i]-xee_y[i]))
+#     error_ydot.append(-(xd_y_dot[i]-xee_y_dot[i]))
 
-    error_theta.append(-(xd_theta[i]-xee_theta[i]))
-    error_thetadot.append(-(xd_theta_dot[i]-xee_theta_dot[i]))
+#     error_theta.append(-(xd_theta[i]-xee_theta[i]))
+#     error_thetadot.append(-(xd_theta_dot[i]-xee_theta_dot[i]))
 
-    error_theta0.append(-(xd_theta0[i]-xee_theta0[i]))
-    error_theta0dot.append(-(xd_theta0_dot[i]-xee_theta0_dot[i]))
-
+#     error_theta0.append(-(xd_theta0[i]-xee_theta0[i]))
+#     error_theta0dot.append(-(xd_theta0_dot[i]-xee_theta0_dot[i]))
+####################na ta ksananoikso##############################
 
 #smoothen the plots:
 # xee_x = savgol_filter(xee_x, window_length=51, polyorder=3)
@@ -418,33 +445,33 @@ for i in range(len(xee_x)):
 
 # # Create plots
 
-# # X values (Target, Desired, Actual)
+# # X values (Target, Desired, Measured)
 # plt.figure()
 # plt.plot(time_stamps[:des_len], xt_x, label='Target X', color='r')
 # plt.plot(time_stamps[:des_len], xd_x, label='Desired X', color='g')
-# plt.plot(time_stamps[:des_len], xee_x, label='Actual X', color='b')
+# plt.plot(time_stamps[:des_len], xee_x, label='Measured X', color='b')
 # plt.grid()
 # plt.title('X values')
 # plt.xlabel('Time [s]')
 # plt.ylabel('X Position [m]')
 # plt.legend()
 
-# # Y values (Target, Desired, Actual)
+# # Y values (Target, Desired, Measured)
 # plt.figure()
 # plt.plot(time_stamps[:des_len], xt_y, label='Target Y', color='r')
 # plt.plot(time_stamps[:des_len], xd_y, label='Desired Y', color='g')
-# plt.plot(time_stamps[:des_len], xee_y, label='Actual Y', color='b')
+# plt.plot(time_stamps[:des_len], xee_y, label='Measured Y', color='b')
 # plt.grid()
 # plt.title('Y values')
 # plt.xlabel('Time [s]')
 # plt.ylabel('Y Position [m]')
 # plt.legend()
 
-# # Theta values (Target, Desired, Actual)
+# # Theta values (Target, Desired, Measured)
 # plt.figure()
 # plt.plot(time_stamps[:des_len], xt_theta, label='Target Theta', color='r')
 # plt.plot(time_stamps[:des_len], xd_theta, label='Desired Theta', color='g')
-# plt.plot(time_stamps[:des_len], xee_theta, label='Actual Theta', color='b')
+# plt.plot(time_stamps[:des_len], xee_theta, label='Measured Theta', color='b')
 # plt.grid()
 # plt.title('Theta values')
 # plt.xlabel('Time [s]')
@@ -463,14 +490,15 @@ for i in range(len(xee_x)):
 # # Show all plots
 # plt.show()
 
+#apo edo
 # Create a figure and a 2x2 grid of subplots
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
-# Plot X values (Target, Desired, Actual)
+# Plot X values (Target, Desired, Measured)
 # axs[0, 0].plot(time_stamps[:des_len], xt_x[:des_len], label='Target X', color='r')
-axs[0, 0].plot(time_stamps[:des_len], xd_x[:des_len], label='Desired X', color='g',linestyle='--')
-axs[0, 0].plot(time_stamps[:des_len], xee_x[:des_len], label='Actual X', color='b')
-# axs[0, 0].scatter(time_stamps[:des_len], xee_x[:des_len], label='Actual X', color='y')
+# axs[0, 0].plot(time_stamps[:des_len], xd_x[:des_len], label='Desired X', color='g',linestyle='--') #na to anoikso
+axs[0, 0].plot(time_stamps[:des_len], xee_x[:des_len], label='Measured X', color='b')
+# axs[0, 0].scatter(time_stamps[:des_len], xee_x[:des_len], label='Measured X', color='y')
 # axs[0, 0].plot(time_stamps[:des_len], xt_x_raw[:des_len], label='Raw target X', color='y')
 axs[0, 0].grid()
 axs[0, 0].set_title('X values')
@@ -478,12 +506,12 @@ axs[0, 0].set_xlabel('Time [s]')
 axs[0, 0].set_ylabel('X Position [m]')
 axs[0, 0].legend()
 
-# Plot Y values (Target, Desired, Actual)
+# Plot Y values (Target, Desired, Measured)
 # axs[0, 1].plot(time_stamps[:des_len], xt_y[:des_len], label='Target Y', color='r')
-axs[0, 1].plot(time_stamps[:des_len], xd_y[:des_len], label='Desired Y', color='g',linestyle='--')
-axs[0, 1].plot(time_stamps[:des_len], xee_y[:des_len], label='Actual Y', color='b')
+# axs[0, 1].plot(time_stamps[:des_len], xd_y[:des_len], label='Desired Y', color='g',linestyle='--') 
+axs[0, 1].plot(time_stamps[:des_len], xee_y[:des_len], label='Measured Y', color='b')
 # axs[0, 1].plot(time_stamps[:des_len], xee_y_smoothed[:des_len], label='Smoothed Y', color='r')
-# axs[0, 1].scatter(time_stamps[:des_len], xee_y[:des_len], label='Actual Y', color='y')
+# axs[0, 1].scatter(time_stamps[:des_len], xee_y[:des_len], label='Measured Y', color='y')
 # axs[0, 1].plot(time_stamps[:des_len], xt_y_raw[:des_len], label='Raw target Y', color='y')
 axs[0, 1].grid()
 axs[0, 1].set_title('Y values')
@@ -491,11 +519,11 @@ axs[0, 1].set_xlabel('Time [s]')
 axs[0, 1].set_ylabel('Y Position [m]')
 axs[0, 1].legend()
 
-# Plot Theta values (Target, Desired, Actual)
+# Plot Theta values (Target, Desired, Measured)
 # axs[1, 0].plot(time_stamps[:des_len], xt_theta[:des_len], label='Target Theta', color='r')
-axs[1, 0].plot(time_stamps[:des_len], xd_theta[:des_len], label='Desired Theta', color='g',linestyle='--')
-axs[1, 0].plot(time_stamps[:des_len], xee_theta[:des_len], label='Actual Theta', color='b')
-# axs[1, 0].scatter(time_stamps[:des_len], xee_theta[:des_len], label='Actual Theta', color='y')
+# axs[1, 0].plot(time_stamps[:des_len], xd_theta[:des_len], label='Desired Theta', color='g',linestyle='--')
+axs[1, 0].plot(time_stamps[:des_len], xee_theta[:des_len], label='Measured Theta', color='b')
+# axs[1, 0].scatter(time_stamps[:des_len], xee_theta[:des_len], label='Measured Theta', color='y')
 # axs[1, 0].plot(time_stamps[:des_len], xt_theta_raw[:des_len], label='Raw target Theta', color='y')
 axs[1, 0].grid()
 axs[1, 0].set_title('Theta values')
@@ -503,11 +531,11 @@ axs[1, 0].set_xlabel('Time [s]')
 axs[1, 0].set_ylabel('Theta [deg]')
 axs[1, 0].legend()
 
-# Plot Theta0 values (Target, Desired, Actual)
+# Plot Theta0 values (Target, Desired, Measured)
 # axs[1, 1].plot(time_stamps[:des_len], xt_theta0[:des_len], label='Target Theta0', color='r')
-axs[1, 1].plot(time_stamps[:des_len], xd_theta0[:des_len], label='Desired Theta0', color='g',linestyle='--')
-axs[1, 1].plot(time_stamps[:des_len], xee_theta0[:des_len], label='Actual Theta0', color='b')
-# axs[1, 1].scatter(time_stamps[:des_len], xee_theta0[:des_len], label='Actual Theta0', color='y')
+# axs[1, 1].plot(time_stamps[:des_len], xd_theta0[:des_len], label='Desired Theta0', color='g',linestyle='--')
+axs[1, 1].plot(time_stamps[:des_len], xee_theta0[:des_len], label='Measured Theta0', color='b')
+# axs[1, 1].scatter(time_stamps[:des_len], xee_theta0[:des_len], label='Measured Theta0', color='y')
 axs[1, 1].grid()
 axs[1, 1].set_title('Theta0 values')
 axs[1, 1].set_xlabel('Time [s]')
@@ -532,44 +560,44 @@ plt.show()
 
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
-# Plot Xdot values (Target, Desired, Actual)
+# Plot Xdot values (Target, Desired, Measured)
 # axs[0, 0].plot(time_stamps[:des_len], xt_x_dot[:des_len], label='Target Xdot', color='r')
-axs[0, 0].plot(time_stamps[:des_len], xd_x_dot[:des_len], label='Desired Xdot', color='g',linestyle='--')
-axs[0, 0].plot(time_stamps[:des_len], xee_x_dot[:des_len], label='Actual Xdot', color='b')
-# axs[0, 0].scatter(time_stamps[:des_len], xee_x_dot[:des_len], label='Actual Xdot', color='y')
+# axs[0, 0].plot(time_stamps[:des_len], xd_x_dot[:des_len], label='Desired Xdot', color='g',linestyle='--')
+axs[0, 0].plot(time_stamps[:des_len], xee_x_dot[:des_len], label='Measured Xdot', color='b')
+# axs[0, 0].scatter(time_stamps[:des_len], xee_x_dot[:des_len], label='Measured Xdot', color='y')
 axs[0, 0].grid()
 axs[0, 0].set_title('Xdot ')
 axs[0, 0].set_xlabel('Time [s]')
 axs[0, 0].set_ylabel('X Velcotiy [m/sec]')
 axs[0, 0].legend()
 
-# Plot Ydot values (Target, Desired, Actual)
+# Plot Ydot values (Target, Desired, Measured)
 # axs[0, 1].plot(time_stamps[:des_len], xt_y_dot[:des_len], label='Target Ydot', color='r')
-axs[0, 1].plot(time_stamps[:des_len], xd_y_dot[:des_len], label='Desired Ydot', color='g',linestyle='--')
-axs[0, 1].plot(time_stamps[:des_len], xee_y_dot[:des_len], label='Actual Ydot', color='b')
-# axs[0, 1].scatter(time_stamps[:des_len], xee_y_dot[:des_len], label='Actual Ydot', color='y')
+# axs[0, 1].plot(time_stamps[:des_len], xd_y_dot[:des_len], label='Desired Ydot', color='g',linestyle='--')
+axs[0, 1].plot(time_stamps[:des_len], xee_y_dot[:des_len], label='Measured Ydot', color='b')
+# axs[0, 1].scatter(time_stamps[:des_len], xee_y_dot[:des_len], label='Measured Ydot', color='y')
 axs[0, 1].grid()
 axs[0, 1].set_title('Ydot')
 axs[0, 1].set_xlabel('Time [s]')
 axs[0, 1].set_ylabel('Y Velocity [m/sec]')
 axs[0, 1].legend()
 
-# Plot Thetadot values (Target, Desired, Actual)
+# Plot Thetadot values (Target, Desired, Measured)
 # axs[1, 0].plot(time_stamps[:des_len], xt_theta_dot[:des_len], label='Target Thetadot', color='r')
-axs[1, 0].plot(time_stamps[:des_len], xd_theta_dot[:des_len], label='Desired Thetadot', color='g',linestyle='--')
-axs[1, 0].plot(time_stamps[:des_len], xee_theta_dot[:des_len], label='Actual Thetadot', color='b')
-# axs[1, 0].scatter(time_stamps[:des_len], xee_theta_dot[:des_len], label='Actual Thetadot', color='y')
+# axs[1, 0].plot(time_stamps[:des_len], xd_theta_dot[:des_len], label='Desired Thetadot', color='g',linestyle='--')
+axs[1, 0].plot(time_stamps[:des_len], xee_theta_dot[:des_len], label='Measured Thetadot', color='b')
+# axs[1, 0].scatter(time_stamps[:des_len], xee_theta_dot[:des_len], label='Measured Thetadot', color='y')
 axs[1, 0].grid()
 axs[1, 0].set_title('Thetadot')
 axs[1, 0].set_xlabel('Time [s]')
 axs[1, 0].set_ylabel('Thetadot [deg/sec]')
 axs[1, 0].legend()
 
-# Plot Theta0dot values (Target, Desired, Actual)
+# Plot Theta0dot values (Target, Desired, Measured)
 # axs[1, 1].plot(time_stamps[:des_len], xt_theta0_dot[:des_len], label='Target Theta0dot', color='r')
-axs[1, 1].plot(time_stamps[:des_len], xd_theta0_dot[:des_len], label='Desired Theta0dot', color='g',linestyle='--')
-axs[1, 1].plot(time_stamps[:des_len], xee_theta0_dot[:des_len], label='Actual Theta0dot', color='b')
-# axs[1, 1].scatter(time_stamps[:des_len], xee_theta0_dot[:des_len], label='Actual Theta0dot', color='y')
+# axs[1, 1].plot(time_stamps[:des_len], xd_theta0_dot[:des_len], label='Desired Theta0dot', color='g',linestyle='--')
+axs[1, 1].plot(time_stamps[:des_len], xee_theta0_dot[:des_len], label='Measured Theta0dot', color='b')
+# axs[1, 1].scatter(time_stamps[:des_len], xee_theta0_dot[:des_len], label='Measured Theta0dot', color='y')
 axs[1, 1].grid()
 axs[1, 1].set_title('Theta0dot')
 axs[1, 1].set_xlabel('Time [s]')
@@ -591,7 +619,7 @@ plt.tight_layout()
 # Show all plots in one window
 plt.show()
 
-
+#OS EDOOOO
 
 
 
@@ -642,8 +670,8 @@ plt.show()
 
 # External Force (X-axis)
 plt.figure()
-plt.plot(time_stamps[:des_len], fext_x[:des_len], label='Fext X', color='k')
-plt.plot(time_stamps[:des_len], fext_x_raw[:des_len], label='Fext X RAW', color='g')
+# plt.plot(time_stamps[:des_len], fext_x[:des_len], label='Fext X', color='k')
+plt.plot(time_stamps[:des_len], fext_x_raw[:des_len], label='Fext X ', color='g')
 # plt.plot(time_stamps[:des_len], fext_smoothed[:des_len], label='Fext_x')
 plt.grid()
 plt.title('External Force (X-axis)')
@@ -659,79 +687,79 @@ plt.show()
 # Create a figure and a 2x2 grid of subplots
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
-# Plot errorX values (Target, Desired, Actual)
-axs[0, 0].plot(time_stamps[:des_len], error_x[:des_len], label='error X', color='r')
-# axs[0, 0].plot(time_stamps[:des_len], error_xdot[:des_len], label='error Xdot', color='b')
-axs[0, 0].grid()
-axs[0, 0].legend()
-axs[0, 0].set_title("Error X ")
-axs[0, 0].set_xlabel('Time [s]')
-axs[0, 0].set_ylabel('Error [m]')
+# # Plot errorX values (Target, Desired, Measured)
+# axs[0, 0].plot(time_stamps[:des_len], error_x[:des_len], label='error X', color='r')
+# # axs[0, 0].plot(time_stamps[:des_len], error_xdot[:des_len], label='error Xdot', color='b')
+# axs[0, 0].grid()
+# axs[0, 0].legend()
+# axs[0, 0].set_title("Error X ")
+# axs[0, 0].set_xlabel('Time [s]')
+# axs[0, 0].set_ylabel('Error [m]')
 
-# Plot Y values (Target, Desired, Actual)
-axs[0, 1].plot(time_stamps[:des_len], error_y[:des_len], label='error Y', color='r')
-# axs[0, 1].plot(time_stamps[:des_len], error_ydot[:des_len], label='error Ydot', color='b')
-axs[0, 1].grid()
-axs[0, 1].legend()
-axs[0, 1].set_title("Error Y ")
-axs[0, 1].set_xlabel('Time [s]')
-axs[0, 1].set_ylabel('Error [m]')
+# # Plot Y values (Target, Desired, Measured)
+# axs[0, 1].plot(time_stamps[:des_len], error_y[:des_len], label='error Y', color='r')
+# # axs[0, 1].plot(time_stamps[:des_len], error_ydot[:des_len], label='error Ydot', color='b')
+# axs[0, 1].grid()
+# axs[0, 1].legend()
+# axs[0, 1].set_title("Error Y ")
+# axs[0, 1].set_xlabel('Time [s]')
+# axs[0, 1].set_ylabel('Error [m]')
 
-# Plot Theta values (Target, Desired, Actual)
-axs[1, 0].plot(time_stamps[:des_len], error_theta[:des_len], label='error Theta', color='r')
-# axs[1, 0].plot(time_stamps[:des_len], error_thetadot[:des_len], label='error Thetadot', color='b')
-axs[1, 0].grid()
-axs[1, 0].legend()
-axs[1, 0].set_title("Error Theta ")
-axs[1, 0].set_xlabel('Time [s]')
-axs[1, 0].set_ylabel('Error [deg]')
+# # Plot Theta values (Target, Desired, Measured)
+# axs[1, 0].plot(time_stamps[:des_len], error_theta[:des_len], label='error Theta', color='r')
+# # axs[1, 0].plot(time_stamps[:des_len], error_thetadot[:des_len], label='error Thetadot', color='b')
+# axs[1, 0].grid()
+# axs[1, 0].legend()
+# axs[1, 0].set_title("Error Theta ")
+# axs[1, 0].set_xlabel('Time [s]')
+# axs[1, 0].set_ylabel('Error [deg]')
 
-# # Plot Theta0 values (Target, Desired, Actual)
-axs[1, 1].plot(time_stamps[:des_len], error_theta0[:des_len], label='error Theta0', color='r')
-# axs[1, 0].plot(time_stamps[:des_len], error_thetadot[:des_len], label='error Thetadot', color='b')
-axs[1, 1].grid()
-axs[1, 1].legend()
-axs[1, 1].set_title("Error Theta0")
-axs[1, 1].set_xlabel('Time [s]')
-axs[1, 1].set_ylabel('Error [deg]')
-plt.show()
+# # # Plot Theta0 values (Target, Desired, Measured)
+# axs[1, 1].plot(time_stamps[:des_len], error_theta0[:des_len], label='error Theta0', color='r')
+# # axs[1, 0].plot(time_stamps[:des_len], error_thetadot[:des_len], label='error Thetadot', color='b')
+# axs[1, 1].grid()
+# axs[1, 1].legend()
+# axs[1, 1].set_title("Error Theta0")
+# axs[1, 1].set_xlabel('Time [s]')
+# axs[1, 1].set_ylabel('Error [deg]')
+# plt.show()
 
 
-# Create a figure and a 2x2 grid of subplots
-fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+# # Create a figure and a 2x2 grid of subplots
+# fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
-# Plot errorX values (Target, Desired, Actual)
-axs[0, 0].plot(time_stamps[:des_len], error_xdot[:des_len], label='error Xdot', color='r')
-axs[0, 0].grid()
-axs[0, 0].legend()
-axs[0, 0].set_title("Error Xdot ")
-axs[0, 0].set_xlabel('Time [s]')
-axs[0, 0].set_ylabel('Error [m/sec]')
+# # Plot errorX values (Target, Desired, Measured)
+# axs[0, 0].plot(time_stamps[:des_len], error_xdot[:des_len], label='error Xdot', color='r')
+# axs[0, 0].grid()
+# axs[0, 0].legend()
+# axs[0, 0].set_title("Error Xdot ")
+# axs[0, 0].set_xlabel('Time [s]')
+# axs[0, 0].set_ylabel('Error [m/sec]')
 
-# Plot Y values (Target, Desired, Actual)
-axs[0, 1].plot(time_stamps[:des_len], error_ydot[:des_len], label='error Ydot', color='r')
-axs[0, 1].grid()
-axs[0, 1].legend()
-axs[0, 1].set_title("Error Ydot")
-axs[0, 1].set_xlabel('Time [s]')
-axs[0, 1].set_ylabel('Error [m/sec]')
+# # Plot Y values (Target, Desired, Measured)
+# axs[0, 1].plot(time_stamps[:des_len], error_ydot[:des_len], label='error Ydot', color='r')
+# axs[0, 1].grid()
+# axs[0, 1].legend()
+# axs[0, 1].set_title("Error Ydot")
+# axs[0, 1].set_xlabel('Time [s]')
+# axs[0, 1].set_ylabel('Error [m/sec]')
 
-# Plot Theta values (Target, Desired, Actual)
-axs[1, 0].plot(time_stamps[:des_len], error_thetadot[:des_len], label='error Thetadot', color='r')
-axs[1, 0].grid()
-axs[1, 0].legend()
-axs[1, 0].set_title("Error Thetadot ")
-axs[1, 0].set_xlabel('Time [s]')
-axs[1, 0].set_ylabel('Error [deg/sec]')
+# # Plot Theta values (Target, Desired, Measured)
+# axs[1, 0].plot(time_stamps[:des_len], error_thetadot[:des_len], label='error Thetadot', color='r')
+# axs[1, 0].grid()
+# axs[1, 0].legend()
+# axs[1, 0].set_title("Error Thetadot ")
+# axs[1, 0].set_xlabel('Time [s]')
+# axs[1, 0].set_ylabel('Error [deg/sec]')
 
-# # Plot Theta0 values (Target, Desired, Actual)
-axs[1, 1].plot(time_stamps[:des_len], error_theta0dot[:des_len], label='error Theta0dot', color='r')
-axs[1, 1].grid()
-axs[1, 1].legend()
-axs[1, 1].set_title("Error Theta0dot")
-axs[1, 1].set_xlabel('Time [s]')
-axs[1, 1].set_ylabel('Error [deg/sec]')
-plt.show()
+# # # Plot Theta0 values (Target, Desired, Measured)
+# axs[1, 1].plot(time_stamps[:des_len], error_theta0dot[:des_len], label='error Theta0dot', color='r')
+# axs[1, 1].grid()
+# axs[1, 1].legend()
+# axs[1, 1].set_title("Error Theta0dot")
+# axs[1, 1].set_xlabel('Time [s]')
+# axs[1, 1].set_ylabel('Error [deg/sec]')
+# plt.show()
 
 
 # ydot = xee_y_dot
@@ -790,3 +818,179 @@ plt.show()
 # plt.ylabel("Y (m) ")
 # plt.grid()
 # plt.show()
+
+
+# Create a figure and a 2x2 grid of subplots
+fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+
+# Plot errorX values (Target, Desired, Measured)
+axs[0, 0].plot(time_stamps[:des_len], acc1_x[:des_len], label='acc1 X', color='r')
+# axs[0, 0].plot(time_stamps[:des_len], error_xdot[:des_len], label='error Xdot', color='b')
+axs[0, 0].grid()
+axs[0, 0].legend()
+axs[0, 0].set_title("acc1 X ")
+axs[0, 0].set_xlabel('Time [s]')
+axs[0, 0].set_ylabel('acceleration [m/s^2]')
+
+# Plot Y values (Target, Desired, Measured)
+axs[0, 1].plot(time_stamps[:des_len], acc1_y[:des_len], label='acc1  Y', color='r')
+# axs[0, 1].plot(time_stamps[:des_len], error_ydot[:des_len], label='error Ydot', color='b')
+axs[0, 1].grid()
+axs[0, 1].legend()
+axs[0, 1].set_title("acc1 Y ")
+axs[0, 1].set_xlabel('Time [s]')
+axs[0, 1].set_ylabel('acceleration [m/s^2]')
+
+# Plot Theta values (Target, Desired, Measured)
+axs[1, 0].plot(time_stamps[:des_len], acc1_z[:des_len], label='acc1 Z', color='r')
+# axs[1, 0].plot(time_stamps[:des_len], error_thetadot[:des_len], label='error Thetadot', color='b')
+axs[1, 0].grid()
+axs[1, 0].legend()
+axs[1, 0].set_title("acc1 Z ")
+axs[1, 0].set_xlabel('Time [s]')
+axs[1, 0].set_ylabel('acceleration [m/s^2]')
+
+plt.show()
+
+# Create a figure and a 2x2 grid of subplots
+fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+
+# Plot errorX values (Target, Desired, Measured)
+axs[0, 0].plot(time_stamps[:des_len], acc2_x[:des_len], label='acc2 X', color='r')
+# axs[0, 0].plot(time_stamps[:des_len], error_xdot[:des_len], label='error Xdot', color='b')
+axs[0, 0].grid()
+axs[0, 0].legend()
+axs[0, 0].set_title("acc2 X ")
+axs[0, 0].set_xlabel('Time [s]')
+axs[0, 0].set_ylabel('acceleration [m/s^2]')
+
+# Plot Y values (Target, Desired, Measured)
+axs[0, 1].plot(time_stamps[:des_len], acc2_y[:des_len], label='acc2  Y', color='r')
+# axs[0, 1].plot(time_stamps[:des_len], error_ydot[:des_len], label='error Ydot', color='b')
+axs[0, 1].grid()
+axs[0, 1].legend()
+axs[0, 1].set_title("acc2 Y ")
+axs[0, 1].set_xlabel('Time [s]')
+axs[0, 1].set_ylabel('acceleration [m/s^2]')
+
+# Plot Theta values (Target, Desired, Measured)
+axs[1, 0].plot(time_stamps[:des_len], acc2_z[:des_len], label='acc2 Z', color='r')
+# axs[1, 0].plot(time_stamps[:des_len], error_thetadot[:des_len], label='error Thetadot', color='b')
+axs[1, 0].grid()
+axs[1, 0].legend()
+axs[1, 0].set_title("acc2 Z ")
+axs[1, 0].set_xlabel('Time [s]')
+axs[1, 0].set_ylabel('acceleration [m/s^2]')
+
+plt.show()
+
+# Create a figure and a 2x2 grid of subplots
+fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+
+# Plot errorX values (Target, Desired, Measured)
+axs[0, 0].plot(time_stamps[:des_len], acc3_x[:des_len], label='acc3 X', color='r')
+# axs[0, 0].plot(time_stamps[:des_len], error_xdot[:des_len], label='error Xdot', color='b')
+axs[0, 0].grid()
+axs[0, 0].legend()
+axs[0, 0].set_title("acc3 X ")
+axs[0, 0].set_xlabel('Time [s]')
+axs[0, 0].set_ylabel('acceleration [m/s^2]')
+
+# Plot Y values (Target, Desired, Measured)
+axs[0, 1].plot(time_stamps[:des_len], acc3_y[:des_len], label='acc3  Y', color='r')
+# axs[0, 1].plot(time_stamps[:des_len], error_ydot[:des_len], label='error Ydot', color='b')
+axs[0, 1].grid()
+axs[0, 1].legend()
+axs[0, 1].set_title("acc3 Y ")
+axs[0, 1].set_xlabel('Time [s]')
+axs[0, 1].set_ylabel('acceleration [m/s^2]')
+
+# Plot Theta values (Target, Desired, Measured)
+axs[1, 0].plot(time_stamps[:des_len], acc3_z[:des_len], label='acc3 Z', color='r')
+# axs[1, 0].plot(time_stamps[:des_len], error_thetadot[:des_len], label='error Thetadot', color='b')
+axs[1, 0].grid()
+axs[1, 0].legend()
+axs[1, 0].set_title("acc3 Z ")
+axs[1, 0].set_xlabel('Time [s]')
+axs[1, 0].set_ylabel('acceleration [m/s^2]')
+
+plt.show()
+
+# Create a figure and a 2x2 grid of subplots
+fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+
+# Plot errorX values (Target, Desired, Measured)
+axs[0, 0].plot(time_stamps[:des_len], imu_acc_x[:des_len], label='imu acc X', color='r')
+# axs[0, 0].plot(time_stamps[:des_len], error_xdot[:des_len], label='error Xdot', color='b')
+axs[0, 0].grid()
+axs[0, 0].legend()
+axs[0, 0].set_title("IMU acc X")
+axs[0, 0].set_xlabel('Time [s]')
+axs[0, 0].set_ylabel('Acceleration [m]')
+
+# Plot Y values (Target, Desired, Measured)
+axs[0, 1].plot(time_stamps[:des_len], imu_acc_y[:des_len], label='imu acc  Y', color='r')
+# axs[0, 1].plot(time_stamps[:des_len], error_ydot[:des_len], label='error Ydot', color='b')
+axs[0, 1].grid()
+axs[0, 1].legend()
+axs[0, 1].set_title("IMU acc Y ")
+axs[0, 1].set_xlabel('Time [s]')
+axs[0, 1].set_ylabel('Acceleration [m/s^2]')
+
+# Plot Theta values (Target, Desired, Measured)
+axs[1, 0].plot(time_stamps[:des_len], imu_vel_theta[:des_len], label='imu vel theta ', color='r')
+# axs[1, 0].plot(time_stamps[:des_len], error_thetadot[:des_len], label='error Thetadot', color='b')
+axs[1, 0].grid()
+axs[1, 0].legend()
+axs[1, 0].set_title("IMU vel Theta ")
+axs[1, 0].set_xlabel('Time [s]')
+axs[1, 0].set_ylabel('Velocity [rad/sec]')
+
+plt.show()
+
+# Assume all the lists below are already populated somewhere in your code
+# time_stamps, xt_x, xd_x, xee_x, ..., imu_acc_x, imu_acc_y, imu_vel_theta
+
+data_dict = {
+    "time": time_stamps,
+
+    "xd_x": xd_x, "xee_x": xee_x,
+    "xd_y": xd_y, "xee_y": xee_y,
+    "xd_theta": xd_theta, "xee_theta": xee_theta,
+    "xd_theta0": xd_theta0, "xee_theta0": xee_theta0,
+
+    "xd_x_dot": xd_x_dot, "xee_x_dot": xee_x_dot,
+    "xd_y_dot": xd_y_dot, "xee_y_dot": xee_y_dot,
+    "xd_theta_dot": xd_theta_dot, "xee_theta_dot": xee_theta_dot,
+    "xd_theta0_dot": xd_theta0_dot, "xee_theta0_dot": xee_theta0_dot,
+
+    "fext_x_raw": fext_x_raw,
+
+    "torquerw": torquerw,
+    "torqueq1": torqueq1,
+    "torqueq2": torqueq2,
+    "torqueq3": torqueq3,
+
+    "error_x": error_x, "error_xdot": error_xdot,
+    "error_y": error_y, "error_ydot": error_ydot,
+    "error_theta": error_theta, "error_thetadot": error_thetadot,
+    "error_theta0": error_theta0, "error_theta0dot": error_theta0dot,
+
+    "acc1_x": acc1_x, "acc1_y": acc1_y, "acc1_z": acc1_z,
+    "acc2_x": acc2_x, "acc2_y": acc2_y, "acc2_z": acc2_z,
+    "acc3_x": acc3_x, "acc3_y": acc3_y, "acc3_z": acc3_z,
+
+    "imu_acc_x": imu_acc_x, "imu_acc_y": imu_acc_y, "imu_vel_theta": imu_vel_theta
+}
+
+# Convert all lists to numpy arrays to ensure compatibility with MATLAB
+for key in data_dict:
+    data_dict[key] = np.array(data_dict[key])
+
+# Ask user for filename
+filename = input("Enter the filename to save (without .mat extension): ").strip() + ".mat"
+file_path = os.path.join(path2, filename)
+
+# Save to .mat file
+scipy.io.savemat(file_path, data_dict)
+print(f"Data saved to {filename}")

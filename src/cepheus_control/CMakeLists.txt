@@ -165,9 +165,9 @@ add_executable(vicon_test_node src/vicon_test.cpp)
 add_executable(motors_test_node src/motors_test.cpp)
 # add_executable(gazebo_motors_test_node src/gazebo_nodes/gazebo_motors_test.cpp)
 add_executable(recorder_node src/recorder.cpp)
-
-
-
+add_executable(acc_logger src/acc_logger.cpp)
+add_executable(sysid_node src/sysid.cpp)
+add_executable(final_raw_recorder_node  src/final_raw_recorder.cpp)
 
 
 ## Rename C++ executable without prefix
@@ -195,8 +195,9 @@ target_link_libraries(vicon_test_node ${catkin_LIBRARIES} )
 target_link_libraries(motors_test_node ${catkin_LIBRARIES})
 # target_link_libraries(gazebo_motors_test_node ${catkin_LIBRARIES})
 target_link_libraries(recorder_node ${catkin_LIBRARIES})
-
-
+target_link_libraries(acc_logger ${catkin_LIBRARIES})
+target_link_libraries(sysid_node ${catkin_LIBRARIES})
+target_link_libraries(final_raw_recorder_node ${catkin_LIBRARIES})
 
 
 # target_link_libraries(eross_control_node ${catkin_LIBRARIES}  _ros) #nikiforos, took from eros

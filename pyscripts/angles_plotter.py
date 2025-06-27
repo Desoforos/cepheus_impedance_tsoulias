@@ -110,7 +110,7 @@ for topic, msg, t in bag.read_messages(topics=['/cepheus/q1','/cepheus/q2', '/ce
                                                '/cepheus/xee_theta0', '/cepheus/q1dot', '/cepheus/q2dot',
                                                 '/cepheus/q3dot', '/cepheus/theta0dot',
                                                 '/cepheus/q1d','/cepheus/q2d', '/cepheus/q3d',
-                                               '/cepheus/theta0d', '/cepheus/q1ddot', '/cepheus/q2ddot',
+                                               '/cepheus/theta0d', '/cepheus/theta0', '/cepheus/q1ddot', '/cepheus/q2ddot',
                                                 '/cepheus/q3ddot', '/cepheus/theta0ddot',
                                                 '/cepheus/torquerw', '/cepheus/torqueq1', '/cepheus/torqueq2', '/cepheus/torqueq3',
                                                 '/cepheus/xee_theta']):
@@ -134,6 +134,8 @@ for topic, msg, t in bag.read_messages(topics=['/cepheus/q1','/cepheus/q2', '/ce
         q3dot.append(msg.data*180/pi)
     elif topic == "/cepheus/theta0dot":
         theta0dot.append(msg.data*180/pi)
+    elif topic == "/cepheus/theta0":
+        theta0.append(msg.data*180/pi)
 
     elif topic == "/cepheus/q1d":
         q1d.append(msg.data*180/pi)
@@ -295,15 +297,15 @@ window_size = 200
 # print("q2[1] is ",q2[200])
 # print("q3[1] is ",q3[200])
 # print("all together is: ", q1[200]+q2[200]+q3[200])
-for i in range(0, len(q1), 100):
-    print("Iteration: ",i)
-    print("theta from vicon: ",theta[i])
-    temp = theta0[i]+q1[i]+q2[i]+q3[i]
-    print("theta0 + q1 + q2 + q3: ",temp)
-    print("difference = ",theta[i]-temp)
-    print("theta0 + q1 + q2 + q3 + q01: ",temp - 30.015)
-    print("difference +q01 = ",theta[i]-temp + 30.015)
-    print("///////////////////")
+# for i in range(0, len(q1), 100):
+#     print("Iteration: ",i)
+#     print("theta from vicon: ",theta[i])
+#     temp = theta0[i]+q1[i]+q2[i]+q3[i]
+#     print("theta0 + q1 + q2 + q3: ",temp)
+#     print("difference = ",theta[i]-temp)
+#     print("theta0 + q1 + q2 + q3 + q01: ",temp - 30.015)
+#     print("difference +q01 = ",theta[i]-temp + 30.015)
+#     print("///////////////////")
 
 
 
@@ -312,7 +314,7 @@ fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
 # Plot X Coordinates (Target, Desired, Actual)
 axs[0, 0].plot(time_stamps[:des_len], q1[:des_len], label='Actual q1', color='b')
-# axs[0, 0].plot(time_stamps[:des_len], q1d[:des_len], label='Desired q1', color='g',linestyle='--')
+axs[0, 0].plot(time_stamps[:des_len], q1d[:des_len], label='Desired q1', color='g',linestyle='--')
 axs[0, 0].grid()
 axs[0, 0].set_title('q1 values')
 axs[0, 0].set_xlabel('Time [s]')
@@ -321,7 +323,7 @@ axs[0, 0].legend()
 
 # Plot Y Coordinates (Target, Desired, Actual)
 axs[0, 1].plot(time_stamps[:des_len], q2[:des_len], label='Actual q2', color='b')
-# axs[0, 1].plot(time_stamps[:des_len], q2d[:des_len], label='Desired q2', color='g',linestyle='--')
+axs[0, 1].plot(time_stamps[:des_len], q2d[:des_len], label='Desired q2', color='g',linestyle='--')
 axs[0, 1].grid()
 axs[0, 1].set_title('q2 values')
 axs[0, 1].set_xlabel('Time [s]')
@@ -330,7 +332,7 @@ axs[0, 1].legend()
 
 # Plot Theta Coordinates (Target, Desired, Actual)
 axs[1, 0].plot(time_stamps[:des_len], q3[:des_len], label='Actual q3', color='b')
-# axs[1, 0].plot(time_stamps[:des_len], q3d[:des_len], label='Desired q3', color='g',linestyle='--')
+axs[1, 0].plot(time_stamps[:des_len], q3d[:des_len], label='Desired q3', color='g',linestyle='--')
 axs[1, 0].grid()
 axs[1, 0].set_title('q3 values')
 axs[1, 0].set_xlabel('Time [s]')
@@ -338,8 +340,8 @@ axs[1, 0].set_ylabel('q3 [deg]')
 axs[1, 0].legend()
 
 # Plot Theta0 Coordinates (Target, Desired, Actual)
-# axs[1, 1].plot(time_stamps[:des_len], theta0[:des_len], label='Actual theta0', color='b')
-# axs[1, 1].plot(time_stamps[:des_len], theta0d[:des_len], label='Desired theta0', color='g',linestyle='--')
+axs[1, 1].plot(time_stamps[:des_len], theta0[:des_len], label='Actual theta0', color='b')
+axs[1, 1].plot(time_stamps[:des_len], theta0d[:des_len], label='Desired theta0', color='g',linestyle='--')
 axs[1, 1].grid()
 axs[1, 1].set_title('theta0 values')
 axs[1, 1].set_xlabel('Time [s]')
@@ -383,8 +385,8 @@ axs[1, 0].set_ylabel('q3dot [deg/sec]')
 axs[1, 0].legend()
 
 # Plot Theta0 Coordinates (Target, Desired, Actual)
-# axs[1, 1].plot(time_stamps[:des_len], theta0dot[:des_len], label='Actual theta0dot', color='b')
-# axs[1, 1].plot(time_stamps[:des_len], theta0ddot[:des_len], label='Desired theta0dot', color='g',linestyle='--')
+axs[1, 1].plot(time_stamps[:des_len], theta0dot[:des_len], label='Actual theta0dot', color='b')
+axs[1, 1].plot(time_stamps[:des_len], theta0ddot[:des_len], label='Desired theta0dot', color='g',linestyle='--')
 axs[1, 1].grid()
 axs[1, 1].set_title('theta0dot values')
 axs[1, 1].set_xlabel('Time [s]')

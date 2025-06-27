@@ -27,6 +27,7 @@
 #include <std_msgs/UInt8.h>
 #include <vector>
 #include <algorithm>
+#include <std_msgs/Float32.h>
 
 
 

@@ -83,14 +83,14 @@ int main(int argc, char **argv) {
     ros::NodeHandle nh;
     signal(SIGINT, sigintHandler);
 
-    ros::Subscriber grab_sub = nh.subscribe("/start_grab", 1, grabCallback);
+    ros::Subscriber grab_sub = nh.subscribe("/start_grab", 1, grabCallback); //perimenei apo kapoion (robot_foros_contorller) na tou pei ksekina piase
     ros::Subscriber arduino_sub = nh.subscribe("/tsoulias_speak", 1, arduinoCallbacktest);
     ros::Publisher arduino_pub = nh.advertise<std_msgs::String>("/tsoulias_hear", 1);
-    // ros::Publisher foros_pub = nh.advertise<std_msgs::Float64>("/foros_hear", 1);
+ 
 
-    ros::Subscriber force_sub = nh.subscribe("/filtered_botasys", 1, forceCallback);
-
-    ros::Rate loop_rate(200); //200Hz
+    ros::Subscriber force_sub = nh.subscribe("/filtered_botasys", 1, forceCallback); //ama thes na diabaseis kai ropes oso kleinei, ostoso bale neo topic afto den isxyei pleon
+    //to topic pou thelei einai:     ros::Subscriber ft_test_sub = nh.subscribe("/bus0/ft_sensor0/ft_sensor_readings/wrench", 1, forceCallback);
+    ros::Rate loop_rate(100); //100Hz
     std_msgs::Float64 force_msg;
     std_msgs::Float64 raw_force_msg;
     std_msgs::Float64 stop_motors_msg;
@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
     int contactCounter = 0;
     char cmd;
     rosbag::Bag bag;
-    std::string path = "/home/desoforos/cepheus_impedance_tsoulias/rosbags/" ;
+    std::string path = "/home/desoforos/cepheus_impedance_tsoulias/rosbags/" ; //allaske to an thes rosbag
     std::string bag_file_name;
 
     ROS_INFO("[Arduino test]: You want to record to a bag? Press Y for yes, anything else for no. \n");
@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
         //     }
         // if(ardincontact){ // contact for 1 sec if(contactCounter > 1*200)
         //     beginGrab = true;
-        //    } //to evgala giati tha perimenei na kanei subscribe
+        //    } //to evgala giati tha perimenei na kanei subscribe, ousiastika itan ena palio kritirio pou diabaze apo bota oti akoubaei gia 1 sec
         if(beginGrab){ 
                 if(!beginSoft){
                     beginSoft = true;
@@ -153,8 +153,6 @@ int main(int argc, char **argv) {
                         // }
                         arduino_msg.data = "hardgrip";
                         arduino_pub.publish(arduino_msg);
-                        // stop_motors_msg.data = 1.0;
-                        // foros_pub.publish(stop_motors_msg);
                         //ROSPUBLISH HARDGRIP MIA FORA META DEN KSANASTELNEI
                     }
                     ros::spinOnce(); //perimeno callback gia true to hardFinished
